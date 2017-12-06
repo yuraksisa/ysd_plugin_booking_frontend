@@ -1,0 +1,305 @@
+<!-- PAGE WITH SIDEBAR -->
+<section class="page-section with-sidebar sub-page">
+  <div class="container">
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <h2 class="text-center"><%=@order.customer_name%> <%=@order.customer_surname%>,
+           <strong><%=t.front_end_activities.order_page.order_detail_title("#{t[:front_end_activities][:order_page][:order_detail_state][@order.status.to_sym]}").to_s.downcase%>
+           </strong></h2>
+
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- CONTENT -->
+      <div class="col-md-8 content" id="content">
+
+        <!-- PRODUCT(S) INFORMATION -->
+        <h3 class="block-title alt">
+          <i class="fa fa-angle-down"></i><%=t.front_end_activities.order_page.order_product_detail_title%>
+        </h3>
+
+        <% @order.order_items_group_by_date_time_item_id.each do |idx, order_items| %>
+            <% first_order_item = order_items[:items].first %>
+            <% p "first_order_item: #{first_order_item}" %>
+            <% product = ::Yito::Model::Booking::Activity.first(code: first_order_item.item_id) %>
+            <div class="car-big-card alt">
+              <div class="row">
+                <div class="col-md-6">
+                  <div>
+                    <div class="item">
+                      <img class="img-responsive" style="width:100%" src="<%= product.photo_url_full %>" alt=""/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="car-details">
+                    <div class="list">
+                      <ul>
+                        <li class="title">
+                          <h2><%=product.name%></h2>
+                        </li>
+                        <br>
+                        <span><strong><%=first_order_item.date.strftime('%d-%m-%Y')%></strong></span>
+                        <hr>
+                        <% order_items[:items].each do |order_item| %>
+                            <span><%=order_item.quantity%> <%=order_item.item_price_description%> x <%='%.2f' % order_item.item_unit_cost%>€ <span class="pull-right"><%='%.2f' % order_item.item_cost%>€</span></span> &nbsp; &nbsp;
+                            <br>
+                        <% end %>
+                      </ul>
+                    </div>
+                    <div class="price pull-right">
+                      <strong><%='%.2f' % order_items[:total]%></strong>€ <i class="fa fa-info-circle"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        <% end %>
+        <hr class="page-divider half transparent"/>
+        <!--/PRODUCT(S) INFORMATION -->
+
+        <!-- CUSTOMER INFORMATION -->
+        <h3 class="block-title alt">
+          <i class="fa fa-angle-down"></i><%=t.front_end_activities.order_page.order_detail_customer_title%>
+        </h3>
+
+        <div class="form-delivery">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <div class="form-control alt">
+                  <strong><%=t.front_end_activities.order_page.order_detail_customer_name%></strong>
+                  <div><%=@order.customer_name%> <%=@order.customer_surname%></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <div class="form-control alt">
+                  <strong><%=t.front_end_activities.order_page.order_detail_customer_email%></strong>
+                  <p><%=@order.customer_email%></p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <div class="form-control alt">
+                  <strong><%=t.front_end_activities.order_page.order_detail_customer_phone_number%></strong>
+                  <p><%=@order.customer_phone%> <%=@order.customer_mobile_phone%></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--/CUSTOMER INFORMATION -->
+
+        <!-- EXTRA DATA -->
+        <% if @order.request_customer_address? or @order.request_customer_information?%>
+        <div class="alert alert-warning">
+           <p>Por favor, complete los datos para agilizar la realización de la actividad en la fecha prevista</p>
+        </div>
+        <form id="order_information_form" name="order_form" class="form-delivery" method="post">
+          <% if @order.request_customer_address? %>
+          <h3 class="block-title alt"> <i class="fa fa-angle-down"></i>Dirección del cliente</h3>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <input name="street" id="street" title="Calle" data-toggle="tooltip"
+                       class="form-control alt" type="text" placeholder="Calle:" maxlength="60"
+                       value="<%=@order.customer_address.street%>">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input name="number" id="number" title="Número" data-toggle="tooltip"
+                       class="form-control alt" type="text" placeholder="Número:"  maxlength="10"
+                       value="<%=@order.customer_address.number%>">
+              </div>
+            </div>
+            <div class="col-md-6 clearfix">
+              <div class="form-group">
+                <input name="complement" id="complement" title="Complemento (piso y puerta)" data-toggle="tooltip"
+                       class="form-control alt" type="text" placeholder="Complemento (piso/puerta):"  maxlength="20"
+                       value="<%=@order.customer_address.complement%>">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <input name="city" id="city" title="Ciudad" data-toggle="tooltip"
+                       class="form-control alt" type="text" placeholder="Ciudad:"  maxlength="60"
+                       value="<%=@order.customer_address.city%>">
+              </div>
+            </div>
+            <div class="col-md-6 clearfix">
+              <div class="form-group">
+                <input name="state" id="state" class="form-control alt" type="text"
+                       placeholder="Provincia:" maxlength="60"
+                       value="<%=@order.customer_address.state%>">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <input name="country" id="country" class="form-control alt" type="text"
+                       placeholder="País:"  maxlength="50"
+                       value="<%=@order.customer_address.country%>">
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-group">
+                <input name="zip" id="zip" class="form-control alt" type="text"
+                       placeholder="Código postal:"  maxlength="10"
+                       value="<%=@order.customer_address.zip%>">
+              </div>
+            </div>
+          </div>
+          <% end %>
+          <% if @order.request_customer_information? %>
+          <br>
+          <h3 class="block-title alt"> <i class="fa fa-angle-down"></i>Datos de los participantes en las actividades</h3>
+            <% item_id = item_description = date = time = nil %>
+            <% position = 0 %>
+            <% @order.order_items.each do |order_item| %>
+               <% if order_item.item_id != item_id || order_item.date != date || order_item.time != time %>
+                  <% position = 0 %>
+                  <% date = order_item.date %>
+                  <% time = order_item.time %>
+                  <% item_id = order_item.item_id %>
+                  <% item_description = order_item.item_description %>
+                  <% if order_item.request_customer_information? %>
+                  <h4 class="widget-title-sub"><%=item_description%>. <%=l(date, '%d %B %Y')%> <%=time%></h4>
+                  <% end %>
+               <% end %>
+               <% if order_item.request_customer_information? %>
+                  <% order_item.order_item_customers.each do |order_item_customer| %>
+                    <% position += 1 %>
+                    <h5 class="widget-title">Cliente <%=position%> - <%=order_item.item_price_description%></h5>
+                    <div class="row">
+                      <input type="hidden" name="order_item_customers[][id]" value="<%=order_item_customer.id%>"/>
+                      <div class="col-md-3">
+                         <div class="form-group">
+                           <input name="order_item_customers[][customer_name]"  title="Nombre" data-toggle="tooltip"
+                                 class="form-control alt" type="text" placeholder="Nombre:" maxlength="80"
+                                 value="<%=order_item_customer.customer_name%>">
+                         </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                        <input name="order_item_customers[][customer_surname]" title="Apellidos" data-toggle="tooltip"
+                               class="form-control alt" type="text" placeholder="Apellidos:"  maxlength="80"
+                               value="<%=order_item_customer.customer_surname%>">
+                        </div>
+                      </div>
+                      <% if order_item.request_customer_document_id %>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <input name="order_item_customers[][document_id]" title="NIF/Pasaporte" data-toggle="tooltip"
+                                 class="form-control alt" type="text" placeholder="NIF/Pasaporte:"  maxlength="50"
+                                 value="<%=order_item_customer.customer_document_id%>">
+                        </div>
+                      </div>
+                      <% end %>
+                      <% if order_item.request_customer_phone %>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <input name="order_item_customers[][customer_phone]" title="Teléfono" data-toggle="tooltip"
+                                 class="form-control alt" type="text" placeholder="Teléfono:"  maxlength="15"
+                                 value="<%=order_item_customer.customer_phone%>">
+                        </div>
+                      </div>
+                      <% end %>
+                      <% if order_item.request_customer_email %>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <input name="order_item_customers[][customer_email]" title="Correo electrónico" data-toggle="tooltip"
+                                 class="form-control alt" type="text" placeholder="Corro electrónico:"  maxlength="40"
+                                 value="<%=order_item_customer.customer_email%>">
+                        </div>
+                      </div>
+                      <% end %>
+                      <% if order_item.request_customer_height %>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <select name="order_item_customers[][customer_height]"
+                                  class="selectpicker input customer-height" data-live-search="false" data-width="100%"
+                                  data-toggle="tooltip" title="Altura (cm)" data-value="<%=order_item_customer.customer_height%>" data-container="body">
+                          </select>
+                        </div>
+                      </div>
+                      <% end %>
+                      <% if order_item.request_customer_weight %>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <select name="order_item_customers[][customer_weight]"
+                                  class="selectpicker input customer-weight" data-live-search="false" data-width="100%"
+                                  data-toggle="tooltip" title="Peso (kg)" data-value="<%=order_item_customer.customer_weight%>" data-container="body">
+                          </select>
+                        </div>
+                      </div>
+                      <% end %>
+                      <% if order_item.request_customer_allergies_intolerances %>
+                      <div class="col-md-12">
+                        <div class="form-group">
+                           <textarea name="order_item_customers[][customer_allergies_or_intolerances]"
+                              class="form-control alt" placeholder="Alergias o intolerancias"
+                              cols="30" rows="10"><%=order_item_customer.customer_allergies_or_intolerances%></textarea>
+                        </div>
+                      </div>
+                      <% end %>
+                      </div>
+                      <br>
+                  <% end %>
+               <% end %>
+            <% end %>
+          <% end %>
+          <div class="row">
+            <div class="overflowed reservation-now">
+              <div>
+                <a id="btn_update_order" class="btn btn-theme pull-right btn-reservation-now" href="#">Actualizar datos</a>
+              </div>
+            </div>
+          </div>
+        </form>
+        <% end %>
+        <!-- EXTRA DATA -->
+
+      </div>
+      <!-- /CONTENT -->
+
+      <!-- SIDEBAR -->
+      <aside class="col-md-4 sidebar" id="sidebar">
+        <!-- widget detail reservation -->
+        <div class="widget shadow widget-details-reservation">
+          <div id="reservation_detail">
+            <h4 class="widget-title"><%=t.front_end_activities.order_page.summary_title%></h4>
+            <div class="widget-content">
+              <h5 class="widget-title-sub"><%=t.front_end_activities.order_page.summary_price%></h5>
+              <div class="list">
+                <ul>
+                  <li><%=t.front_end_activities.order_page.summary_total%>: <span class="pull-right"><%="%.2f" % @order.total_cost%>€</span></li>
+                  <li><%=t.front_end_activities.order_page.summary_total_paid%>: <span class="pull-right text-primary"><%="%.2f" % @order.total_paid%>€</span></li>
+                  <li><%=t.front_end_activities.order_page.summary_total_pending%>: <span class="pull-right text-danger"><%="%.2f" % @order.total_pending%>€</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /widget detail reservation -->
+        <!-- widget helping center -->
+        <div class="widget shadow widget-helping-center" style="display: none">
+          <h4 class="widget-title">Atención al cliente</h4>
+          <div class="widget-content">
+            <p>Vivamus eget nibh. Etiam cursus leo vel metus. Nulla facilisi. Aenean nec eros.</p>
+            <h5 class="widget-title-sub">+34 666 10 10 10</h5>
+            <p><a href="mailto:support@mybooking.es">support@mybooking.es</a></p>
+          </div>
+        </div>
+        <!-- /widget helping center -->
+      </aside>
+      <!-- /SIDEBAR -->
+    </div>
+  </div>
+</section>
+<!-- /PAGE WITH SIDEBAR -->

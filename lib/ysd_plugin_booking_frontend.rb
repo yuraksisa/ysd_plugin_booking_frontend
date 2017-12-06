@@ -1,0 +1,15 @@
+require "ysd_plugin_booking_frontend/version"
+
+require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_booking_frontend'
+require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_booking_frontend_rest_api'
+
+require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_activities_frontend'
+require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_activities_frontend_rest_api'
+
+require 'ysd_plugin_booking_frontend/yito_extension/ysd_plugin_booking_frontend_extension'
+
+require "ysd_plugin_booking_frontend/ysd_plugin_booking_frontend_init"
+
+module YsdPluginBookingFrontend
+  # Your code goes here...
+end

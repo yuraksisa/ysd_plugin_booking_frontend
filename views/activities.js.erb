@@ -1,0 +1,50 @@
+require(['jquery','ysdtemplate'],
+    function($,  tmpl) {
+        model = { // THE MODEL
+
+            activities: null,
+
+            loadActivities: function () {
+                var url = '/api/booking-activities/frontend/activities';
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    contentType: 'application/json; charset=utf-8',
+                    crossDomain: true,
+                    success: function (data, textStatus, jqXHR) {
+                        model.activities = data;
+                        view.updateActivities();
+                    },
+                    error: function (data, textStatus, jqXHR) {
+                        alert('Error obteniendo la información');
+                    },
+                    complete: function (jqXHR, textStatus) {
+                    }
+
+                });
+            }
+
+        };
+
+
+        controller = { // THE CONTROLLER
+
+        };
+
+
+        view = { // THE VIEW
+
+            init: function () {
+                model.loadActivities();
+            },
+
+            updateActivities: function () {
+                var result = tmpl('script_activities')({activities: model.activities});
+                $('#activities').html(result);
+            }
+
+        };
+
+        view.init();
+    }
+);

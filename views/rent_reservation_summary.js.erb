@@ -1,0 +1,26 @@
+require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
+        'ysdtemplate',
+        'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
+        'jquery.ui.datepicker.validation', 'datejs',
+        'bootstrap', 'bootstrap.select'],
+    function($, RemoteDataSource, SelectSelector, tmpl) {
+
+  model = { // THE MODEL
+      requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
+  };
+
+  controller = { // THE CONTROLLER
+
+  };
+
+  view = { // THE VIEW
+
+      init: function() {
+
+      }
+
+  };
+
+  view.init();
+
+});

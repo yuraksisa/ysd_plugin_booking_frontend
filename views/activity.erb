@@ -1,0 +1,114 @@
+<!-- PAGE WITH SIDEBAR -->
+<section class="page-section sub-page">
+  <div class="container">
+
+    <aside class="row">
+      <!-- ACTIVITY DETAIL -->
+      <div class="col-md-8 content">
+        <div id="activity">
+
+        </div>
+      </div>
+      <!-- /ACTIVITY DETAIL -->
+      <!-- BUY ACTIVITY FORM -->
+      <!-- SIDEBAR -->
+      <aside class="col-md-4 sidebar" id="sidebar">
+        <div id="buy_container" class="widget shadow widget-find-car">
+          <div id="buy_selector">
+
+          </div>
+        </div>
+      </aside>
+      <!-- /BUY ACTIVITY FORM -->
+    </div>
+
+  </div>
+</section>
+
+<script type="text/tmpl" id="script_activity">
+
+      <div class="project-overview">
+        <h3 class="block-title"><span><%%=activity.name%></span></h3>
+      </div>
+
+      <div class="img-carousel">
+        <div><img src="<%%=activity.photo_url_full%>" alt="" style="width: 100%"/></div>
+      </div>
+
+      <br>
+
+      <div class="project-overview">
+        <%%=activity.description%>
+      </div>
+
+</script>
+
+<script type="text/tmpl" id="script_cyclic_calendar">
+
+      <h4 class="widget-title"><%=t.front_end_activities.activity_page.reservation_title%></h4>
+      <div class="widget-content">
+        <h4 class="widget-title-sub"><%=t.front_end_activities.activity_page.cyclic_choose_date_title%></h4>
+        <!-- form -->
+        <div class="form-search light">
+          <form name="select_date_form" id="select_date_form">
+            <input type="hidden" name="activity_id" id="activity_id" value="<%%=activity.id%>"/>
+            <div id="datepicker"></div>
+            <div id="turns"></div>
+            <div id="tickets"></div>
+          </form>
+        </div>
+      </div>
+
+</script>
+
+<script type="text/tmpl" id="script_cyclic_turns">
+
+        <%% if (morningTurns.length == 0  &&
+        	    afternoonTurns.length == 0 &&
+        	    nightTurns.length == 0) {%>
+        <p><%=t.front_end_activities.activity_page.no_turns%></p>
+        <%% } else { %>
+        <%% }%>
+        <br>
+        <h4 class="widget-title-sub"><%=t.front_end_activities.activity_page.cyclic_choose_turn_title%></h4>
+        <%% if (morningTurns.length > 0) {%>
+        <div class="form-group has-icon has-label">
+        <label for="turn"><%=t.activity.mornings%></label>
+        <br>
+        <%% for (var idx=0;idx<morningTurns.length;idx++) { %>
+          <input type="radio" name="turn" value="<%%=morningTurns[idx]%>">&nbsp;<%%=morningTurns[idx]%></input>
+        <%% } %>
+        </div>
+        <%% } %>
+
+        <%% if (afternoonTurns.length > 0) {%>
+        <h5 class="smaller_text"><%=t.activity.afternoons%></h4>
+        <%% } %>
+        <%% for (var idx=0;idx<afternoonTurns.length;idx++) { %>
+            <input type="radio" name="turn" value="<%%=afternoonTurns[idx]%>">&nbsp;<%%=afternoonTurns[idx]%></input>
+        <%% } %>
+        <%% if (nightTurns.length > 0) {%>
+        <h5 class="smaller_text"><%=t.activity.evenings%></h4>
+        <%% } %>
+        <%% for (var idx=0;idx<nightTurns.length;idx++) { %>
+            <input type="radio" name="turn" value="<%%=nightTurns[idx]%>">&nbsp;<%%=nightTurns[idx]%></input>
+        <%% } %>
+
+</script>
+
+<script type="text/tmpl" id="script_tickets">
+    <h4 class="widget-title-sub"><%=t.front_end_activities.activity_page.choose_tickets%></h4>
+    <%% for (item in tickets) { %>
+    <div class="form-group">
+      <select name="quantity_rate_<%%=item%>" id="quantity_rate_<%%=item%>" class="quantity_rate form-control" data-width="100%" data-container="body">
+        <%% for (var idx=0; idx<tickets[item].length; idx++) { %>
+        <option value="<%%=tickets[item][idx]["number"]%>" data-total="<%%=tickets[item][idx]["total"]%>"><%%=tickets[item][idx]["description"]%></option>
+        <%% } %>
+      </select>
+    </div>
+    <%% } %>
+    <div class="button">
+       <a id="btn_reservation" href="#" class="btn btn-block btn-theme btn-theme-dark"><%=t.front_end_activities.activity_page.book%></a>
+    </div>
+
+</script>

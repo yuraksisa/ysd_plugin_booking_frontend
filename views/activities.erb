@@ -1,0 +1,95 @@
+<!-- PAGE WITH SIDEBAR -->
+<section class="page-section sub-page">
+  <div class="container">
+
+    <div id="activities">
+    </div>
+
+  </div>
+</section>
+
+
+<!-- SCRIPTS -->
+
+<script type="text/tmpl" id="script_activities">
+
+        <div class="row">
+          <!-- CONTENT -->
+          <div class="col-md-9 content">
+
+            <%% if (activities.length > 0) { %>
+            <h3 class="block-title alt"><i class="fa fa-angle-down"></i><%=t.front_end_activities.activities_title%></h3>
+            <%% } else { %>
+            <p><%= t.entitymanagement.no_data %></p>
+            <%% } %>
+
+            <%% for (var idx=0;idx<activities.length;idx++) { %>
+            <%% activity = activities[idx]; %>
+              <div class="car-big-card alt">
+                  <div class="row">
+                      <div class="col-md-8">
+                          <img class="img-responsive" src="<%%=activity.photo_url_full%>"  alt=""/>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="car-details">
+                              <div class="list">
+                                  <ul>
+                                      <li class="title">
+                                          <h2><%%=activity.name%></h2>
+                                          <%%=activity.short_description%>
+                                      </li>
+                                  </ul>
+                              </div>
+                              <div class="price">
+                                  <small><%=t.front_end_activities.from%></small>&nbsp;<strong><%%=new Number(activity.from_price).toFixed(2)%></strong> <span>€</span> <i class="fa fa-info-circle"></i>
+                              </div>
+                              <table class="table">
+                                <tr>
+                                  <td class="buttons">
+                                    <a class="btn btn-theme btn-choose-product" href="/reserva-actividades/actividades/<%%=activity.id%>" style="width:100%"><%=t.front_end_activities.book%></a>
+                                  </td>
+                                </tr>
+                              </table>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <hr class="page-divider half transparent"/>
+            <%% } %>
+          </div>
+        </div>
+
+
+</script>
+
+<script type="text/tmpl" id="script_activities_2">
+  <%% for (var idx=0;idx<activities.length;idx++) { %>
+  <%% activity = activities[idx]; %>
+  <div class="row">
+    <div class="col-lg-8 col-md-7 col-sm-12 project-media">
+      <div class="img-carousel">
+        <div><img src="<%%=activity.photo_url_full%>" alt=""/></div>
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-5 col-sm-7">
+      <div class="project-overview">
+        <h3 class="block-title"><span><%%=activity.name%></span></h3>
+        <%%=activity.short_description%>
+      </div>
+
+      <div class="project-details">
+        <h3 class="block-title"><span>Detalle</span></h3>
+        <h4><%=t.front_end_activities.from%>&nbsp;<%%=new Number(activity.from_price).toFixed(2)%>€</h4>
+        <table class="table">
+          <tr>
+            <td class="buttons">
+              <a class="btn btn-theme btn-choose-product" href="#" style="width:100%"><%=t.front_end_activities.book%></a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <%% } %>
+</script>

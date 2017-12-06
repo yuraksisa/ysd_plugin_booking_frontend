@@ -1,0 +1,223 @@
+require(['jquery','ysdtemplate',
+        'jquery.ui', 'jquery.ui.datepicker-es', 'jquery.ui.datepicker.validation', 'jquery.validate',
+        'bootstrap', 'bootstrap.select'],
+    function($,  tmpl) {
+
+      model = { // THE MODEL
+
+          shoppingCart: null,
+          shoppingCartProducts: null,
+
+          loadShoppingCart: function() {
+              var url = '/api/booking-activities/frontend/shopping-cart';
+              $.ajax({
+                  type: 'GET',
+                  url: url,
+                  contentType: 'application/json; charset=utf-8',
+                  crossDomain: true,
+                  success: function (data, textStatus, jqXHR) {
+                      model.shoppingCart = data.shopping_cart;
+                      model.shoppingCartProducts = data.products;
+                      view.updateShoppingCart();
+                  },
+                  error: function (data, textStatus, jqXHR) {
+                      alert('Error obteniendo la información');
+                  },
+                  complete: function (jqXHR, textStatus) {
+                  }
+
+              });
+          },
+
+          createOrder: function() {
+
+              var order = $('form[name=reservation_form]').formParams(false);
+              order.comments = $('#comments').val();
+              order.payment = $('#accordion a').not('.collapsed').attr('data-payment-method');
+              var orderJSON = JSON.stringify(order);
+
+              var url = '/api/booking-activities/frontend/create-order';
+
+              $.ajax({
+                  type: 'POST',
+                  url : url,
+                  data: orderJSON,
+                  dataType : 'json',
+                  contentType : 'application/json; charset=utf-8',
+                  crossDomain: true,
+                  success: function(data, textStatus, jqXHR) {
+                      alert('Pedido creado');
+                      //window.location.href='/reserva-actividades/carrito';
+                  },
+                  error: function(data, textStatus, jqXHR) {
+                      alert('Error creando pedido');
+                  },
+                  complete: function(jqXHR, textStatus) {
+
+                  }
+
+              });
+
+          }
+
+      };
+
+      controller = { // THE CONTROLLER
+
+          submitReservationForm: function() {
+              if ($('#accept').is(':checked')) {
+                  if ($('#accordion a').not('.collapsed').attr('data-payment-method') === 'undefined') {
+                      alert('Debe indicar forma de pago');
+                  }
+                  else {
+                      $('form[name=reservation_form]').submit();
+                  }
+              }
+              else {
+                  alert('<%=t.front_end_activities.checkout_page.conditions_not_read%>');
+              }
+          }
+
+      };
+
+      view = { // THE VIEW
+
+          init: function() {
+              this.setupEvents();
+              this.setupValidation();
+              model.loadShoppingCart();
+          },
+
+          setupEvents: function() {
+
+              $('#accept').bind('click', function(){
+                  //controller.conditionsReadClick();
+              });
+
+              $('#btn_reservation').bind('click', function() {
+                  controller.submitReservationForm();
+              });
+
+          },
+
+          setupValidation: function() {
+
+              this.setupReservationFormValidation();
+
+          },
+
+          setupReservationFormValidation: function() {
+
+              $('form[name=reservation_form]').validate(
+                  {
+
+                      submitHandler: function(form) {
+                          $('#reservation_error').hide();
+                          $('#reservation_error').html('');
+                          // Create order from the shopping cart
+                          model.createOrder();
+                          return false;
+                      },
+
+                      invalidHandler : function (form, validator) {
+                          $('#reservation_error').html('<%=t.front_end_activities.checkout_page.form_errors%>');
+                          $('#reservation_error').show();
+                      },
+
+                      rules : {
+
+                          'customer_name': 'required',
+                          'customer_surname' : 'required',
+                          'customer_email' : {
+                              required: true,
+                              email: true
+                          },
+                          'customer_email_confirmation': {
+                              required: true,
+                              email: true,
+                              equalTo : 'customer_email'
+                          },
+                          'customer_phone': {
+                              required: true,
+                              minlength: 9
+                          }
+                      },
+
+                      messages : {
+
+                          'customer_name': '<%=t.front_end_activities.checkout_page.field_customer_name_mandatory%>',
+                          'customer_surname' : '<%=t.front_end_activities.checkout_page.field_customer_surname_mandatory%>',
+                          'customer_email' : {
+                              required: '<%=t.front_end_activities.checkout_page.field_customer_email_mandatory%>',
+                              email: '<%=t.new_booking.customer_email.format%>'
+                          },
+                          'customer_email_confirmation': {
+                              'required': '<%=t.front_end_activities.checkout_page.field_customer_email_mandatory%>',
+                              email: '<%=t.new_booking.customer_email_confirmation.format%>',
+                              'equalTo': '<%=t.new_booking.customer_email_confirmation.equal_to%>'
+                          },
+                          'customer_phone': {
+                              'required': '<%=t.front_end_activities.checkout_page.field_customer_main_phone_number%>',
+                              'minlength': '<%=t.new_booking.customer_phone.min_length%>'
+                          }
+                      },
+
+                      errorPlacement: function (error, element) {
+
+                          if (element.attr('name') == 'accept')
+                          {
+                              error.insertAfter(element.parent());
+                          }
+                          else
+                          {
+                              error.insertAfter(element);
+                          }
+
+                      },
+
+                      errorClass : 'form-reservation-error'
+
+                  }
+              );
+
+          },
+
+          updateShoppingCart: function() { /* Update the shopping cart */
+              this.updateShoppingCartProducts();
+              this.updateShoppingCartSummary();
+              this.updatePayment();
+          },
+
+          updateShoppingCartProducts: function() { /* Update the shopping cart products */
+              var productInfo = tmpl('script_products_detail')(
+                  {products: model.shoppingCartProducts,
+                   shopping_cart: model.shoppingCart});
+              $('#selected_products').html(productInfo);
+          },
+
+          updateShoppingCartSummary: function() { /* Update the shopping cart summary */
+              var reservationInfo = tmpl('script_reservation_summary')(
+                  {shopping_cart: model.shoppingCart});
+              $('#reservation_detail').html(reservationInfo);
+          },
+
+          updatePayment: function() { // Update the payment
+              var paymentInfo = tmpl('script_payment_detail')(
+                  {shopping_cart: model.shoppingCart});
+              $('#payment_detail').html(paymentInfo);
+
+              if (model.shoppingCart.can_make_request) {
+                  $('#btn_reservation').html('<%=t.front_end_activities.checkout_page.request_reservation%>');
+              }
+              else {
+                  $('#btn_reservation').html('<%=t.front_end_activities.checkout_page.pay%>');
+              }
+          }
+
+      };
+
+      view.init();
+
+
+    }
+);

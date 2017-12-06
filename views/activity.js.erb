@@ -1,0 +1,327 @@
+require(['jquery','ysdtemplate',
+        'jquery.ui', 'jquery.ui.datepicker-es', 'jquery.ui.datepicker.validation', 'jquery.validate',
+        'bootstrap', 'bootstrap.select'],
+    function($,  tmpl) {
+
+        model = { // THE MODEL
+
+            id: <%= @activity_id%>,
+            activity: null,
+            tickets: null,
+            buyTickets: null,
+            // Cyclic activity data
+            cyclicMorningTurns: null,
+            cyclicAfternoonTurns: null,
+            cyclicNightTurns: null,
+            cyclicDate: null,
+            cyclicTurn: null,
+
+            loadActivity: function () { /* Load the activity */
+                var url = '/api/booking-activities/frontend/activities/'+model.id;
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    contentType: 'application/json; charset=utf-8',
+                    crossDomain: true,
+                    success: function (data, textStatus, jqXHR) {
+                        model.activity = data;
+                        view.updateActivity();
+                    },
+                    error: function (data, textStatus, jqXHR) {
+                        alert('Error obteniendo la información');
+                    },
+                    complete: function (jqXHR, textStatus) {
+                    }
+
+                });
+            },
+
+            loadTickets: function() { /* Load the available tickets */
+
+                var url = '/api/booking-activities/frontend/activities/'+this.activity.id+'/tickets';
+
+                if (this.activity.occurence === 'cyclic') {
+                  url+='?date='+this.cyclicDate+'&turn='+this.cyclicTurn;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    contentType: 'application/json; charset=utf-8',
+                    crossDomain: true,
+                    success: function (data, textStatus, jqXHR) {
+                        model.tickets = data;
+                        view.updateTickets();
+                    },
+                    error: function (data, textStatus, jqXHR) {
+                        alert('Error obteniendo la información');
+                    },
+                    complete: function (jqXHR, textStatus) {
+                    }
+                });
+
+
+            },
+
+            addToShoppingCart: function() {
+
+                var request = null;
+
+                if (this.activity.occurence === 'cyclic') {
+                    request = {
+                        id: this.activity.id,
+                        date: this.cyclicDate,
+                        turn: this.cyclicTurn,
+                        tickets: this.buyTickets
+                    };
+                }
+
+                var requestJSON = encodeURIComponent(JSON.stringify(request));
+
+                var url = '/api/booking-activities/frontend/add-to-shopping-cart';
+
+                $.ajax({
+                    type: 'POST',
+                    url : url,
+                    data: requestJSON,
+                    dataType : 'json',
+                    contentType : 'application/json; charset=utf-8',
+                    crossDomain: true,
+                    success: function(data, textStatus, jqXHR) {
+                        alert('Product añadido al carrito');
+                        window.location.href='/reserva-actividades/carrito';
+                    },
+                    error: function(data, textStatus, jqXHR) {
+                        alert('Error obteniendo la información');
+                    },
+                    complete: function(jqXHR, textStatus) {
+
+                    }
+
+                });
+
+            },
+
+            buildCyclicTurns: function() {
+
+                if (this.activity.all_days_same_turns) {
+                    this.cyclicMorningTurns = this.activity.morning_turns;
+                    this.cyclicAfternoonTurns = this.activity.afternoon_turns;
+                    this.cyclicNightTurns = this.activity.night_turns;
+                }
+                else {
+                    var dayOfWeek = $('#datepicker').datepicker('getDate').getDate();
+                    switch (dayOfWeek) {
+                        case 0:
+                            this.cyclicMorningTurns = this.sunday_morning_turns;
+                            this.cyclicAfternoonTurns = this.sunday_afternoon_turns;
+                            this.cyclicNightTurns = this.sunday_night_turns;
+                            break;
+                        case 1:
+                            this.cyclicMorningTurns = this.monday_morning_turns;
+                            this.cyclicAfternoonTurns = this.monday_afternoon_turns;
+                            this.cyclicNightTurns = this.monday_night_turns;
+                            break;
+                        case 2:
+                            this.cyclicMorningTurns = this.tuesday_morning_turns;
+                            this.cyclicAfternoonTurns = this.tuesday_afternoon_turns;
+                            this.cyclicNightTurns = this.tuesday_night_turns;
+                            break;
+                        case 3:
+                            this.cyclicMorningTurns = this.wednesday_morning_turns;
+                            this.cyclicAfternoonTurns = this.wednesday_afternoon_turns;
+                            this.cyclicNightTurns = this.wednesday_night_turns;
+                            break;
+                        case 4:
+                            this.cyclicMorningTurns = this.thursday_morning_turns;
+                            this.cyclicAfternoonTurns = this.thursday_afternoon_turns;
+                            this.cyclicNightTurns = this.thursday_night_turns;
+                            break;
+                        case 5:
+                            this.cyclicMorningTurns = this.friday_morning_turns;
+                            this.cyclicAfternoonTurns = this.friday_afternoon_turns;
+                            this.cyclicNightTurns = this.friday_night_turns;
+                            break;
+                        case 6:
+                            this.cyclicMorningTurns = this.saturday_morning_turns;
+                            this.cyclicAfternoonTurns = this.saturday_afternoon_turns;
+                            this.cyclicNightTurns = this.saturday_night_turns;
+                            break;
+                    }
+                }
+
+                this.cyclicMorningTurns = this.cyclicMorningTurns.split(',').filter(function(element){return element != '';});
+                this.cyclicAfternoonTurns = this.cyclicAfternoonTurns.split(',').filter(function(element){return element != '';});
+                this.cyclicNightTurns = this.cyclicNightTurns.split(',').filter(function(element){return element != '';});
+
+                view.updateActivityCyclicTurns();
+            }
+        };
+
+        controller = { // THE CONTROLLER
+
+            onCyclicDateChanged: function() { /* Cyclic activity date changed */
+              model.cyclicDate = $('#datepicker').val(); // String representation of the date (format dd/MM/yyyy)
+              model.buildCyclicTurns();
+            },
+
+            onCyclicTurnChanged: function() { /* Cyclic activity turn changed */
+              model.cyclicTurn = $('input[name=turn]').val();
+              model.loadTickets();
+            },
+
+            onBtnReservationClick: function() { /* Button reservation click */
+
+              model.buyTickets = {};
+              var quantityRate = $('select.quantity_rate');
+              var selectedTickets = false;
+
+              for (idx=0; idx<quantityRate.length; idx++) {
+                 var rate = parseInt($(quantityRate[idx]).attr('name').replace('quantity_rate_',''));
+                 var value = parseInt($(quantityRate[idx]).val());
+                 if (value > 0) {
+                     selectedTickets = true;
+                     model.buyTickets[rate] = value;
+                 }
+              }
+
+              if (!selectedTickets) {
+                  alert('<%=t.front_end_activities.activity_page.no_tickets_selected%>');
+              }
+              else {
+                  model.addToShoppingCart();
+              }
+
+            }
+
+
+        };
+
+
+        view = { // THE VIEW
+
+            init: function() {
+
+                model.loadActivity();
+
+            },
+
+            updateActivity: function() { // Update the activity (shows it)
+
+                var result = tmpl('script_activity')({activity: model.activity});
+                $('#activity').html(result);
+
+                if (model.activity.occurence === 'cyclic') {
+                    this.updateActivityCyclic();
+                }
+
+            },
+
+            updateActivityCyclic: function() { // Set up the calendar
+
+                // Builds the calendar
+                var result = tmpl('script_cyclic_calendar')({activity: model.activity});
+                $('#buy_selector').html(result);
+
+                // Setup the date control
+                $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>" ] );
+                $("#datepicker").datepicker({
+                    minDate: new Date(),
+                    beforeShowDay: function(date){
+                        // Make sure invalidates not available dates
+                        if (!model.activity.all_year) {
+                            if (((date.getMonth() < model.activity.from_month-1) ||
+                                (date.getMonth() == model.activity.from_month-1 &&
+                                date.getDate() < model.activity.from_day)) ||
+                                (date.getMonth() > model.activity.to_month-1 ||
+                                (date.getMonth() == model.activity.to_month-1 &&
+                                date.getDate() > model.activity.to_day))) {
+                                return [false];
+                            }
+                        }
+
+                        if (!model.activity.all_days) {
+                          switch (date.getDay()) {
+                              case 0:
+                                if (!model.activity.sundays) {
+                                  return [false];
+                                }
+                                break;
+                              case 1:
+                                if (!model.activity.mondays) {
+                                  return [false];
+                                }
+                                  break;
+                              case 2:
+                                if (!model.activity.tuesdays) {
+                                  return [false];
+                                }
+                                break;
+                              case 3:
+                                if (!model.activity.wednesdays) {
+                                  return [false];
+                                }
+                                break;
+                              case 4:
+                                if (!model.activity.thursdays) {
+                                  return [false];
+                                }
+                                break;
+                              case 5:
+                                if (!model.activity.fridays) {
+                                  return [false];
+                                }
+                                break;
+                              case 6:
+                                if (!model.activity.saturdays) {
+                                  return [false];
+                                }
+                                break;
+                          }
+                        }
+                        tomorrow = new Date(new Date().toString('MM/dd/yyyy')).add(1).days();
+                        if (date < tomorrow) {
+                            return [false];
+                        }
+                        return [true];
+                    }
+                });
+
+                $('#datepicker').bind('change', function() {
+                    controller.onCyclicDateChanged();
+                });
+
+
+            },
+
+            updateActivityCyclicTurns: function() { /* Setup the turns */
+                // Builds the turns
+                var result = tmpl('script_cyclic_turns')({morningTurns: model.cyclicMorningTurns,
+                                                          afternoonTurns: model.cyclicAfternoonTurns,
+                                                          nightTurns: model.cyclicNightTurns});
+                $('#turns').html(result);
+
+                $('input[name=turn]').bind('change', function() {
+                    controller.onCyclicTurnChanged();
+                });
+
+                $('#tickets').html('');
+
+            },
+
+            updateTickets: function() { /* Setup the tickets */
+                // Builds the turns
+                var result = tmpl('script_tickets')({tickets: model.tickets});
+                $('#tickets').html(result);
+                $('.quantity_rate').selectpicker();
+                $('#btn_reservation').bind('click', function(){
+                   controller.onBtnReservationClick();
+                });
+            }
+
+
+
+        };
+
+        view.init();
+    });
