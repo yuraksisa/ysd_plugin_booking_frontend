@@ -74,13 +74,12 @@ module YsdPluginBookingFrontend
 
       locals.store(:driver_age_rules, young_driver_rules)
       locals.store(:driver_age_rule_definition, young_driver_rule_definition)
-      
+
       case block_name
         when 'booking_selector_full_v2'
           frontend_skin = SystemConfiguration::Variable.get_value('frontend.skin',nil)
           page = frontend_skin ? "#{frontend_skin}_rent_search_form_full_v2" : :rent_search_form_full_v2
           js = frontend_skin ? "#{frontend_skin}_rent_search_form_full_v2_js" : :rent_search_form_full_v2_js
-          p "page: #{page} js: #{js}"
           result = app.partial(page, :locals => locals)
           result << app.partial(js, :locals => locals)         
       end

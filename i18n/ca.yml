@@ -36,10 +36,10 @@ front_end_reservation:
   payment_to_confirm_reservation: Per confirmar la reserva es requereix una paga i senyal del %1% de l'import de la reserva
   conditions_read: He llegit i accepto <a href="%1" target="blank">les condicions de lloguer</a>
   request_reservation: Sol.licitar reserva
-  credit_card_payment: Tarjeta de crèdit (es requereix una paga i senyal del %1% per confirmar la reserva)
+  credit_card_payment: Targeta de crèdit (es requereix una paga i senyal del %1% per confirmar la reserva)
   paypal_payment: PayPal (es requereix una paga i senyal del %1% per confirmar la reserva)
-  conditions_not_read: Lo sentimos. No ha marcado que ha leído las condiciones de alquiler
-  form_errors: Si us plau, comprobi el formulari. Conté dades no vàlides.
+  conditions_not_read: Ho sentim. No ha marcat que ha llegit les condicions de lloguer
+  form_errors: Si us plau, revisi el formulari. Conté dades invàlides.
   product_information_title: Informació del producte
   products_information_title: Informació dels productes
   reservation_summary_title: Detall de la reserva
@@ -54,17 +54,17 @@ front_end_reservation:
   reservation_summary_return_time_supplement: Suplement hora de devolució
   reservation_summary_total: Total
   reservation_summary_deposit: Fiança
-  reservation_summary_deposit_detail: La fianza se devolverá tras las devolución del producto
-  modify_reservation: Modificar reserva
+  reservation_summary_deposit_detail: La fiança es retornarà després de la devolució del producte
+  modify_the_reservation: Modificar reserva
   booking_detail_title: la seva reserva %1
   booking_detail_state:
     pending_confirmation: està pendent de confirmació
     confirming: està sent confirmada
     confirmed: està confirmada
-    in_progress: està en progrés
+    in_progress: està en curs
     done: està finalitzada
-    cancelled: està cancelada
-  booking_detail_product_title: Producte
+    cancelled: està cancel.lada
+  booking_detail_product_title: Producte contractat
   booking_detail_extras_title: Extras
   booking_detail_customer_title: Dades del client
   booking_detail_customer_name: Nom

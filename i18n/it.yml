@@ -1,6 +1,6 @@
 front_end_reservation:
-  home: Inicio
-  conditions: Condizioni
+  home: Inizio
+  conditions: Termini e condizioni
   choose_product_page_title: Selezionare prodotto
   choose_products_page_title: Selezionare produrre
   complete_reservation_page_title: Completare i dati
@@ -13,20 +13,20 @@ front_end_reservation:
   return_place: Luogo riconsegna
   date_to: Data riconsegna
   time_to: Ora riconsegna
-  driver_age: L'età del conducente
-  update: Per aggiornarlo
+  driver_age: Età del conducente
+  update: Aggiornare
   product: Prodotto
   select: Selezionare
-  next: Seguente
+  next: Successivo
   extras_title: Extra
   customer_title: Dati del cliente
   not_available: Non disponibile
   field_customer_name: Nome
-  field_customer_name_mandatory: The name is mandatory
+  field_customer_name_mandatory: È obbligatorio inserire il nome
   field_customer_surname: Cognome
-  field_customer_surname_mandatory: The surname is mandatory
+  field_customer_surname_mandatory: È obbligatorio inserire il cognome
   field_customer_email: E-mail
-  field_customer_email_mandatory: The e-mail is mandatory
+  field_customer_email_mandatory: È obbligatorio inserire l'e-mail
   field_customer_email_confirm: Confermare e-mail
   field_customer_main_phone_number: Telefono
   field_customer_alternative_phone_number: Telefono alternativo
@@ -48,23 +48,23 @@ front_end_reservation:
   reservation_summary_price: Prezzo
   reservation_summary_total_product: Totale prodotto
   reservation_summary_total_extras: Totale extra
-  reservation_summary_pickup_place_supplement: Pick up place supplement
-  reservation_summary_pickup_time_supplement: Pick up time supplement
-  reservation_summary_return_place_supplement: Return place supplement
-  reservation_summary_return_time_supplement: Return time supplement
+  reservation_summary_pickup_place_supplement: Supplemento luogo di ritiro
+  reservation_summary_pickup_time_supplement: Supplemento orario di ritiro
+  reservation_summary_return_place_supplement: Supplemento luogo di riconsegna
+  reservation_summary_return_time_supplement: Supplemento orario di riconsegna
   reservation_summary_total: Totale
-  reservation_summary_deposit: Deposit
-  reservation_summary_deposit_detail: La fianza se devolverá tras las devolución del producto
-  modify_reservation: Modify reservation
+  reservation_summary_deposit: Deposito cauzionale
+  reservation_summary_deposit_detail: Il deposito cauzionale verrà restituito alla riconsegna del prodotto
+  modify_the_reservation: Modifica prenotazione
   booking_detail_title: la sua prenotazione %1
   booking_detail_state:
     pending_confirmation: non è stata ancora confermata
-    confirming: is being confirmed
+    confirming: si sta confermando
     confirmed: è confermata
-    in_progress: is in progress
-    done: is finished
-    cancelled: has been canceled
-  booking_detail_product_title: Prodotto
+    in_progress: è in corso
+    done: è finalizzato
+    cancelled: è cancellata
+  booking_detail_product_title: Prodotto prenotato
   booking_detail_extras_title: Extra
   booking_detail_customer_title: Dati del cliente
   booking_detail_customer_name: Nome

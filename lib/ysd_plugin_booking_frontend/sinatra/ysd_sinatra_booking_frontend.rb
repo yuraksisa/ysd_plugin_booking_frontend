@@ -47,10 +47,15 @@ module Sinatra
 
 						if @shopping_cart.nil?
 							if booking_parameters
+								booking_pickup_place = ::Yito::Model::Booking::PickupReturnPlace.first(name: pickup_place)
+								booking_return_place = ::Yito::Model::Booking::PickupReturnPlace.first(name: return_place)
       	  	    @shopping_cart = ::Yito::Model::Booking::ShoppingCartRenting.create(
       	  	  					date_from: date_from, time_from: time_from,
       	  	  					date_to: date_to, time_to: time_to,
-      	  	  					pickup_place: pickup_place, return_place: return_place,
+												pickup_place: pickup_place,
+												pickup_place_customer_translation: booking_pickup_place ? booking_pickup_place.translate(session[:locale]).name : pickup_place,
+												return_place: return_place,
+												return_place_customer_translation: booking_return_place ? booking_return_place.translate(session[:locale]).name : return_place,
 								        number_of_adults: number_of_adults, number_of_children: number_of_children,
 												driver_age_rule_id: driver_age_rule_id)
 							else
@@ -145,6 +150,12 @@ module Sinatra
 					app.get endpoint do
 
 						if @booking = BookingDataSystem::Booking.get_by_free_access_id(params[:id])
+							# If the reservation customer language does not match with the session locale, redirect to the
+							# language url to show the reservation in the customer language
+							if settings.multilanguage_site and @booking.customer_language and @booking.customer_language != session[:locale] and
+							   @booking.customer_language != settings.default_language
+								redirect "/#{@booking.customer_language}#{request.path}"
+							end
 							locals = {}
 							locals.store(:total_cost_includes_deposit,
 													 SystemConfiguration::Variable.get_value('booking.total_cost_includes_deposit', 'false').to_bool)

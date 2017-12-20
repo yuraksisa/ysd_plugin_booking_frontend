@@ -157,7 +157,8 @@ module Sinatra
                }
                # Create the shopping cart if not exist
                if shopping_cart.nil?
-                 shopping_cart = ::Yito::Model::Order::ShoppingCart.create(:creation_date => DateTime.now)
+                 shopping_cart = ::Yito::Model::Order::ShoppingCart.create(:creation_date => DateTime.now,
+                                                                           customer_language: session[:locale])
                  session[:shopping_cart_id] = shopping_cart.id
                end
 

@@ -34,7 +34,6 @@ front_end_reservation:
   field_comments: Comentarios
   payment_title: Pago
   payment_to_confirm_reservation: Para confirmar la reserva se requiere una paga y señal del %1% del importe total de la reserva
-  request_reservation: Solicitar reserva
   conditions_read: He leído y acepto las <a href="%1" target="blank">condiciones</a> del alquiler
   request_reservation: Solicitar reserva
   credit_card_payment: Tarjeta de crédito (20% de paga y señal para confirmar reserva)
@@ -56,7 +55,7 @@ front_end_reservation:
   reservation_summary_total: Total
   reservation_summary_deposit: Fianza
   reservation_summary_deposit_detail: La fianza se devolverá tras las devolución del producto
-  modify_reservation: Modificar reserva
+  modify_the_reservation: Modificar reserva
   booking_detail_title: su reserva está %1
   booking_detail_state:
     pending_confirmation: Pendiente de confirmación
