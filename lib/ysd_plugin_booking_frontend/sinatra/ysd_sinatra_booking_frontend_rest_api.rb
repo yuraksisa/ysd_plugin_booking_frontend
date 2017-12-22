@@ -151,14 +151,14 @@ module Sinatra
         }
 
         booking_summary.merge!({
-                                   date_from_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :short, locale),
-                                   date_from_default_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :default, locale),
-                                   date_from_extended_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :extended, locale),
-                                   date_from_full_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :full, locale),
-                                   date_to_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :short, locale),
-                                   date_to_default_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :default, locale),
-                                   date_to_extended_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :extended, locale),
-                                   date_to_full_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :full, locale)
+                                   date_from_short_format: SystemConfiguration::Settings.instance.format_date(booking.date_from, :short, locale),
+                                   date_from_default_format: SystemConfiguration::Settings.instance.format_date(booking.date_from, :default, locale),
+                                   date_from_extended_format: SystemConfiguration::Settings.instance.format_date(booking.date_from, :extended, locale),
+                                   date_from_full_format: SystemConfiguration::Settings.instance.format_date(booking.date_from, :full, locale),
+                                   date_to_short_format: SystemConfiguration::Settings.instance.format_date(booking.date_to, :short, locale),
+                                   date_to_default_format: SystemConfiguration::Settings.instance.format_date(booking.date_to, :default, locale),
+                                   date_to_extended_format: SystemConfiguration::Settings.instance.format_date(booking.date_to, :extended, locale),
+                                   date_to_full_format: SystemConfiguration::Settings.instance.format_date(booking.date_to, :full, locale)
                                })
 
         booking_summary.merge!({ # Pickup / Return
