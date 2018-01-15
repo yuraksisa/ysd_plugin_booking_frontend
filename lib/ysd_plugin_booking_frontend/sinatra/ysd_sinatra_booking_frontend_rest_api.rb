@@ -334,7 +334,8 @@ module Sinatra
         # Prepare the sales process
         can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
                   BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
-        sales_process = {can_pay: can_pay}
+        server_timestamp = DateTime.now
+        sales_process = {can_pay: can_pay, server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
         sales_process_json = sales_process.to_json
 
         # Join all the data togheter
