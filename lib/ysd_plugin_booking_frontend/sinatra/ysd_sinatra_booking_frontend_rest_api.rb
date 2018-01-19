@@ -1,7 +1,9 @@
 module Sinatra
   module YitoExtension
-    
+
     module BookingFrontendRESTApiHelper
+
+      MIDDLE_ENDIAN_LANGUAGES = ['en']
 
       #
       # Build the shopping representation to be exported to JSON
@@ -36,34 +38,34 @@ module Sinatra
                comments: shopping_cart.comments
         }
         sc.merge!({
-            date_from_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :short, locale),
-            date_from_default_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :default, locale),
-            date_from_extended_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :extended, locale),
-            date_from_full_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :full, locale).split(' ').map!{|item| item.capitalize}.join(' '),
-            date_to_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :short, locale),
-            date_to_default_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :default, locale),
-            date_to_extended_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :extended, locale),
-            date_to_full_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :full, locale).split(' ').map!{|item| item.capitalize}.join(' ')
-                 })
+                      date_from_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :short, locale),
+                      date_from_default_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :default, locale),
+                      date_from_extended_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :extended, locale),
+                      date_from_full_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :full, locale).split(' ').map!{|item| item.capitalize}.join(' '),
+                      date_to_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :short, locale),
+                      date_to_default_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :default, locale),
+                      date_to_extended_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :extended, locale),
+                      date_to_full_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_to, :full, locale).split(' ').map!{|item| item.capitalize}.join(' ')
+                  })
 
         sc.merge!({ # Pickup / Return place
-                   pickup_place: shopping_cart.pickup_place,
-                   pickup_place_customer_translation: shopping_cart.pickup_place_customer_translation,
-                   return_place: shopping_cart.return_place,
-                   return_place_customer_translation: shopping_cart.return_place_customer_translation
-                 })
+                    pickup_place: shopping_cart.pickup_place,
+                    pickup_place_customer_translation: shopping_cart.pickup_place_customer_translation,
+                    return_place: shopping_cart.return_place,
+                    return_place_customer_translation: shopping_cart.return_place_customer_translation
+                  })
 
         sc.merge!({ # Driver information
-                   driver_age: shopping_cart.driver_age,
-                   driver_driving_license_years: shopping_cart.driver_driving_license_years,
-                   driver_under_age: shopping_cart.driver_under_age,
-                   driver_age_allowed: shopping_cart.driver_age_allowed,
-                   driver_age_cost: shopping_cart.driver_age_cost,
-                   driver_age_deposit: shopping_cart.driver_age_deposit,
-                   driver_age_rule_id: shopping_cart.driver_age_rule_id,
-                   driver_age_rule_description: shopping_cart.driver_age_rule_description,
-                   driver_age_rule_description_customer_translation: shopping_cart.driver_age_rule_description_customer_translation
-                 })
+                    driver_age: shopping_cart.driver_age,
+                    driver_driving_license_years: shopping_cart.driver_driving_license_years,
+                    driver_under_age: shopping_cart.driver_under_age,
+                    driver_age_allowed: shopping_cart.driver_age_allowed,
+                    driver_age_cost: shopping_cart.driver_age_cost,
+                    driver_age_deposit: shopping_cart.driver_age_deposit,
+                    driver_age_rule_id: shopping_cart.driver_age_rule_id,
+                    driver_age_rule_description: shopping_cart.driver_age_rule_description,
+                    driver_age_rule_description_customer_translation: shopping_cart.driver_age_rule_description_customer_translation
+                  })
 
         # Items
         sc_items = []
@@ -325,15 +327,15 @@ module Sinatra
 
         # Prepare the products
         p_json = ::Yito::Model::Booking::RentingSearch.search(shopping_cart.date_from,
-                                            shopping_cart.date_to, shopping_cart.days, locale, booking_item_family.frontend == :shopcart).to_json
+                                                              shopping_cart.date_to, shopping_cart.days, locale, booking_item_family.frontend == :shopcart).to_json
 
         # Prepare the extras
         e_json = ::Yito::Model::Booking::RentingExtraSearch.search(shopping_cart.date_from,
-                                            shopping_cart.date_to, shopping_cart.days, locale).to_json
+                                                                   shopping_cart.date_to, shopping_cart.days, locale).to_json
 
         # Prepare the sales process
         can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
-                  BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
+            BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
         server_timestamp = DateTime.now
         sales_process = {can_pay: can_pay, server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
         sales_process_json = sales_process.to_json
@@ -358,7 +360,7 @@ module Sinatra
         # Prepare the products
         domain = SystemConfiguration::Variable.get_value('site.domain')
         products = ::Yito::Model::Booking::BookingCategory.all(fields: [:code, :name, :short_description, :description, :album_id],
-                                                                     conditions: {active: true}, order: [:code])
+                                                               conditions: {active: true}, order: [:code])
         products_list = []
         products.each do |item|
           products_list << {
@@ -368,7 +370,7 @@ module Sinatra
           }
         end
         p_json = products_list.to_json
-        
+
         # Prepare the sales process
         sales_process = {can_pay: booking.can_pay?}
         sales_process_json = sales_process.to_json
@@ -381,11 +383,18 @@ module Sinatra
       #
       # Parses dd/mm/yyyy date
       #
-      def parse_date(date_str)
+      def parse_date(date_str, language=nil)
+        p "date: #{date_str} language: #{language}"
         if date_str.nil?
           return nil
-        elsif /\d{2}\/\d{2}\/\d{4}/.match(date_str)
-          return DateTime.strptime(date_str,'%d/%m/%Y')
+        elsif /\d{2}\/\d{2}\/\d{4}/.match(date_str) # Little endian / Middle endian date format
+          if language and MIDDLE_ENDIAN_LANGUAGES.include?(language)
+            return DateTime.strptime(date_str,'%m/%d/%Y')
+          else
+            return DateTime.strptime(date_str,'%d/%m/%Y')
+          end
+        elsif /\d{4}\/\d{2}\/\d{2}/.match(date_str) # Big endian date format
+          return DateTime.strptime(date_str,'%Y/%m/%d')
         else
           begin
             return DateTime.parse(date_str)
@@ -401,8 +410,8 @@ module Sinatra
       #
       def age(date_of_reference, date_of_birth)
 
-        if date_of_reference.nil? || (date_of_reference.is_a?String and date_of_reference.empty?) || 
-           date_of_birth.nil? || (date_of_birth.is_a?String and date_of_birth.empty?)
+        if date_of_reference.nil? || (date_of_reference.is_a?String and date_of_reference.empty?) ||
+            date_of_birth.nil? || (date_of_birth.is_a?String and date_of_birth.empty?)
           return nil
         else
           (date_of_reference.year-date_of_birth.year) + (date_of_birth.month>date_of_reference.month ? 1:0)
@@ -416,25 +425,36 @@ module Sinatra
 
       def self.registered(app)
 
-      	#
-      	# Get the pickup places
-      	#
-      	app.get '/api/booking/frontend/pickup-places' do
+        #
+        # Get information from the server
+        #
+        app.get '/api/booking/frontend/settings' do
+          server_timestamp = DateTime.now
+          settings = {server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
+
+          content_type 'json'
+          settings.to_json
+        end
+
+        #
+        # Get the pickup places
+        #
+        app.get '/api/booking/frontend/pickup-places' do
 
           places = BookingDataSystem.pickup_places.map do |item|
-             item_translation = item.translate(session[:locale])
-             {id: item.name, name: item_translation.name}
+            item_translation = item.translate(session[:locale])
+            {id: item.name, name: item_translation.name}
           end
 
           content_type 'json'
           places.to_json
 
-      	end
+        end
 
-      	#
-      	# Get the return places
-      	#
-      	app.get '/api/booking/frontend/return-places' do
+        #
+        # Get the return places
+        #
+        app.get '/api/booking/frontend/return-places' do
 
           places = BookingDataSystem.return_places.map do |item|
             item_translation = item.translate(session[:locale])
@@ -444,17 +464,17 @@ module Sinatra
           content_type 'json'
           places.to_json
 
-      	end
+        end
 
         #
         # Get the pickup /return time
         #
-      	app.get '/api/booking/frontend/pickup-return-times' do 
+        app.get '/api/booking/frontend/pickup-return-times' do
 
-		      content_type 'json'
+          content_type 'json'
           BookingDataSystem.pickup_return_timetable.to_json
 
-      	end
+        end
 
         # ------------------------------- Product ---------------------------------------------------
 
@@ -482,7 +502,7 @@ module Sinatra
           elsif session.has_key?(:shopping_cart_renting_id)
             shopping_cart = ::Yito::Model::Booking::ShoppingCartRenting.get(session[:shopping_cart_renting_id])
           end
-          
+
           # Do the process
           if shopping_cart
             booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
@@ -617,11 +637,11 @@ module Sinatra
             shopping_cart.driver_name = request_data['driver_name'] if request_data.has_key?('driver_name')
             shopping_cart.driver_surname = request_data['driver_surname']  if request_data.has_key?('driver_surname')
             shopping_cart.driver_document_id = request_data['driver_document_id'] if request_data.has_key?('driver_document_id')
-            shopping_cart.driver_date_of_birth = parse_date(request_data['driver_date_of_birth'])  if request_data.has_key?('driver_date_of_birth')
+            shopping_cart.driver_date_of_birth = parse_date(request_data['driver_date_of_birth'], shopping_cart.customer_language)  if request_data.has_key?('driver_date_of_birth')
             shopping_cart.driver_driving_license_number = request_data['driver_driving_license_number'] if request_data.has_key?('driver_driving_license_number')
-            shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date']) if request_data.has_key?('driver_driving_license_date')
+            shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_date')
             shopping_cart.driver_driving_license_country = request_data['driver_driving_license_country'] if request_data.has_key?('driver_driving_license_country')
-            shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date']) if request_data.has_key?('driver_driving_license_expiration_date')
+            shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_expiration_date')
             shopping_cart.calculate_cost # Calculate cost using driver real date of birth and driving license date
             if shopping_cart.driver_address.nil?
               shopping_cart.driver_address = LocationDataSystem::Address.new
@@ -637,15 +657,15 @@ module Sinatra
             shopping_cart.additional_driver_1_name = request_data['additional_driver_1_name'] if request_data.has_key?('additional_driver_1_name')
             shopping_cart.additional_driver_1_surname = request_data['additional_driver_1_surname'] if request_data.has_key?('additional_driver_1_surname')
             shopping_cart.additional_driver_1_document_id = request_data['additional_driver_1_document_id'] if request_data.has_key?('additional_driver_1_document_id')
-            shopping_cart.additional_driver_1_document_id_date = parse_date(request_data['additional_driver_1_document_id_date']) if request_data.has_key?('additional_driver_1_document_id_date')
-            shopping_cart.additional_driver_1_document_id_expiration_date = parse_date(request_data['additional_driver_1_document_id_expiration_date']) if request_data.has_key?('additional_driver_1_document_id_expiration_date')
+            shopping_cart.additional_driver_1_document_id_date = parse_date(request_data['additional_driver_1_document_id_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_date')
+            shopping_cart.additional_driver_1_document_id_expiration_date = parse_date(request_data['additional_driver_1_document_id_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_expiration_date')
             shopping_cart.additional_driver_1_origin_country = request_data['additional_driver_1_origin_country'] if request_data.has_key?('additional_driver_1_origin_country')
-            shopping_cart.additional_driver_1_date_of_birth = parse_date(request_data['additional_driver_1_date_of_birth']) if request_data.has_key?('additional_driver_1_date_of_birth')
+            shopping_cart.additional_driver_1_date_of_birth = parse_date(request_data['additional_driver_1_date_of_birth'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_date_of_birth')
             shopping_cart.additional_driver_1_age = age(Date.today, shopping_cart.additional_driver_1_date_of_birth) if !shopping_cart.additional_driver_1_date_of_birth.nil?
             shopping_cart.additional_driver_1_driving_license_number = request_data['additional_driver_1_driving_license_number'] if request_data.has_key?('additional_driver_1_driving_license_number')
-            shopping_cart.additional_driver_1_driving_license_date = parse_date(request_data['additional_driver_1_driving_license_date']) if request_data.has_key?('additional_driver_1_driving_license_date')
+            shopping_cart.additional_driver_1_driving_license_date = parse_date(request_data['additional_driver_1_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_date')
             shopping_cart.additional_driver_1_driving_license_country = request_data['additional_driver_1_driving_license_country'] if request_data.has_key?('additional_driver_1_driving_license_country')
-            shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date']) if request_data.has_key?('additional_driver_1_driving_license_expiration_date')
+            shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_expiration_date')
             shopping_cart.additional_driver_1_phone = request_data['additional_driver_1_phone'] if request_data.has_key?('additional_driver_1_phone')
             shopping_cart.additional_driver_1_email = request_data['additional_driver_1_email'] if request_data.has_key?('additional_driver_1_email')
             # Flight
