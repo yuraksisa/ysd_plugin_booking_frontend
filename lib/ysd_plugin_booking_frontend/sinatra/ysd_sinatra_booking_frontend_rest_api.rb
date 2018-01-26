@@ -327,7 +327,9 @@ module Sinatra
 
         # Prepare the products
         p_json = ::Yito::Model::Booking::RentingSearch.search(shopping_cart.date_from,
-                                                              shopping_cart.date_to, shopping_cart.days, locale, booking_item_family.frontend == :shopcart).to_json
+                                                              shopping_cart.date_to, shopping_cart.days, locale,
+                                                              booking_item_family.frontend == :shopcart,
+                                                              nil, true).to_json
 
         # Prepare the extras
         e_json = ::Yito::Model::Booking::RentingExtraSearch.search(shopping_cart.date_from,
