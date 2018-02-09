@@ -326,10 +326,13 @@ module Sinatra
         sc_json = sc.to_json
 
         # Prepare the products
-        p_json = ::Yito::Model::Booking::RentingSearch.search(shopping_cart.date_from,
-                                                              shopping_cart.date_to, shopping_cart.days, locale,
-                                                              booking_item_family.frontend == :shopcart,
-                                                              nil, true).to_json
+        renting_search_options = {locale: locale,
+                                  full_information: booking_item_family.frontend == :shopcart,
+                                  product_code: nil, # All products
+                                  web_public: true,
+                                  sales_channel_code: shopping_cart.sales_channel_code}
+        p_json = ::Yito::Model::Booking::BookingCategory.search(shopping_cart.date_from, shopping_cart.date_to,
+                                                                shopping_cart.days, renting_search_options).to_json
 
         # Prepare the extras
         e_json = ::Yito::Model::Booking::RentingExtraSearch.search(shopping_cart.date_from,
@@ -770,7 +773,7 @@ module Sinatra
 
           # TODO Check parameters
           date_from = time_from = date_to = time_to = pickup_place = return_place = number_of_adults = number_of_children =
-              driver_age_rule_id = nil
+              driver_age_rule_id = sales_channel_code = nil
 
           if model_request[:date_from] && model_request[:date_to]
             date_from = DateTime.strptime(model_request[:date_from],"%d/%m/%Y")
@@ -782,6 +785,8 @@ module Sinatra
             number_of_adults = model_request[:number_of_adults] if model_request.has_key?(:number_of_adults)
             number_of_children = model_request[:number_of_children] if model_request.has_key?(:number_of_childen)
             driver_age_rule_id = model_request[:driver_age_rule] if model_request.has_key?(:driver_age_rule)
+            sales_channel_code = model_request[:sales_channel_code] if model_request.has_key?(:sales_channel_code)
+            sales_channel_code = nil if sales_channel_code and sales_channel_code.empty?
           else
             content_type :json
             status 422
@@ -803,7 +808,7 @@ module Sinatra
                                                 date_to, time_to,
                                                 pickup_place, return_place,
                                                 number_of_adults, number_of_children,
-                                                driver_age_rule_id)
+                                                driver_age_rule_id, sales_channel_code)
             if shopping_cart.customer_language != session[:locale]
               shopping_cart.change_customer_language(session[:locale])
             end
@@ -820,6 +825,7 @@ module Sinatra
                 number_of_adults: number_of_adults,
                 number_of_children: number_of_children,
                 driver_age_rule_id: driver_age_rule_id,
+                sales_channel_code: sales_channel_code,
                 customer_language: session[:locale])
             session[:shopping_cart_renting_id] = shopping_cart.id
           end

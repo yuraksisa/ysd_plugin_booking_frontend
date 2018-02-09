@@ -35,6 +35,8 @@ module Sinatra
 							number_of_adults = params[:number_of_adults]
 							number_of_children = params[:number_of_children]
 							driver_age_rule_id = params[:driver_age_rule]
+							sales_channel_code = params[:sales_channel_code]
+							sales_channel_code = nil if sales_channel_code and sales_channel_code.empty?
 							booking_parameters = true
 						end
 
@@ -57,7 +59,8 @@ module Sinatra
 												return_place: return_place,
 												return_place_customer_translation: booking_return_place ? booking_return_place.translate(session[:locale]).name : return_place,
 								        number_of_adults: number_of_adults, number_of_children: number_of_children,
-												driver_age_rule_id: driver_age_rule_id)
+												driver_age_rule_id: driver_age_rule_id,
+												sales_channel_code: sales_channel_code)
 							else
 								# TODO create default values or redirect home?
 							end
@@ -69,7 +72,7 @@ module Sinatra
 										date_to, time_to,
 										pickup_place, return_place,
 										number_of_adults, number_of_children,
-										driver_age_rule_id)
+										driver_age_rule_id, sales_channel_code)
 							end
 						end
 
