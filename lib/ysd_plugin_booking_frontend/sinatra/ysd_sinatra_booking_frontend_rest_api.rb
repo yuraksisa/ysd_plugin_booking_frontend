@@ -339,8 +339,15 @@ module Sinatra
                                                                    shopping_cart.date_to, shopping_cart.days, locale).to_json
 
         # Prepare the sales process
-        can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
-            BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
+        #
+        # TODO : Take into account sales channel payment configuration
+        #
+        if shopping_cart.sales_channel_code.nil? or shopping_cart.sales_channel_code.empty?
+            can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
+                      BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
+        else
+          can_pay = false
+        end
         server_timestamp = DateTime.now
         sales_process = {can_pay: can_pay, server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
         sales_process_json = sales_process.to_json
@@ -434,8 +441,35 @@ module Sinatra
         # Get information from the server
         #
         app.get '/api/booking/frontend/settings' do
+
           server_timestamp = DateTime.now
-          settings = {server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
+
+          domain = SystemConfiguration::Variable.get_value('site.domain')
+          products = ::Yito::Model::Booking::BookingCategory.all(
+                       fields: [:code, :name, :short_description, :description, :from_price, :from_price_offer],
+                       conditions: {active: true, web_public: true},
+                       order: [:code]).map do |item|
+
+                          photo = item.album ? item.album.thumbnail_medium_url : nil
+                          full_photo = item.album ? item.album.image_url : nil
+                          photo_path = nil
+                          if photo
+                            photo_path = (photo.match(/^https?:/) ? photo : File.join(domain, photo))
+                          end
+                          full_photo_path = nil
+                          if full_photo
+                            full_photo_path = (full_photo.match(/^https?:/) ? full_photo : File.join(domain, full_photo))
+                          end
+
+                          {code: item.code, name: item.name,
+                           short_description: item.short_description, description: item.description,
+                           from_price: item.from_price, from_price_offer: item.from_price_offer,
+                           photo_path: photo_path, full_photo_path: full_photo_path}
+                      end
+
+          settings = {server_date: server_timestamp.strftime('%Y-%m-%d'),
+                      server_time: server_timestamp.strftime('%H:%M'),
+                      products: products}
 
           content_type 'json'
           settings.to_json
