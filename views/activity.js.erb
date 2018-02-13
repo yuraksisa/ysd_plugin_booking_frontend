@@ -88,8 +88,7 @@ require(['jquery','ysdtemplate',
                     contentType : 'application/json; charset=utf-8',
                     crossDomain: true,
                     success: function(data, textStatus, jqXHR) {
-                        alert('Product añadido al carrito');
-                        window.location.href='/reserva-actividades/carrito';
+                         window.location.href='/shopping-cart';
                     },
                     error: function(data, textStatus, jqXHR) {
                         alert('Error obteniendo la información');
@@ -110,42 +109,42 @@ require(['jquery','ysdtemplate',
                     this.cyclicNightTurns = this.activity.night_turns;
                 }
                 else {
-                    var dayOfWeek = $('#datepicker').datepicker('getDate').getDate();
+                    var dayOfWeek = $('#datepicker').datepicker('getDate').getDay();
                     switch (dayOfWeek) {
                         case 0:
-                            this.cyclicMorningTurns = this.sunday_morning_turns;
-                            this.cyclicAfternoonTurns = this.sunday_afternoon_turns;
-                            this.cyclicNightTurns = this.sunday_night_turns;
+                            this.cyclicMorningTurns = this.activity.sunday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.sunday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.sunday_night_turns;
                             break;
                         case 1:
-                            this.cyclicMorningTurns = this.monday_morning_turns;
-                            this.cyclicAfternoonTurns = this.monday_afternoon_turns;
-                            this.cyclicNightTurns = this.monday_night_turns;
+                            this.cyclicMorningTurns = this.activity.monday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.monday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.monday_night_turns;
                             break;
                         case 2:
-                            this.cyclicMorningTurns = this.tuesday_morning_turns;
-                            this.cyclicAfternoonTurns = this.tuesday_afternoon_turns;
-                            this.cyclicNightTurns = this.tuesday_night_turns;
+                            this.cyclicMorningTurns = this.activity.tuesday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.tuesday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.tuesday_night_turns;
                             break;
                         case 3:
-                            this.cyclicMorningTurns = this.wednesday_morning_turns;
-                            this.cyclicAfternoonTurns = this.wednesday_afternoon_turns;
-                            this.cyclicNightTurns = this.wednesday_night_turns;
+                            this.cyclicMorningTurns = this.activity.wednesday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.wednesday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.wednesday_night_turns;
                             break;
                         case 4:
-                            this.cyclicMorningTurns = this.thursday_morning_turns;
-                            this.cyclicAfternoonTurns = this.thursday_afternoon_turns;
-                            this.cyclicNightTurns = this.thursday_night_turns;
+                            this.cyclicMorningTurns = this.activity.thursday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.thursday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.thursday_night_turns;
                             break;
                         case 5:
-                            this.cyclicMorningTurns = this.friday_morning_turns;
-                            this.cyclicAfternoonTurns = this.friday_afternoon_turns;
-                            this.cyclicNightTurns = this.friday_night_turns;
+                            this.cyclicMorningTurns = this.activity.friday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.friday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.friday_night_turns;
                             break;
                         case 6:
-                            this.cyclicMorningTurns = this.saturday_morning_turns;
-                            this.cyclicAfternoonTurns = this.saturday_afternoon_turns;
-                            this.cyclicNightTurns = this.saturday_night_turns;
+                            this.cyclicMorningTurns = this.activity.saturday_morning_turns;
+                            this.cyclicAfternoonTurns = this.activity.saturday_afternoon_turns;
+                            this.cyclicNightTurns = this.activity.saturday_night_turns;
                             break;
                     }
                 }

@@ -12,12 +12,12 @@ module Sinatra
          #
          app.get '/api/booking-activities/frontend/activities' do
 
-           activities = ::Yito::Model::Booking::Activity.all(active: true)
+           activities = ::Yito::Model::Booking::Activity.all(active: true, web_public: true)
 
            status 200
            content_type :json
            activities.to_json(only: [:id, :name, :short_description, :from_price, :from_price_offer, :photo_url_medium,
-                                     :photo_url_full])
+                                     :photo_url_full, :alias])
 
          end
 

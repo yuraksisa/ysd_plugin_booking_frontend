@@ -9,7 +9,7 @@ module Sinatra
         #
         # Show the activities list
         #
-        app.get '/reserva-actividades/actividades' do
+        app.route :get, ['/reserva-actividades/actividades','/excursiones'] do
 
           load_page(:activities)
 
@@ -35,14 +35,34 @@ module Sinatra
           load_page(:activity)
 
         end
-        
+
+        #
+        # Load an activity (by its alias)
+        #
+        app.get /^[^.]*$/ do
+
+          preffixes = Plugins::Plugin.plugin_invoke_all('ignore_path_prefix_cms', {:app => self})
+          if request.path_info.empty? or request.path_info.start_with?(*preffixes)
+            pass
+          end
+
+          # Query activity
+          if @activity = ::Yito::Model::Booking::Activity.first(:alias => request.path_info)
+            @activity_id = @activity.id
+            load_page(:activity)
+          else
+            pass
+          end
+
+        end
+
         #
         # GET /reserva-actividades/carrito
         #
         # Show the shopping cart
         #
-        app.get '/reserva-actividades/carrito' do
-          load_page(:activities_shopping_cart)          
+        app.route :get, ['/reserva-actividades/carrito', '/shopping-cart'] do
+          load_page(:activities_shopping_cart)
         end
         
         #
@@ -50,8 +70,8 @@ module Sinatra
         #
         # Show the checkout form - before confirm the order
         #
-        app.get '/reserva-actividades/revisar' do
-          
+        app.route :get, ['/reserva-actividades/revisar', '/checkout'] do
+
           load_page(:activities_checkout)
           
         end

@@ -46,7 +46,11 @@
                               <table class="table">
                                 <tr>
                                   <td class="buttons">
+                                    <%% if (activity.alias && activity.alias.length!=0) { %>
+                                    <a class="btn btn-theme btn-choose-product" href="<%%=activity.alias%>" style="width:100%"><%=t.front_end_activities.book%></a>
+                                    <%% } else { %>
                                     <a class="btn btn-theme btn-choose-product" href="/reserva-actividades/actividades/<%%=activity.id%>" style="width:100%"><%=t.front_end_activities.book%></a>
+                                    <%% } %>
                                   </td>
                                 </tr>
                               </table>
