@@ -123,6 +123,12 @@ module Sinatra
 				#
 				# Step 3* : Payment [OPTIONAL]
 				#
+				# It receives three arguments in POST form
+				#
+				# id: The booking free access id
+				# payment: deposit, total or pending
+				# payment_method_id: The payment method identifier
+				#
 				['/reserva/pagar', '/book/pay'].each do |endpoint|
 					app.post endpoint do #, :allowed_origin => lambda { SystemConfiguration::Variable.get_value('site.domain') } do
 
@@ -194,6 +200,11 @@ module Sinatra
 													 SystemConfiguration::Variable.get_value('booking.total_cost_includes_deposit', 'false').to_bool)
 							locals.store(:booking_driver_min_age_rules,
 													 SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
+
+							@payment_methods = Payments::PaymentMethod.available_to_web
+							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
+							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
 							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}
@@ -216,6 +227,11 @@ module Sinatra
 													 SystemConfiguration::Variable.get_value('booking.total_cost_includes_deposit', 'false').to_bool)
 							locals.store(:booking_driver_min_age_rules,
 													 SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
+
+							@payment_methods = Payments::PaymentMethod.available_to_web
+							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
+							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
 							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}
@@ -237,6 +253,11 @@ module Sinatra
 													 SystemConfiguration::Variable.get_value('booking.total_cost_includes_deposit', 'false').to_bool)
 							locals.store(:booking_driver_min_age_rules,
 													 SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
+
+							@payment_methods = Payments::PaymentMethod.available_to_web
+							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
+							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
 							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}

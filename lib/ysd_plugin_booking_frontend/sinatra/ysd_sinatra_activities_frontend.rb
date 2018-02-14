@@ -85,6 +85,12 @@ module Sinatra
         #
         # Payment
         #
+        # It receives three arguments in POST form
+        #
+        # id: The order free access id
+        # payment: deposit, total or pending
+        # payment_method_id: The payment method identifier
+        #
         ['/reserva-actividades/pagar'].each do |endpoint|
           app.post endpoint do #, :allowed_origin => lambda { SystemConfiguration::Variable.get_value('site.domain') } do
 
