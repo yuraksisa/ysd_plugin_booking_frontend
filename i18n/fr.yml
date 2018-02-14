@@ -31,11 +31,11 @@ front_end_reservation:
   additional_information_title: Additional information
   field_comments: Comments
   payment_title: Pay
-  payment_to_confirm_reservation: To confirm the reservation a %1% deposit is required
+  payment_to_confirm_reservation: To confirm the reservation a %1% %2 deposit is required
   conditions_read: I've read and accept <a href="%1" target="blank">the general terms and conditions</a>
   request_reservation: Request reservation
-  credit_card_payment: Credit card (a deposit of %1% is required to confirm the reservation)
-  paypal_payment: PayPal (a deposit of %1% is required to confirm the reservation)
+  credit_card_payment: Credit card
+  paypal_payment: PayPal
   conditions_not_read: Lo sentimos. No ha marcado que ha leído las condiciones de alquiler
   form_errors: Por favor, revise el formulario. Contiene datos no válidos.
   product_information_title: Product information

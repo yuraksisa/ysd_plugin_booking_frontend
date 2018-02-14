@@ -33,11 +33,11 @@ front_end_reservation:
   additional_information_title: Información adicional
   field_comments: Comentarios
   payment_title: Pago
-  payment_to_confirm_reservation: Para confirmar la reserva se requiere una paga y señal del %1% del importe total de la reserva
+  payment_to_confirm_reservation: Para confirmar la reserva se requiere una paga y señal del %1% %2 del importe total de la reserva
   conditions_read: He leído y acepto las <a href="%1" target="blank">condiciones</a> del alquiler
   request_reservation: Solicitar reserva
-  credit_card_payment: Tarjeta de crédito (20% de paga y señal para confirmar reserva)
-  paypal_payment: PayPal (20% de paga y señal para confirmar reserva)
+  credit_card_payment: Tarjeta de crédito
+  paypal_payment: PayPal
   conditions_not_read: Lo sentimos. No ha marcado que ha leído las condiciones de alquiler
   form_errors: Por favor, revise el formulario. Contiene datos no válidos.
   product_information_title: Información del producto
@@ -72,6 +72,7 @@ front_end_reservation:
   booking_detail_customer_email: Correo electrónico
   booking_detail_summary_paid: Pagado
   booking_detail_summary_pending: Pendiente
+  booking_detail_pay_button: Pagar
 front_end_activities:
   activities_title: Actividades y/o excursiones
   from: Desde
@@ -109,7 +110,12 @@ front_end_activities:
     conditions_read: He leído y acepto las <a href="%1" target="blank">condiciones</a> de las actividades
     form_errors: Por favor, revise el formulario. Contiene datos no válidos.
     conditions_not_read: Lo sentimos. No ha marcado que ha leído las condiciones
+    payment_group:
+      title: Pago
+      deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% del importe total del pedido
+      total_title: Para confirmar el pedido se requiere el importe del total del pedido
   order_page:
+    page_title: Pedido %1
     order_detail_title: su pedido está %1
     order_detail_state:
       pending_confirmation: Pendiente de confirmación
@@ -125,3 +131,8 @@ front_end_activities:
     summary_total: Total
     summary_total_paid: Pagado
     summary_total_pending: Pendiente
+    payment_group:
+      title: Pago
+      deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% %2 del importe total del pedido
+      pending_title: Puede proceder al pago del importe pendiente %1 del pedido
+      total_title: Para confirmar el pedido se requiere el importe del total del pedido

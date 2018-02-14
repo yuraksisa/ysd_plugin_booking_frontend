@@ -33,11 +33,11 @@ front_end_reservation:
   additional_information_title: Ulteriori informazioni
   field_comments: Commenti
   payment_title: Pagamento
-  payment_to_confirm_reservation: Per confermare la prenotazione è necessario effettuare un pagamento pari al %1% del costo totale della prenotazione
+  payment_to_confirm_reservation: Per confermare la prenotazione è necessario effettuare un pagamento pari al %1% %2 del costo totale della prenotazione
   conditions_read: Ho letto e accetto <a href="%1" target="blank">i termini e le condizioni generali di noleggio</a>
   request_reservation: Effettuare la prenotazione
-  credit_card_payment: Credit card (a deposit of %1% is required to confirm the reservation)
-  paypal_payment: PayPal (a deposit of %1% is required to confirm the reservation)
+  credit_card_payment: Credit card
+  paypal_payment: PayPal
   conditions_not_read: Lo sentimos. No ha marcado que ha leído las condiciones de alquiler
   form_errors: Por favor, revise el formulario. Contiene datos no válidos.
   product_information_title: Informazioni sul prodotto
@@ -72,3 +72,4 @@ front_end_reservation:
   booking_detail_customer_email: E-mail
   booking_detail_summary_paid: Pagato
   booking_detail_summary_pending: Da pagare
+  booking_detail_pay_button: Pagare

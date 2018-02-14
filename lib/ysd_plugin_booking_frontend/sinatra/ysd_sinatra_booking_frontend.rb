@@ -9,14 +9,11 @@ module Sinatra
 																			 'views')))
 				app.settings.translations = Array(app.settings.translations).push(File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'i18n')))
 
-				if (defined?MY_BOOKING_FRONTEND) && (MY_BOOKING_FRONTEND == '4.0')
-          p "Setting up mybooking 4.0"
-		     app.set :bookingcharge_gateway_return_ok, '/reserva/payment-gateway-return/ok'
-		     app.set :bookingcharge_gateway_return_cancel, '/reserva/payment-gateway-return/cancel'
-		     app.set :bookingcharge_gateway_return_nok, '/reserva/payment-gateway-return/nok'
-       end
+ 	      app.set :bookingcharge_gateway_return_ok, '/reserva/payment-gateway-return/ok'
+	      app.set :bookingcharge_gateway_return_cancel, '/reserva/payment-gateway-return/cancel'
+	      app.set :bookingcharge_gateway_return_nok, '/reserva/payment-gateway-return/nok'
 
-  		# =================== RESERVATION PROCESS (FRONT-END) ==========================================
+  		  # =================== RESERVATION PROCESS (FRONT-END) ==========================================
 
       	#
       	# Step 1 in reservation : choose product
@@ -112,6 +109,10 @@ module Sinatra
 						locals.store(:booking_driver_min_age_rules,
 												 SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
 
+						@payment_methods = Payments::PaymentMethod.available_to_web
+						@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
+						@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
 						# Load the page
 						page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_complete" : :rent_reservation_complete
       	  	load_page(page, {page_title: t.front_end_reservation.complete_reservation_page_title , locals: locals})
@@ -125,12 +126,10 @@ module Sinatra
 				['/reserva/pagar', '/book/pay'].each do |endpoint|
 					app.post endpoint do #, :allowed_origin => lambda { SystemConfiguration::Variable.get_value('site.domain') } do
 
-						booking = BookingDataSystem::Booking.get_by_free_access_id(params[:id])
-						if booking
+						if booking = BookingDataSystem::Booking.get_by_free_access_id(params[:id])
 							payment = params[:payment]
 							payment_method = params[:payment_method_id]
-							charge = booking.create_online_charge!(payment, payment_method)
-							if charge
+							if charge = booking.create_online_charge!(payment, payment_method)
 								session[:booking_id] = booking.id
 								session[:charge_id] = charge.id
 								status, header, body = call! env.merge("PATH_INFO" => "/charge",
@@ -164,6 +163,11 @@ module Sinatra
 													 SystemConfiguration::Variable.get_value('booking.total_cost_includes_deposit', 'false').to_bool)
 							locals.store(:booking_driver_min_age_rules,
 													 SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
+
+							@payment_methods = Payments::PaymentMethod.available_to_web
+							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
+							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
 							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}

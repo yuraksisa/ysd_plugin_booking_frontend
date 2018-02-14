@@ -33,7 +33,7 @@ front_end_reservation:
   additional_information_title: Informació adicional
   field_comments: Comentaris
   payment_title: Pagament
-  payment_to_confirm_reservation: Per confirmar la reserva es requereix una paga i senyal del %1% de l'import de la reserva
+  payment_to_confirm_reservation: Per confirmar la reserva es requereix una paga i senyal del %1% %2 de l'import de la reserva
   conditions_read: He llegit i accepto <a href="%1" target="blank">les condicions de lloguer</a>
   request_reservation: Sol.licitar reserva
   credit_card_payment: Targeta de crèdit (es requereix una paga i senyal del %1% per confirmar la reserva)
@@ -72,3 +72,4 @@ front_end_reservation:
   booking_detail_customer_email: Correu electric
   booking_detail_summary_paid: Pagat
   booking_detail_summary_pending: Pendent
+  booking_detail_pay_button: Pagar

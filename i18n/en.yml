@@ -33,7 +33,7 @@ front_end_reservation:
   additional_information_title: Additional information
   field_comments: Comments
   payment_title: Pay
-  payment_to_confirm_reservation: To confirm the reservation a %1% deposit is required
+  payment_to_confirm_reservation: To confirm the reservation a %1% %2 deposit is required
   conditions_read: I've read and accept <a href="%1" target="blank">the general terms and conditions</a>
   request_reservation: Request reservation
   credit_card_payment: Credit card (to confirm booking a %1% deposit is required)
@@ -72,3 +72,4 @@ front_end_reservation:
   booking_detail_customer_email: E-mail
   booking_detail_summary_paid: Paid
   booking_detail_summary_pending: To be paid
+  booking_detail_pay_button: Pay

@@ -4,6 +4,10 @@ module Sinatra
 
       def self.registered(app)
 
+        app.set :ordercharge_gateway_return_ok, '/reserva-actividades/payment-gateway-return/ok'
+        app.set :ordercharge_gateway_return_cancel, '/reserva-actividades/payment-gateway-return/cancel'
+        app.set :ordercharge_gateway_return_nok, '/reserva-actividades/payment-gateway-return/nok'
+
         #
         # GET /reserva-actividades/actividades
         #
@@ -11,7 +15,9 @@ module Sinatra
         #
         app.route :get, ['/reserva-actividades/actividades','/excursiones'] do
 
-          load_page(:activities)
+          page = settings.frontend_skin ? "#{settings.frontend_skin}_activities" : :activities
+
+          load_page(page)
 
         end
         
@@ -32,7 +38,10 @@ module Sinatra
         app.get '/reserva-actividades/actividades/:id' do
 
           @activity_id = params[:id]
-          load_page(:activity)
+
+          page = settings.frontend_skin ? "#{settings.frontend_skin}_activity" : :activity
+
+          load_page(page)
 
         end
 
@@ -49,7 +58,8 @@ module Sinatra
           # Query activity
           if @activity = ::Yito::Model::Booking::Activity.first(:alias => request.path_info)
             @activity_id = @activity.id
-            load_page(:activity)
+            page = settings.frontend_skin ? "#{settings.frontend_skin}_activity" : :activity
+            load_page(page)
           else
             pass
           end
@@ -62,18 +72,39 @@ module Sinatra
         # Show the shopping cart
         #
         app.route :get, ['/reserva-actividades/carrito', '/shopping-cart'] do
-          load_page(:activities_shopping_cart)
-        end
-        
-        #
-        # GET /reserva-actividades/revisar
-        #
-        # Show the checkout form - before confirm the order
-        #
-        app.route :get, ['/reserva-actividades/revisar', '/checkout'] do
 
-          load_page(:activities_checkout)
-          
+          @payment_methods = Payments::PaymentMethod.available_to_web
+          @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
+          @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
+          page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_shopping_cart" : :activities_shopping_cart
+          load_page(page)
+        end
+
+
+        #
+        # Payment
+        #
+        ['/reserva-actividades/pagar'].each do |endpoint|
+          app.post endpoint do #, :allowed_origin => lambda { SystemConfiguration::Variable.get_value('site.domain') } do
+
+            if order = ::Yito::Model::Order::Order.get(params[:id].to_i)
+              payment = params[:payment]
+              payment_method = params[:payment_method_id]
+              if charge = order.create_online_charge!(payment, payment_method)
+                session[:order_id] = order.id
+                session[:charge_id] = charge.id
+                status, header, body = call! env.merge("PATH_INFO" => "/charge",
+                                                       "REQUEST_METHOD" => 'GET')
+              else
+                status 404
+              end
+            else
+              status 404
+            end
+
+          end
+
         end
 
         #
@@ -82,8 +113,74 @@ module Sinatra
         app.get '/reserva-actividades/pedido/:free_access_id' do
 
           @order = ::Yito::Model::Order::Order.get_by_free_access_id(params[:free_access_id])
-          load_page(:activities_order)
+
+          @payment_methods = Payments::PaymentMethod.available_to_web
+          @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
+          @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
+          page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
+          load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id)})
           
+        end
+
+        # =============== RETURN FROM PAYMENT GATEWAY ===================================
+
+        #
+        # Return OK from payment gateway
+        #
+        ['/reserva-actividades/payment-gateway-return/ok'].each do |endpoint|
+          app.get endpoint do
+
+            if session.has_key?(:charge_id)
+              @order = ::Yito::Model::Order::OrderCharge.order_from_charge(session[:charge_id])
+              @payment_methods = Payments::PaymentMethod.available_to_web
+              @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
+              @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
+              load_page(page)
+            else
+              logger.error "Back from payment gateway - OK - NOT charge in session"
+              status 404
+            end
+
+          end
+        end
+
+        #
+        # Return CANCEL from payment gateway
+        #
+        ['/reserva-actividades/payment-gateway-return/cancel'].each do |endpoint|
+          app.get endpoint do
+            if session.has_key?(:charge_id)
+              @order = ::Yito::Model::Order::OrderCharge.order_from_charge(session[:charge_id])
+              @payment_methods = Payments::PaymentMethod.available_to_web
+              @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
+              @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
+              load_page(page)
+            else
+              logger.error "Back from payment gateway - CANCEL - NOT charge in session"
+              status 404
+            end
+          end
+        end
+
+        #
+        # Return NOK from payment gateway
+        #
+        ['/reserva-actividades/payment-gateway-return/nok'].each do |endpoint|
+          app.get endpoint do
+            if session.has_key?(:charge_id)
+              @order = ::Yito::Model::Order::OrderCharge.order_from_charge(session[:charge_id])
+              @payment_methods = Payments::PaymentMethod.available_to_web
+              @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
+              @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
+              load_page(page)
+            else
+              status 404
+            end
+          end
         end
 
       end
