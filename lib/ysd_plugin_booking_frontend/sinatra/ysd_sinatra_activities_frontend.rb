@@ -94,7 +94,7 @@ module Sinatra
         ['/reserva-actividades/pagar'].each do |endpoint|
           app.post endpoint do #, :allowed_origin => lambda { SystemConfiguration::Variable.get_value('site.domain') } do
 
-            if order = ::Yito::Model::Order::Order.get(params[:id].to_i)
+            if order = ::Yito::Model::Order::Order.get_by_free_access_id(params[:id].to_i)
               payment = params[:payment]
               payment_method = params[:payment_method_id]
               if charge = order.create_online_charge!(payment, payment_method)
@@ -103,9 +103,11 @@ module Sinatra
                 status, header, body = call! env.merge("PATH_INFO" => "/charge",
                                                        "REQUEST_METHOD" => 'GET')
               else
+                logger.error "Activities payment - charge not created"
                 status 404
               end
             else
+              logger.error "Activities payment - order #{params[:id]} not found"
               status 404
             end
 
