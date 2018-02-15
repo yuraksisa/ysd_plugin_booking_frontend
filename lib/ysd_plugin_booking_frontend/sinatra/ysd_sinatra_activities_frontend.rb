@@ -94,7 +94,7 @@ module Sinatra
         ['/reserva-actividades/pagar'].each do |endpoint|
           app.post endpoint do #, :allowed_origin => lambda { SystemConfiguration::Variable.get_value('site.domain') } do
 
-            if order = ::Yito::Model::Order::Order.get_by_free_access_id(params[:id].to_i)
+            if order = ::Yito::Model::Order::Order.get_by_free_access_id(params[:id])
               payment = params[:payment]
               payment_method = params[:payment_method_id]
               if charge = order.create_online_charge!(payment, payment_method)
