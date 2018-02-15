@@ -127,7 +127,7 @@ module Sinatra
           @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
           page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-          load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id)})
+          load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
           
         end
 
@@ -145,7 +145,7 @@ module Sinatra
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
               page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-              load_page(page)
+              load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
             else
               logger.error "Back from payment gateway - OK - NOT charge in session"
               status 404
@@ -165,7 +165,7 @@ module Sinatra
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
               page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-              load_page(page)
+              load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
             else
               logger.error "Back from payment gateway - CANCEL - NOT charge in session"
               status 404
@@ -184,7 +184,7 @@ module Sinatra
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
               page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-              load_page(page)
+              load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
             else
               status 404
             end

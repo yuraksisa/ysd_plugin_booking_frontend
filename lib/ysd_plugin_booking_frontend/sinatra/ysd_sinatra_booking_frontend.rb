@@ -176,7 +176,7 @@ module Sinatra
 
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}
+							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
 						else
 							status 404
 						end
@@ -207,7 +207,7 @@ module Sinatra
 
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}
+							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
 						else
 							status 404
 						end
@@ -234,7 +234,7 @@ module Sinatra
 
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}
+							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
 						else
 							status 404
 						end
@@ -260,7 +260,7 @@ module Sinatra
 
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals}
+							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
 						else
 							status 404
 						end
