@@ -35,7 +35,8 @@ module Sinatra
                pickup_place_cost: shopping_cart.pickup_place_cost,
                return_place_cost: shopping_cart.return_place_cost,
                promotion_code: shopping_cart.promotion_code,
-               comments: shopping_cart.comments
+               comments: shopping_cart.comments,
+               destination_accommodation: shopping_cart.destination_accommodation
         }
         sc.merge!({
                       date_from_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :short, locale),
@@ -149,7 +150,8 @@ module Sinatra
                             customer_document_id: booking.customer_document_id,
                             customer_language: booking.customer_language,
                             status: booking.status,
-                            free_access_id: booking.free_access_id
+                            free_access_id: booking.free_access_id,
+                            destination_accommodation: booking.destination_accommodation
         }
 
         booking_summary.merge!({
@@ -667,6 +669,7 @@ module Sinatra
             shopping_cart.customer_document_id = request_data['customer_document_id'] || request_data['driver_document_id']
             shopping_cart.customer_language = request_data['customer_language'] if request_data.has_key?('customer_language')
             shopping_cart.comments = request_data['comments']
+            shopping_cart.destination_accommodation = request_data['destination_accommodation'] if request_data.has_key?('destination_accommodation')
             shopping_cart.pay_now =  (request_data['payment'] != 'none')
             shopping_cart.payment_method_id = (request_data['payment'] != 'none' ? request_data['payment'] : nil)
             # Number of adults/children (accomodation)
