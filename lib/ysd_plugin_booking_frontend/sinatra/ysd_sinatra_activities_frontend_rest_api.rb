@@ -250,8 +250,6 @@ module Sinatra
              halt 422, {error: 'Invalid request. Expected a JSON with data params'}.to_json
            end
 
-           p "model_request: #{model_request.inspect}"
-
            # Retrieve the shopping cart
            if params[:free_access_id]
              shopping_cart = ::Yito::Model::Order::ShoppingCart.get_by_free_access_id(params[:free_access_id])
@@ -325,7 +323,6 @@ module Sinatra
 
            end
 
-
          end
 
 
@@ -336,8 +333,65 @@ module Sinatra
          #
          # Get an order
          #
-         app.get '/api/booking-activities/frontend/shopping-cart/:free_access_id' do
-           
+         app.get '/api/booking-activities/frontend/order/:free_access_id' do
+
+         end
+
+         #
+         # Updates an order
+         #
+         app.put '/api/booking-activities/frontend/order/:free_access_id' do
+
+           # Extract the data parameters
+           begin
+             request.body.rewind
+             model_request = JSON.parse(URI.unescape(request.body.read)).symbolize_keys!
+           rescue JSON::ParserError
+             halt 422, {error: 'Invalid request. Expected a JSON with data params'}.to_json
+           end
+
+           if @order = ::Yito::Model::Order::Order.get_by_free_access_id(params[:free_access_id])
+             @order.transaction do
+               begin
+                 if model_request.has_key?(:customer_address)
+                   @order.customer_address = LocationDataSystem::Address.new if @order.customer_address.nil?
+                   @order.customer_address.street = model_request[:customer_address][:street] if model_request[:customer_address].has_key?(:street)
+                   @order.customer_address.number = model_request[:customer_address][:number] if model_request[:customer_address].has_key?(:number)
+                   @order.customer_address.complement = model_request[:customer_address][:complement] if model_request[:customer_address].has_key?(:complement)
+                   @order.customer_address.city = model_request[:customer_address][:city] if model_request[:customer_address].has_key?(:city)
+                   @order.customer_address.state = model_request[:customer_address][:state] if model_request[:customer_address].has_key?(:state)
+                   @order.customer_address.country = model_request[:customer_address][:country] if model_request[:customer_address].has_key?(:country)
+                   @order.customer_address.zip = model_request[:customer_address][:zip] if model_request[:customer_address].has_key?(:zip)
+                   @order.customer_address.save
+                   @order.save
+                 end
+                 if model_request.has_key?(:order_item_customers)
+                   model_request[:order_item_customers].each do |item|
+                     if order_item_customer = ::Yito::Model::Order::OrderItemCustomer.get(item[:id])
+                       order_item_customer.customer_name = item[:customer_name] if item.has_key?(:customer_name)
+                       order_item_customer.customer_surname = item[:customer_surname] if item.has_key?(:customer_surname)
+                       order_item_customer.customer_document_id = item[:customer_document_id] if item.has_key?(:customer_document_id)
+                       order_item_customer.customer_phone = item[:customer_phone] if item.has_key?(:customer_phone)
+                       order_item_customer.customer_email = item[:customer_email] if item.has_key?(:customer_email)
+                       order_item_customer.customer_height = item[:customer_height] if item.has_key?(:customer_height)
+                       order_item_customer.customer_weight = item[:customer_weight] if item.has_key?(:customer_weight)
+                       order_item_customer.customer_allergies_or_intolerances = item[:customer_allergies_or_intolerances] if item.has_key?(:customer_allergies_or_intolerances)
+                       order_item_customer.save
+                     end
+                   end
+                 end
+                 status 200
+                 content_type :json
+                 true.to_json
+               rescue DataMapper::SaveFailureError => error
+                 p "Error updating order. #{@order.inspect} #{@order.errors.full_messages.inspect}"
+                 raise error
+               end
+             end
+           else
+             halt 404
+           end
+
          end
 
       end

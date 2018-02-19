@@ -173,6 +173,7 @@ module Sinatra
 							@payment_methods = Payments::PaymentMethod.available_to_web
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
 
 							# Load the page
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary

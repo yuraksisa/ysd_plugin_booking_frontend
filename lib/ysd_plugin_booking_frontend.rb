@@ -1,5 +1,7 @@
 require "ysd_plugin_booking_frontend/version"
 
+require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_hp_booking_helper'
+require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_booking_frontend'
 require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_booking_frontend'
 require 'ysd_plugin_booking_frontend/sinatra/ysd_sinatra_booking_frontend_rest_api'
 
