@@ -345,10 +345,11 @@ module Sinatra
         # TODO : Take into account sales channel payment configuration
         #
         if shopping_cart.sales_channel_code.nil? or shopping_cart.sales_channel_code.empty?
-            can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
-                      BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
+          can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
+                    BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
         else
-          can_pay = false
+          can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool &&
+                    BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
         end
         server_timestamp = DateTime.now
         sales_process = {can_pay: can_pay, server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
