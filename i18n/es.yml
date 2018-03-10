@@ -73,6 +73,12 @@ front_end_reservation:
   booking_detail_summary_paid: Pagado
   booking_detail_summary_pending: Pendiente
   booking_detail_pay_button: Pagar
+  summary_page:
+    fill_data_message: Por favor, complete los datos para agilizar la realización de la actividad en la fecha prevista
+    customer_address: Dirección del cliente
+    data_of_the_participants: Datos de los participantes en las actividades
+    participant: Participante
+    update_data_button: Actualizar datos
 front_end_activities:
   activities_title: Actividades y/o excursiones
   from: Desde

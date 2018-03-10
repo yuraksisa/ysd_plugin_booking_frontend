@@ -139,8 +139,8 @@ module Sinatra
 
         booking_summary = { # Basic data
                             id: booking.id,
-                            date_from: booking.date_from,
-                            date_to: booking.date_to,
+                            date_from: booking.date_from.strftime('%Y-%m-%d'),
+                            date_to: booking.date_to.strftime('%Y-%m-%d'),
                             days: booking.days,
                             customer_name: booking.customer_name,
                             customer_surname: booking.customer_surname,

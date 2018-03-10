@@ -73,3 +73,9 @@ front_end_reservation:
   booking_detail_summary_paid: Paid
   booking_detail_summary_pending: To be paid
   booking_detail_pay_button: Pay
+  summary_page:
+    fill_data_message: Please complete the information to speed up the completion of the activity on the scheduled date
+    customer_address: Customer's address
+    data_of_the_participants: Data of the participants in the activities
+    participant: Participant
+    update_data_button: Update data
