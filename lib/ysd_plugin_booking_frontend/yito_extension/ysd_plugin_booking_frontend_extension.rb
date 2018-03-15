@@ -66,8 +66,8 @@ module YsdPluginBookingFrontend
         ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family')))
       locals.store(:booking_item_type,
         SystemConfiguration::Variable.get_value('booking.item_type')) 
-      locals.store(:booking_allow_custom_pickup_return_place,
-        SystemConfiguration::Variable.get_value('booking.allow_custom_pickup_return_place', 'false').to_bool)
+      locals.store(:pickup_return_places_configuration,
+        SystemConfiguration::Variable.get_value('booking.pickup_return_places_configuration', 'list'))
 
       young_driver_rules = SystemConfiguration::Variable.get_value('booking.driver_min_age.rules', 'false').to_bool
       young_driver_rule_definition = ::Yito::Model::Booking::BookingDriverAgeRuleDefinition.get(SystemConfiguration::Variable.get_value('booking.driver_min_age.rule_definition'))

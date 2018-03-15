@@ -12,6 +12,9 @@ front_end_reservation:
   date_to: Return Date
   time_to: Return Time
   driver_age: Driver's age
+  another_place: Another place
+  pickup_place_address: Pick-up address
+  return_place_address: Return address
   update: Update
   product: Product
   select: Select

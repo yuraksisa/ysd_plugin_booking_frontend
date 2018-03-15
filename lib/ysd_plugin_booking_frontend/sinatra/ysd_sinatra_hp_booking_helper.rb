@@ -52,8 +52,10 @@ module Sinatra
         sc.merge!({ # Pickup / Return place
                     pickup_place: shopping_cart.pickup_place,
                     pickup_place_customer_translation: shopping_cart.pickup_place_customer_translation,
+                    custom_pickup_place: shopping_cart.custom_pickup_place,
                     return_place: shopping_cart.return_place,
-                    return_place_customer_translation: shopping_cart.return_place_customer_translation
+                    return_place_customer_translation: shopping_cart.return_place_customer_translation,
+                    custom_return_place: shopping_cart.custom_return_place
                   })
 
         sc.merge!({ # Driver information
@@ -168,8 +170,10 @@ module Sinatra
         booking_summary.merge!({ # Pickup / Return
                                  pickup_place: booking.pickup_place,
                                  pickup_place_customer_translation: booking.pickup_place_customer_translation,
+                                 custom_pickup_place: booking.custom_pickup_place,
                                  return_place: booking.return_place,
-                                 return_place_customer_translation: booking.return_place_customer_translation
+                                 return_place_customer_translation: booking.return_place_customer_translation,
+                                 custom_return_place: booking.custom_return_place
                                })
 
         booking_summary.merge!({ # Time from / to

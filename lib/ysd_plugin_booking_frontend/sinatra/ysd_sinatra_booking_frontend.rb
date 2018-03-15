@@ -22,16 +22,22 @@ module Sinatra
 
       	  	# Retrive the parameters from the request
 					  booking_parameters = false
+						params.symbolize_keys!
 					  if params[:date_from] && params[:date_to]
+              # Retrieve date/time from - to
       	  	  date_from = DateTime .strptime(params[:date_from],"%d/%m/%Y")
       	  	  time_from = params[:time_from]
       	  	  date_to = DateTime.strptime(params[:date_to],"%d/%m/%Y")
       	  	  time_to = params[:time_to]
-      	  	  pickup_place = params[:pickup_place]
-      	  	  return_place = params[:return_place]
+              # Retrieve pickup/return place
+							pickup_place, custom_pickup_place, pickup_place_customer_translation,
+							return_place, custom_return_place, return_place_customer_translation = request_pickup_return_place(params)
+							# Retrieve number of adutls and children
 							number_of_adults = params[:number_of_adults]
 							number_of_children = params[:number_of_children]
+							# Retrieve driver age rule
 							driver_age_rule_id = params[:driver_age_rule]
+							# Retrieve sales channel
 							sales_channel_code = params[:sales_channel_code]
 							sales_channel_code = nil if sales_channel_code and sales_channel_code.empty?
 							booking_parameters = true
@@ -46,15 +52,15 @@ module Sinatra
 
 						if @shopping_cart.nil?
 							if booking_parameters
-								booking_pickup_place = ::Yito::Model::Booking::PickupReturnPlace.first(name: pickup_place)
-								booking_return_place = ::Yito::Model::Booking::PickupReturnPlace.first(name: return_place)
       	  	    @shopping_cart = ::Yito::Model::Booking::ShoppingCartRenting.create(
       	  	  					date_from: date_from, time_from: time_from,
       	  	  					date_to: date_to, time_to: time_to,
 												pickup_place: pickup_place,
-												pickup_place_customer_translation: booking_pickup_place ? booking_pickup_place.translate(session[:locale]).name : pickup_place,
+												pickup_place_customer_translation: pickup_place_customer_translation,
+												custom_pickup_place: custom_pickup_place,
 												return_place: return_place,
-												return_place_customer_translation: booking_return_place ? booking_return_place.translate(session[:locale]).name : return_place,
+												return_place_customer_translation: return_place_customer_translation,
+												custom_return_place: custom_return_place,
 								        number_of_adults: number_of_adults, number_of_children: number_of_children,
 												driver_age_rule_id: driver_age_rule_id,
 												sales_channel_code: sales_channel_code)
@@ -67,7 +73,8 @@ module Sinatra
 								@shopping_cart.change_selection_data(
 										date_from, time_from,
 										date_to, time_to,
-										pickup_place, return_place,
+										pickup_place, custom_pickup_place,
+										return_place, custom_return_place,
 										number_of_adults, number_of_children,
 										driver_age_rule_id, sales_channel_code)
 							end
@@ -80,9 +87,9 @@ module Sinatra
               SystemConfiguration::Variable.get_value('booking.min_days', '1').to_i)
             locals.store(:booking_item_family, booking_item_family)
             locals.store(:booking_item_type,
-              SystemConfiguration::Variable.get_value('booking.item_type')) 
-            locals.store(:booking_allow_custom_pickup_return_place,
-              SystemConfiguration::Variable.get_value('booking.allow_custom_pickup_return_place', 'false').to_bool)
+              SystemConfiguration::Variable.get_value('booking.item_type'))
+						locals.store(:pickup_return_places_configuration,
+												 SystemConfiguration::Variable.get_value('booking.pickup_return_places_configuration', 'list'))
 						locals.store(:booking_driver_min_age_rules,
 						  SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
 

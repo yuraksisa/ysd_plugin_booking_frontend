@@ -14,6 +14,9 @@ front_end_reservation:
   date_to: Data de devolució
   time_to: Hora de devolució
   driver_age: Edat del conductor
+  another_place: Altre lloc
+  pickup_place_address: Si us plau, escrigui l'adreça lliurament
+  return_place_address: Si us plau, escrigui l'adreça devolució
   update: Actualitzar
   product: Producte
   select: Seleccionar
