@@ -250,7 +250,19 @@ module Sinatra
             shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_date')
             shopping_cart.driver_driving_license_country = request_data['driver_driving_license_country'] if request_data.has_key?('driver_driving_license_country')
             shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_expiration_date')
-            shopping_cart.calculate_cost # Calculate cost using driver real date of birth and driving license date
+
+            booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
+            if booking_item_family and booking_item_family.driver_date_of_birth
+              shopping_cart.driver_age = BookingDataSystem::Booking.completed_years(shopping_cart.date_from,
+                                                                                    shopping_cart.driver_date_of_birth) unless shopping_cart.driver_date_of_birth.nil?
+            end
+            if booking_item_family and booking_item_family.driver_license
+              shopping_cart.driver_driving_license_years = BookingDataSystem::Booking.completed_years(shopping_cart.date_from,
+                                                                                                      shopping_cart.driver_driving_license_date) unless shopping_cart.driver_driving_license_date.nil?
+            end
+
+            shopping_cart.calculate_cost(true, true) # Calculate cost using driver real date of birth and driving license date
+
             if shopping_cart.driver_address.nil?
               shopping_cart.driver_address = LocationDataSystem::Address.new
             end

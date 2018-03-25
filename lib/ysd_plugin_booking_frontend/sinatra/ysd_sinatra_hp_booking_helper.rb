@@ -315,7 +315,7 @@ module Sinatra
         )
 
         booking_summary.merge!(
-            summary_status: "#{booking.customer_name} #{booking.customer_surname}, <strong>#{t.booking.title(t[:booking][:state][booking.status.to_sym]).to_s.downcase}</strong>"
+            summary_status: "#{booking.customer_name} #{booking.customer_surname}, <strong>#{t.front_end_reservation.booking_detail_title(t[:front_end_reservation][:booking_detail_state][booking.status.to_sym]).to_s.downcase}</strong>"
         )
       end
 
