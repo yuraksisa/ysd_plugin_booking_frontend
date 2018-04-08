@@ -12,8 +12,11 @@ module Sinatra
          #
          app.get '/api/booking-activities/frontend/activities' do
 
-           activities = ::Yito::Model::Booking::Activity.all(active: true, web_public: true)
-
+           activities = ::Yito::Model::Booking::Activity.all(active: true, web_public: true).map do |activity|
+                          t_activity = activity.translate(session[:locale])
+                          t_activity.alias = format_url_with_language(t_activity.alias)
+                          t_activity
+                        end
            status 200
            content_type :json
            activities.to_json(only: [:id, :name, :short_description, :from_price, :from_price_offer, :photo_url_medium,
@@ -28,11 +31,15 @@ module Sinatra
          #
          app.get '/api/booking-activities/frontend/activities/:id' do
 
-           activity = ::Yito::Model::Booking::Activity.get(params[:id])
-
-           status 200
-           content_type :json
-           activity.to_json
+           if activity = ::Yito::Model::Booking::Activity.get(params[:id])
+             t_activity = activity.translate(session[:locale])
+             t_activity.alias = format_url_with_language(activity.alias)
+             status 200
+             content_type :json
+             t_activity.to_json
+           else
+             status 404
+           end
 
          end
 
@@ -50,7 +57,7 @@ module Sinatra
                if params[:activity_date_id] # Multiple dates activity
 
                elsif params[:date] and params[:turn] # Cyclic activity
-                 tickets = activity.tickets(Date.strptime(params[:date],'%d/%m/%Y'), params[:turn])
+                 tickets = activity.translate(session[:locale]).tickets(parse_date(params[:date], session[:locale]), params[:turn])
                end
                
                status 200
@@ -88,7 +95,9 @@ module Sinatra
            # Build the products hash with full information about the products in the shopping cart
            unless shopping_cart.nil?
              products = ::Yito::Model::Booking::Activity.all(fields: [:id, :code, :name, :short_description, :description] ,
-                                                             conditions: {code: (shopping_cart.shopping_cart_items.map { |item| item.item_id}).uniq} )
+                                                             conditions: {code: (shopping_cart.shopping_cart_items.map { |item| item.item_id}).uniq} ).map do |activity|
+                          activity.translate(session[:locale])
+                        end
              domain = SystemConfiguration::Variable.get_value('site.domain')
              products.each do |product|
                products_hash.store(product.code, {id: product.id, code: product.code, name: product.name,
@@ -163,7 +172,7 @@ module Sinatra
                end
 
                if activity.occurence == :cyclic
-                 date= model_request[:date]
+                 date= parse_date(model_request[:date], session[:locale])
                  time= model_request[:turn]
                end
 

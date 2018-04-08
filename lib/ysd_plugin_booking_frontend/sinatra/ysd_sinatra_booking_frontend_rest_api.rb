@@ -245,11 +245,11 @@ module Sinatra
             shopping_cart.driver_name = request_data['driver_name'] if request_data.has_key?('driver_name')
             shopping_cart.driver_surname = request_data['driver_surname']  if request_data.has_key?('driver_surname')
             shopping_cart.driver_document_id = request_data['driver_document_id'] if request_data.has_key?('driver_document_id')
-            shopping_cart.driver_date_of_birth = parse_date(request_data['driver_date_of_birth'], shopping_cart.customer_language)  if request_data.has_key?('driver_date_of_birth')
+            shopping_cart.driver_date_of_birth = parse_date(request_data['driver_date_of_birth'], shopping_cart.customer_language)  if request_data.has_key?('driver_date_of_birth') and !request_data['driver_date_of_birth'].nil? and !request_data['driver_date_of_birth'].to_s.empty?
             shopping_cart.driver_driving_license_number = request_data['driver_driving_license_number'] if request_data.has_key?('driver_driving_license_number')
-            shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_date')
+            shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_date') and !request_data['driver_driving_license_date'].nil? and !request_data['driver_driving_license_date'].to_s.empty?
             shopping_cart.driver_driving_license_country = request_data['driver_driving_license_country'] if request_data.has_key?('driver_driving_license_country')
-            shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_expiration_date')
+            shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_expiration_date') and !request_data['driver_driving_license_expiration_date'].nil? and !request_data['driver_driving_license_expiration_date'].to_s.empty?
 
             booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
             if booking_item_family and booking_item_family.driver_date_of_birth
@@ -277,15 +277,15 @@ module Sinatra
             shopping_cart.additional_driver_1_name = request_data['additional_driver_1_name'] if request_data.has_key?('additional_driver_1_name')
             shopping_cart.additional_driver_1_surname = request_data['additional_driver_1_surname'] if request_data.has_key?('additional_driver_1_surname')
             shopping_cart.additional_driver_1_document_id = request_data['additional_driver_1_document_id'] if request_data.has_key?('additional_driver_1_document_id')
-            shopping_cart.additional_driver_1_document_id_date = parse_date(request_data['additional_driver_1_document_id_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_date')
-            shopping_cart.additional_driver_1_document_id_expiration_date = parse_date(request_data['additional_driver_1_document_id_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_expiration_date')
+            shopping_cart.additional_driver_1_document_id_date = parse_date(request_data['additional_driver_1_document_id_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_date') and !request_data['additional_driver_1_document_id_date'].nil? and !request_data['additional_driver_1_document_id_date'].to_s.empty?
+            shopping_cart.additional_driver_1_document_id_expiration_date = parse_date(request_data['additional_driver_1_document_id_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_expiration_date') and !request_data['additional_driver_1_document_id_expiration_date'].nil? and !request_data['additional_driver_1_document_id_expiration_date'].to_s.empty?
             shopping_cart.additional_driver_1_origin_country = request_data['additional_driver_1_origin_country'] if request_data.has_key?('additional_driver_1_origin_country')
-            shopping_cart.additional_driver_1_date_of_birth = parse_date(request_data['additional_driver_1_date_of_birth'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_date_of_birth')
+            shopping_cart.additional_driver_1_date_of_birth = parse_date(request_data['additional_driver_1_date_of_birth'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_date_of_birth') and !request_data['additional_driver_1_date_of_birth'].nil? and !request_data['additional_driver_1_date_of_birth'].to_s.empty?
             shopping_cart.additional_driver_1_age = age(Date.today, shopping_cart.additional_driver_1_date_of_birth) if !shopping_cart.additional_driver_1_date_of_birth.nil?
             shopping_cart.additional_driver_1_driving_license_number = request_data['additional_driver_1_driving_license_number'] if request_data.has_key?('additional_driver_1_driving_license_number')
-            shopping_cart.additional_driver_1_driving_license_date = parse_date(request_data['additional_driver_1_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_date')
+            shopping_cart.additional_driver_1_driving_license_date = parse_date(request_data['additional_driver_1_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_date') and !request_data['additional_driver_1_driving_license_date'].nil? and !request_data['additional_driver_1_driving_license_date'].to_s.empty?
             shopping_cart.additional_driver_1_driving_license_country = request_data['additional_driver_1_driving_license_country'] if request_data.has_key?('additional_driver_1_driving_license_country')
-            shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_expiration_date')
+            shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_expiration_date') and !request_data['additional_driver_1_driving_license_expiration_date'].nil? and !request_data['additional_driver_1_driving_license_expiration_date'].to_s.empty?
             shopping_cart.additional_driver_1_phone = request_data['additional_driver_1_phone'] if request_data.has_key?('additional_driver_1_phone')
             shopping_cart.additional_driver_1_email = request_data['additional_driver_1_email'] if request_data.has_key?('additional_driver_1_email')
             # Flight
@@ -296,8 +296,15 @@ module Sinatra
             begin
               shopping_cart.save
             rescue DataMapper::SaveFailureError => error
-              logger.error "Error saving shopping_cart #{error}"
-              logger.error "Error details: #{error.resource.errors.full_messages.inspect}"
+              unless shopping_cart.valid?
+                logger.error "Error saving shopping cart : #{shopping_cart.errors.inspect} -- #{shopping_cart.errors.full_messages.inspect}"
+                halt 422, {error: shopping_cart.errors.full_messages}.to_json
+              end
+              if shopping_cart.driver_address and !shopping_cart.driver_address.valid?
+                logger.error "Error saving shopping cart - driver address : #{shopping_cart.driver_address.errors.inspect} -- #{shopping_cart.driver_address.errors.full_messages.inspect}"
+                halt 422, {error: shopping_cart.driver_address.errors.full_messages}.to_json
+              end
+              logger.error "Error during checkout process. Details: #{error.resource.inspect} #{error.resource.errors.full_messages.inspect}"
               halt 422, {error: error.resource.errors.full_messages}.to_json
             end
 

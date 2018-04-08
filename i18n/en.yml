@@ -82,3 +82,69 @@ front_end_reservation:
     data_of_the_participants: Data of the participants in the activities
     participant: Participant
     update_data_button: Update data
+front_end_activities:
+  activities_title: Activities & excursions
+  from: From
+  book: Book now
+  activity_page:
+    reservation_title: Reservation
+    cyclic_choose_date_title: Select date
+    cyclic_choose_turn_title: Select turn
+    morning_turns: Morning
+    afternoon_turns: Afternoon
+    evening_turns: Evening
+    no_turns: Sorry, there are no shifts this day
+    choose_tickets: Select tickets
+    no_tickets_selected: You have not selected any tickets
+    book: Book Now
+  checkout_page:
+    activities_information_title: Checkout
+    summary_title: Reservation detail
+    summary_price: Price
+    summary_total: Total
+    customer_title: Customer
+    field_customer_name: Name
+    field_customer_name_mandatory: Name is required
+    field_customer_surname: Surname
+    field_customer_surname_mandatory: Surname is required
+    field_customer_email: Email
+    field_customer_email_mandatory: Email is required
+    field_customer_email_confirm: Email confirmation
+    field_customer_main_phone_number: Main telephone number
+    field_customer_alternative_phone_number: Alternative telephone number
+    additional_information_title: Additional data
+    field_comments: Comments
+    payment_title: Payment
+    credit_card_payment: Credit card
+    paypal_payment: Paypal
+    request_reservation: Request reservation
+    pay: Pay now
+    conditions_read: "I've read and I accept the <a href=\"%1\" target=\"blank\">conditions</a>"
+    form_errors: Please, check the form.
+    conditions_not_read: Sorry, you have not read the conditions
+    payment_group:
+      title: Payment
+      deposit_title: To confirm the order requires a deposit of %1% of the total amount of the order
+      total_title: To confirm the order is required to pay the total amount of the order
+  order_page:
+    page_title: Order %1
+    order_detail_title: Your order is %1
+    order_detail_state:
+      pending_confirmation: Pending
+      confirmed: Confirmed
+      cancelled: Canceled
+    order_product_detail_title: Order detail
+    order_detail_customer_title: Customer data
+    order_detail_customer_name: Full name
+    order_detail_customer_email: Email
+    order_detail_customer_phone_number: Phone numbers
+    summary_title: Order detail
+    summary_price: Price
+    summary_total: Total
+    summary_total_paid: Paid
+    summary_total_pending: Pending
+    payment_group:
+      title: Payment
+      deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% %2 del importe total del pedido
+      pending_title: Puede proceder al pago del importe pendiente %1 del pedido
+      total_title: To confirm the order is required to pay the total amount of the order

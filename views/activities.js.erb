@@ -2,10 +2,14 @@ require(['jquery','ysdtemplate'],
     function($,  tmpl) {
         model = { // THE MODEL
 
+            requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
             activities: null,
 
             loadActivities: function () {
                 var url = '/api/booking-activities/frontend/activities';
+                if (model.requestLanguage != null) {
+                    url += '?lang='+model.requestLanguage;
+                }
                 $.ajax({
                     type: 'GET',
                     url: url,

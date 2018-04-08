@@ -5,6 +5,7 @@ require(['jquery','ysdtemplate',
 
         model = { // THE MODEL
 
+            requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
             id: <%= @activity_id%>,
             activity: null,
             tickets: null,
@@ -18,6 +19,9 @@ require(['jquery','ysdtemplate',
 
             loadActivity: function () { /* Load the activity */
                 var url = '/api/booking-activities/frontend/activities/'+model.id;
+                if (model.requestLanguage != null) {
+                    url += '?lang='+model.requestLanguage;
+                }
                 $.ajax({
                     type: 'GET',
                     url: url,
