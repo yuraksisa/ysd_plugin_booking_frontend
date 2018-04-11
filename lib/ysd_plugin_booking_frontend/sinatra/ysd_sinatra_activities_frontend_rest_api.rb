@@ -44,6 +44,27 @@ module Sinatra
          end
 
          #
+         # GET /api/booking-activities/frontend/activities/:id/dates
+         #
+         # Get the activity dates
+         #
+         app.get '/api/booking-activities/frontend/activities/:id/dates' do
+
+           if activity = ::Yito::Model::Booking::Activity.get(params[:id]) and
+              activity.occurence == :multiple_dates
+             # TODO Take into account real occupation
+             activity_dates = ::Yito::Model::Booking::ActivityDate.all(conditions: {:date_from.gte => Date.today},
+                                                                       order: [:date_from.asc])
+             status 200
+             content_type :json
+             activity_dates.to_json({only: [:id, :description]})
+           else
+             status 404
+           end
+
+         end
+
+         #
          # GET /api/booking-activities/frontend/activities/:id/tickets
          #
          # Get the tickets that can be sold for the activity
@@ -55,9 +76,13 @@ module Sinatra
              if activity.active
                tickets = nil
                if params[:activity_date_id] # Multiple dates activity
-
+                 if activity_date = ::Yito::Model::Booking::ActivityDate.get(params[:activity_date_id])
+                   tickets = activity.translate(session[:locale]).tickets(activity_date.date_from, activity_date.time_from)
+                 end
                elsif params[:date] and params[:turn] # Cyclic activity
                  tickets = activity.translate(session[:locale]).tickets(parse_date(params[:date], session[:locale]), params[:turn])
+               else
+                 tickets = activity.translate(session[:locale]).tickets(activity.date_from, activity.time_from)
                end
                
                status 200
@@ -100,11 +125,15 @@ module Sinatra
                         end
              domain = SystemConfiguration::Variable.get_value('site.domain')
              products.each do |product|
+               full_photo = nil
+               full_photo = product.photo_url_full.match(/^https?:/) ? product.photo_url_full : File.join(domain, product.photo_url_full) if product.photo_url_full
+               medium_photo = nil
+               medium_photo = product.photo_url_medium.match(/^https?:/) ? product.photo_url_medium : File.join(domain, product.photo_url_medium) if product.photo_url_medium
                products_hash.store(product.code, {id: product.id, code: product.code, name: product.name,
                                                   short_description: product.short_description,
                                                   description: product.description,
-                                                  full_photo: product.photo_url_full.match(/^https?:/) ? product.photo_url_full : File.join(domain, product.photo_url_full),
-                                                  medium_photo: product.photo_url_medium.match(/^https?:/) ? product.photo_url_medium : File.join(domain, product.photo_url_medium)})
+                                                  full_photo: full_photo,
+                                                  medium_photo: medium_photo})
              end
            end
            
@@ -162,7 +191,11 @@ module Sinatra
                    request_customer_height: activity.request_customer_height,
                    request_customer_weight: activity.request_customer_weight,
                    request_customer_allergies_intolerances: activity.request_customer_allergies_intolerances,
-                   uses_planning_resources: activity.uses_planning_resources
+                   uses_planning_resources: activity.uses_planning_resources,
+                   custom_payment_allow_deposit_payment: activity.custom_payment_allow_deposit_payment,
+                   custom_payment_deposit: activity.custom_payment_deposit,
+                   custom_payment_allow_total_payment: activity.custom_payment_allow_total_payment,
+                   allow_request_reservation: activity.allow_request_reservation
                }
                # Create the shopping cart if not exist
                if shopping_cart.nil?
@@ -174,6 +207,16 @@ module Sinatra
                if activity.occurence == :cyclic
                  date= parse_date(model_request[:date], session[:locale])
                  time= model_request[:turn]
+               elsif activity.occurence == :multiple_dates
+                 if activity_date = ::Yito::Model::Booking::ActivityDate.get(model_request[:activity_date_id])
+                   date = activity_date.date_from
+                   time = activity_date.time_from
+                 else
+                   halt 422, {error: 'date is not setup for the activity'}.to_json
+                 end
+               elsif activity.occurence == :one_time
+                 date = activity.date_from
+                 time = activity.time_from
                end
 
                # Appends the items (three kind of rates)
@@ -229,7 +272,6 @@ module Sinatra
              halt 422, {error: 'Invalid request. Activity not found'}
            end
              
-           
 
          end
 

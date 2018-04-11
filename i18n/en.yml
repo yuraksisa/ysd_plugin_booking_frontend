@@ -88,6 +88,7 @@ front_end_activities:
   book: Book now
   activity_page:
     reservation_title: Reservation
+    multiple_dates_choose_date_title: Select date
     cyclic_choose_date_title: Select date
     cyclic_choose_turn_title: Select turn
     morning_turns: Morning

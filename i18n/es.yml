@@ -88,6 +88,7 @@ front_end_activities:
   book: Reservar
   activity_page:
     reservation_title: Reserva
+    multiple_dates_choose_date_title: Seleccionar la fecha
     cyclic_choose_date_title: Seleccionar la fecha
     cyclic_choose_turn_title: Seleccionar el horario
     no_turns: Lo sentimos, no hay turnos este día
@@ -147,4 +148,4 @@ front_end_activities:
       title: Pago
       deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% %2 del importe total del pedido
       pending_title: Puede proceder al pago del importe pendiente %1 del pedido
-      total_title: Para confirmar el pedido se requiere el importe del total del pedido
+      total_title: Para confirmar el pedido se requiere el pago del importe del total del pedido
