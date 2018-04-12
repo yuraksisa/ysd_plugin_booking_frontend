@@ -115,7 +115,6 @@ module Sinatra
             booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
             shopping_cart.set_item(product_code, quantity, booking_item_family.multiple_items?)
             content_type 'json'
-            #setup_session_locale_from_params
             shopping_cart_to_json(shopping_cart)
           else
             logger.error "Shopping cart does not exist"

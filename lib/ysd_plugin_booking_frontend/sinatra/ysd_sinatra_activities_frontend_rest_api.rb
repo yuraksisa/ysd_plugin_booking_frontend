@@ -53,7 +53,8 @@ module Sinatra
            if activity = ::Yito::Model::Booking::Activity.get(params[:id]) and
               activity.occurence == :multiple_dates
              # TODO Take into account real occupation
-             activity_dates = ::Yito::Model::Booking::ActivityDate.all(conditions: {:date_from.gte => Date.today},
+             activity_dates = ::Yito::Model::Booking::ActivityDate.all(conditions: {:activity_id => activity.id,
+                                                                                    :date_from.gte => Date.today},
                                                                        order: [:date_from.asc])
              status 200
              content_type :json
@@ -81,7 +82,7 @@ module Sinatra
                  end
                elsif params[:date] and params[:turn] # Cyclic activity
                  tickets = activity.translate(session[:locale]).tickets(parse_date(params[:date], session[:locale]), params[:turn])
-               else
+               else # One time activity
                  tickets = activity.translate(session[:locale]).tickets(activity.date_from, activity.time_from)
                end
                
