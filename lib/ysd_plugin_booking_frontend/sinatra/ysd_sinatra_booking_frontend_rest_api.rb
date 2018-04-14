@@ -349,8 +349,6 @@ module Sinatra
 
           shopping_cart = nil
 
-          p "shopping cart : #{session[:shopping_cart_renting_id]}"
-
           # Retrieve the shopping cart
           if params[:free_access_id]
             shopping_cart = ::Yito::Model::Booking::ShoppingCartRenting.get_by_free_access_id(params[:free_access_id])
@@ -394,7 +392,7 @@ module Sinatra
 
           # TODO Check parameters
           date_from = time_from = date_to = time_to = pickup_place = return_place = number_of_adults = number_of_children =
-              driver_age_rule_id = sales_channel_code = nil
+              driver_age_rule_id = sales_channel_code = promotion_code = nil
 
           if model_request[:date_from] && model_request[:date_to]
             # Retrieve date/time from - to
@@ -413,6 +411,9 @@ module Sinatra
             # Retrieve sales channel
             sales_channel_code = model_request[:sales_channel_code] if model_request.has_key?(:sales_channel_code)
             sales_channel_code = nil if sales_channel_code and sales_channel_code.empty?
+            # Retrieve promotion code
+            promotion_code = model_request[:promotion_code] if model_request.has_key?(:promotion_code)
+            promotion_code = nil if promotion_code and promotion_code.empty?
           else
             content_type :json
             status 422
@@ -435,7 +436,7 @@ module Sinatra
                                                 pickup_place, custom_pickup_place,
                                                 return_place, custom_return_place,
                                                 number_of_adults, number_of_children,
-                                                driver_age_rule_id, sales_channel_code)
+                                                driver_age_rule_id, sales_channel_code, promotion_code)
             if shopping_cart.customer_language != session[:locale]
               shopping_cart.change_customer_language(session[:locale])
             end
@@ -453,6 +454,7 @@ module Sinatra
                 number_of_children: number_of_children,
                 driver_age_rule_id: driver_age_rule_id,
                 sales_channel_code: sales_channel_code,
+                promotion_code: promotion_code,
                 customer_language: session[:locale])
             session[:shopping_cart_renting_id] = shopping_cart.id
           end
@@ -543,7 +545,7 @@ module Sinatra
                   end
                 end
               rescue DataMapper::SaveFailureError => error
-                p "Error updating order. #{@booking.inspect} #{@booking.errors.full_messages.inspect}"
+                logger.error "Error updating order. #{@booking.inspect} #{@booking.errors.full_messages.inspect}"
                 raise error
               end
             end

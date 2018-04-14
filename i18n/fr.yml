@@ -12,6 +12,8 @@ front_end_reservation:
   date_to: Return Date
   time_to: Return Time
   driver_age: Driver's age
+  promotion_code: Promotion Code
+  promotion_code_not_valid: The promotion code is not valid
   another_place: Another place
   pickup_place_address: Pick-up address
   return_place_address: Return address

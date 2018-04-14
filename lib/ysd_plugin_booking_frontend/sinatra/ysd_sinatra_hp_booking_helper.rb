@@ -336,7 +336,9 @@ module Sinatra
                                   full_information: booking_item_family.frontend == :shopcart,
                                   product_code: nil, # All products
                                   web_public: true,
-                                  sales_channel_code: shopping_cart.sales_channel_code}
+                                  sales_channel_code: shopping_cart.sales_channel_code,
+                                  apply_promotion_code: (shopping_cart.promotion_code and !shopping_cart.promotion_code.empty?) ? true : false,
+                                  promotion_code: shopping_cart.promotion_code}
         p_json = ::Yito::Model::Booking::BookingCategory.search(shopping_cart.date_from, shopping_cart.date_to,
                                                                 shopping_cart.days, renting_search_options).to_json
 

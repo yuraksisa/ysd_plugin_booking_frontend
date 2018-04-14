@@ -40,6 +40,9 @@ module Sinatra
 							# Retrieve sales channel
 							sales_channel_code = params[:sales_channel_code]
 							sales_channel_code = nil if sales_channel_code and sales_channel_code.empty?
+							# Retrieve promotion code
+							promotion_code = params[:promotion_code]
+							promotion_code = nil if promotion_code and promotion_code.empty?
 							booking_parameters = true
 						end
 
@@ -63,7 +66,8 @@ module Sinatra
 												custom_return_place: custom_return_place,
 								        number_of_adults: number_of_adults, number_of_children: number_of_children,
 												driver_age_rule_id: driver_age_rule_id,
-												sales_channel_code: sales_channel_code)
+												sales_channel_code: sales_channel_code,
+												promotion_code: promotion_code)
 							else
 								# TODO create default values or redirect home?
 							end
@@ -76,7 +80,7 @@ module Sinatra
 										pickup_place, custom_pickup_place,
 										return_place, custom_return_place,
 										number_of_adults, number_of_children,
-										driver_age_rule_id, sales_channel_code)
+										driver_age_rule_id, sales_channel_code, promotion_code)
 							end
 						end
 

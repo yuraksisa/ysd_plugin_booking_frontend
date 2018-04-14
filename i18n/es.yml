@@ -14,6 +14,8 @@ front_end_reservation:
   date_to: Fecha de devolución
   time_to: Hora de devolución
   driver_age: Edad del conductor
+  promotion_code: Código de promoción
+  promotion_code_not_valid: El código de promoción no es válido
   another_place: Otro lugar
   pickup_place_address: Por favor, escriba la dirección entrega
   return_place_address: Por favor, escriba la dirección devolución
