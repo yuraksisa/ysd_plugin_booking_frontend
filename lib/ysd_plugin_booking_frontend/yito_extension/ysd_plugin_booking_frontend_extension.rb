@@ -63,8 +63,11 @@ module YsdPluginBookingFrontend
       young_driver_rules = SystemConfiguration::Variable.get_value('booking.driver_min_age.rules', 'false').to_bool
       young_driver_rule_definition = ::Yito::Model::Booking::BookingDriverAgeRuleDefinition.get(SystemConfiguration::Variable.get_value('booking.driver_min_age.rule_definition'))
       addons = app.mybooking_addons
-      addon_promotion_code = addons and addons.has_key?(:addon_promotion_code) and addons[:addon_promotion_code]
-
+      addon_promotion_code = if addons and addons.has_key?(:addon_promotion_code) and addons[:addon_promotion_code]
+                               addons[:addon_promotion_code]
+                             else
+                               false
+                             end
       locals = {}
       locals.store(:booking_min_days,
         SystemConfiguration::Variable.get_value('booking.min_days', '1').to_i)
