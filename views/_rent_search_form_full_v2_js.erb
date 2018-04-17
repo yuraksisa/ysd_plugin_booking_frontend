@@ -1,7 +1,8 @@
 <script type="text/javascript">
 
 require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
-	     'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es', 
+	     'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
+       'jquery.ui.datepicker-en','jquery.ui.datepicker-it','jquery.ui.datepicker-ca',
 	     'jquery.ui.datepicker.validation', 'datejs',
 	     'bootstrap', 'bootstrap.select'], 
 	     function($, RemoteDataSource, SelectSelector) {
@@ -9,6 +10,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
   selectorModel = {
       requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
       minDays   : <%=booking_min_days%>,
+      allowCustomPlaces : <%=pickup_return_places_configuration == 'list+custom'%>,
+      pickupReturnPlaces: <%if booking_item_family.pickup_return_place%>true<%else%>false<%end%>,
+      timeToFrom: <%if booking_item_family.time_to_from%>true<%else%>false<%end%>
   };
 
   selectorController = {
@@ -27,6 +31,37 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         $('#date_to').datepicker('option', 'minDate', dateTo);
 
       },
+
+      pickupPlaceChanged: function() {
+
+         if (selectorModel.allowCustomPlaces) {
+             if ($('#pickup_place').val() == 'other') {
+                 $('input[name=custom_pickup_place]').val('true');
+                 $('#another_pickup_place_group').show();
+             }
+             else {
+                 $('input[name=custom_pickup_place]').val('false');
+                 $('#another_pickup_place_group').hide();
+             }
+         }
+
+      },
+
+      returnPlaceChanged: function() {
+
+          if (selectorModel.allowCustomPlaces) {
+              if ($('#return_place').val() == 'other') {
+                  $('input[name=custom_return_place]').val('true');
+                  $('#another_return_place_group').show();
+              }
+              else {
+                  $('input[name=custom_return_place]').val('false');
+                  $('#another_return_place_group').hide();
+              }
+          }
+
+      },
+
       formSearchClick: function() {
         <% if booking_item_family.driver and driver_age_rules and driver_age_rule_definition and !driver_age_rule_definition.driver_age_rules.empty?  %>
         if ($('#driver_age_rule option:selected').attr('allowed') == 'false') {
@@ -45,28 +80,61 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
   	init: function() {
 
   		this.setupForm();
+  		this.setupValidation();
   	  this.setupDateControls();
-  		this.loadPickupReturnPlaces();
-  		this.loadPickupReturnTime();
+  	  if (selectorModel.pickupReturnPlaces) {
+          this.loadPickupReturnPlaces();
+      }
+      if (selectorModel.timeToFrom) {
+          this.loadPickupReturnTime();
+      }
 
   	},
 
+    setupValidation: function() {
+
+  	    $('form[name=search_form]').validate({
+           rules: {
+               promotion_code: {
+                   remote: {
+                       url: '/api/check-promotion-code',
+                       type: 'post',
+                       data: {
+                           code: function() {
+                               return $('#promotion_code').val();
+                           }
+                       }
+                   }
+               }
+           },
+           messages: {
+               promotion_code: {
+                   remote: "<%=t.front_end_reservation.promotion_code_not_valid%>"
+               }
+           },
+           errorClass : 'text-danger'
+        });
+
+    },
+
     setupForm: function() {
   	  $('#formSearchSubmit').bind('click', function(){
-  	      selectorController.formSearchClick();
+  	      if ($('form[name=search_form]').valid())
+          {
+              selectorController.formSearchClick();
+          }
       })
     },
 
   	setupDateControls: function() {
       
-      $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>" ] );
+      $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>"] );
       var locale = $.datepicker.regional["<%=session[:locale] || 'es'%>"];
 
       $('#date_from').datepicker({numberOfMonths:1, 
           minDate: new Date(), 
           maxDate: new Date().add(365).days(), 
-          dateFormat: 'dd/mm/yy',
-          firstDay: 1}, 
+          dateFormat: 'dd/mm/yy'},
           locale);
       $('#date_from').datepicker('setDate', '+0'); 
 
@@ -90,13 +158,26 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         }
 
         var dataSourcePickupPlaces = new RemoteDataSource(pickupPlacesURL,
-																													{'id':'name','description':'name'});
+																													{'id':'id','description':'name'});
         var pickupPlace = new SelectSelector('pickup_place', 
         		dataSourcePickupPlaces, null, false, '',
-                function() { 
+                function() {
+                  if (selectorModel.allowCustomPlaces) {
+                      $('#pickup_place').append($('<option>', {
+                          value: 'other',
+                          text : '<%=t.front_end_reservation.another_place%>'
+                      }));
+                  }
                 	$('#pickup_place').selectpicker();
                   $('#pickup_place').selectpicker('refresh');
                 } );
+
+        if (selectorModel.allowCustomPlaces) {
+            $('#pickup_place').bind('change', function() {
+               selectorController.pickupPlaceChanged();
+            });
+        }
+
 
         var returnPlacesURL = '/api/booking/frontend/return-places';
         if (selectorModel.requestLanguage != null) {
@@ -104,13 +185,25 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         }
 
         var dataSourceReturnPlaces = new RemoteDataSource(returnPlacesURL,
-																													{'id':'name','description':'name'});
+																													{'id':'id','description':'name'});
         var returnPlace = new SelectSelector('return_place', 
         		dataSourcePickupPlaces, null, false, '',
-                function() { 
+                function() {
+                  if (selectorModel.allowCustomPlaces) {
+                      $('#return_place').append($('<option>', {
+                          value: 'other',
+                          text : '<%=t.front_end_reservation.another_place%>'
+                      }));
+                  }
                 	$('#return_place').selectpicker();
                 	$('#return_place').selectpicker('refresh');
-                } );          
+                } );
+
+        if (selectorModel.allowCustomPlaces) {
+            $('#return_place').bind('change', function() {
+                selectorController.returnPlaceChanged();
+            });
+        }
 
   	},
 

@@ -35,6 +35,26 @@ front_end_reservation:
   field_customer_email_confirm: Confirmar correo electrónico
   field_customer_main_phone_number: Teléfono principal
   field_customer_alternative_phone_number: Teléfono alternativo
+  fieldset_driver: Datos del conductor
+  field_driver_name: Nombre del conductor
+  field_driver_surname: Apellidos del conductor
+  field_driver_date_of_birth: Fecha de nacimiento del conductor
+  field_driver_document_id: Nif o pasaporte del conductor
+  field_driver_driving_license_number: Número del carnet de conducir
+  field_driver_driving_license_date: Fecha expedición carnet de conducir
+  field_driver_driving_license_country: País expedición carnet de conducir
+  fieldset_driver_address: Dirección
+  field_driver_address_street: Calle
+  field_driver_address_number: Número
+  field_driver_address_complement: Complemento (piso/puerta)
+  field_driver_address_city: Ciudad
+  field_driver_address_state: Provincia
+  field_driver_address_country: País
+  field_driver_address_zip: Código Postal
+  fieldset_flight: Vuelo
+  field_flight_company: Compañía
+  field_flight_number: Número de vuelo
+  field_flight_time: Hora prevista
   additional_information_title: Información adicional
   field_comments: Comentarios
   payment_title: Pago

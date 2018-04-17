@@ -1,22 +1,102 @@
 require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         'ysdtemplate',
         'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
-        'jquery.ui.datepicker.validation', 'datejs',
+        'jquery.ui.datepicker.validation','jquery.form', 'datejs',
         'bootstrap', 'bootstrap.select'],
     function($, RemoteDataSource, SelectSelector, tmpl) {
 
         model = { // THE MODEL
             requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
+            orderId: '<%= @order.free_access_id%>',
+            pay: function(payment, paymentMethodId) {
+                // Submit the form to start the payment
+                $.form('/reserva-actividades/pagar',{ id: model.orderId,
+                                                      payment: payment,
+                                                      payment_method_id: paymentMethodId}, 'POST').submit();
+            },
+            update: function() {
+
+                var order = $('form[name=order_information_form]').formParams(false);
+                var order_item_customers = order['order_item_customers'];
+                delete order['order_item_customers'];
+                order['order_item_customers'] = [];
+                for (item in order_item_customers) {
+                    order['order_item_customers'].push(order_item_customers[item]);
+                }
+                if (model.requestLanguage != null) {
+                    url += '?lang='+model.requestLanguage;
+                }
+                var orderJSON = encodeURIComponent(JSON.stringify(order));
+
+                var url = '/api/booking-activities/frontend/order/' + this.orderId;
+
+                $.ajax({
+                    type: 'PUT',
+                    url : url,
+                    data: orderJSON,
+                    dataType : 'json',
+                    contentType : 'application/json; charset=utf-8',
+                    crossDomain: true,
+                    success: function(data, textStatus, jqXHR) {
+                        view.update('order_updated')
+                    },
+                    error: function(data, textStatus, jqXHR) {
+                        alert('Error actualizando pedido');
+                    }
+                });
+
+            }
         };
 
         controller = { // THE CONTROLLER
-
+            btnPayClick: function() {
+                if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined') {
+                    alert('Debe indicar forma de pago');
+                }
+                else {
+                  <% if @order.can_pay_deposit? %>
+                  var payment = 'deposit';
+                  <% elsif @order.can_pay_pending? %>
+                  var payment = 'pending';
+                  <% elsif @order.can_pay_total? %>
+                  var payment = 'total';
+                  <% end %>
+                  var paymentMethodId = $('#accordion a').not('.collapsed').attr('data-payment-method');
+                  model.pay(payment, paymentMethodId);
+                }
+            },
+            btnUpdateClick: function() {
+                model.update();
+            }
         };
 
         view = { // THE VIEW
 
             init: function() {
-
+                this.setupEvents();
+            },
+            setupEvents: function() {
+                $('#btn_pay').bind('click', function(){
+                    controller.btnPayClick();
+                });
+                $('#btn_update_order').bind('click', function(){
+                    controller.btnUpdateClick();
+                });
+            },
+            update: function(action) {
+                switch (action) {
+                    case 'order_updated':
+                        $.toast({
+                            heading: 'Actualización de datos',
+                            text: 'Los datos se han actualizado correctamente',
+                            position: 'top-right',
+                            bgColor: 'rgb(56, 154, 56)',
+                            textColor: 'white',
+                            loader: false,
+                            stack: false
+                        });
+                        break;
+                }
             }
 
         };

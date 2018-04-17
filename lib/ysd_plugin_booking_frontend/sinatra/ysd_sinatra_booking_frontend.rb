@@ -99,8 +99,14 @@ module Sinatra
 
       	  	# Load the page
 						title = booking_item_family.multiple_items? ? t.front_end_reservation.choose_products_page_title : t.front_end_reservation.choose_product_page_title
+
 						page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_choose_product" : :rent_reservation_choose_product
-      	    load_page(page, {page_title: title, locals: locals})
+						page_options = {page_title: title, locals: locals, cache: false}
+
+						default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+						page_options.store(:custom_js, 'rent_reservation_choose_product') unless default_js
+
+      	    load_page(page, page_options)
 
         end
 
@@ -125,8 +131,15 @@ module Sinatra
 						@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
 						# Load the page
+            title = t.front_end_reservation.complete_reservation_page_title
+
 						page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_complete" : :rent_reservation_complete
-      	  	load_page(page, {page_title: t.front_end_reservation.complete_reservation_page_title , locals: locals})
+            page_options = {page_title: title, locals: locals, cache: false}
+
+            default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+            page_options.store(:custom_js, 'rent_reservation_complete') unless default_js
+
+      	  	load_page(page, page_options)
 
       	  end
       	end
@@ -187,8 +200,16 @@ module Sinatra
 							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
 
 							# Load the page
+              title = t.front_end_reservation.summary_page_title(@booking.id)
+
 							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'rent_reservation_summary') unless default_js
+
+              load_page(page, page_options)
+
 						else
 							status 404
 						end
@@ -218,8 +239,16 @@ module Sinatra
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
 							# Load the page
-							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
+              title = t.front_end_reservation.summary_page_title(@booking.id)
+
+              page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'rent_reservation_summary') unless default_js
+
+              load_page(page, page_options)
+
 						else
 							status 404
 						end
@@ -245,8 +274,15 @@ module Sinatra
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
 							# Load the page
-							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
+              title = t.front_end_reservation.summary_page_title(@booking.id)
+
+              page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'rent_reservation_summary') unless default_js
+
+              load_page(page, page_options)
 						else
 							status 404
 						end
@@ -271,8 +307,15 @@ module Sinatra
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
 							# Load the page
-							page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
-							load_page page, {page_title: t.front_end_reservation.summary_page_title(@booking.id), locals: locals, cache: false}
+              title = t.front_end_reservation.summary_page_title(@booking.id)
+
+              page = settings.frontend_skin ? "#{settings.frontend_skin}_rent_reservation_summary" : :rent_reservation_summary
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'rent_reservation_summary') unless default_js
+
+              load_page(page, page_options)
 						else
 							status 404
 						end

@@ -1,7 +1,7 @@
-require(['jquery','ysdtemplate',
+require(['jquery','ysdtemplate', 'YSDRemoteDataSource','YSDSelectSelector',
         'jquery.ui', 'jquery.ui.datepicker-es', 'jquery.ui.datepicker.validation', 'jquery.validate',
         'bootstrap', 'bootstrap.select'],
-    function($,  tmpl) {
+    function($,  tmpl, RemoteDataSource, SelectSelector) {
 
         model = { // THE MODEL
 
@@ -16,6 +16,8 @@ require(['jquery','ysdtemplate',
             cyclicNightTurns: null,
             cyclicDate: null,
             cyclicTurn: null,
+            // Multiple dates date
+            multipleDatesActivityDateId: null,
 
             loadActivity: function () { /* Load the activity */
                 var url = '/api/booking-activities/frontend/activities/'+model.id;
@@ -44,8 +46,33 @@ require(['jquery','ysdtemplate',
 
                 var url = '/api/booking-activities/frontend/activities/'+this.activity.id+'/tickets';
 
+                var urlParams = null;
+
+                if (model.requestLanguage != null) {
+                    urlParams = '?lang='+model.requestLanguage;
+                }
+
                 if (this.activity.occurence === 'cyclic') {
-                  url+='?date='+this.cyclicDate+'&turn='+this.cyclicTurn;
+                  if (urlParams == null) {
+                      urlParams = '?';
+                  }
+                  else {
+                      urlParams += '&';
+                  }
+                  urlParams += 'date='+this.cyclicDate+'&turn='+this.cyclicTurn;
+                }
+                else if (this.activity.occurence === 'multiple_dates') {
+                  if (urlParams == null) {
+                      urlParams = '?';
+                  }
+                  else {
+                      urlParams += '&';
+                  }
+                  urlParams += 'activity_date_id='+this.multipleDatesActivityDateId;
+                }
+
+                if (urlParams != null) {
+                    url += urlParams;
                 }
 
                 $.ajax({
@@ -79,10 +106,26 @@ require(['jquery','ysdtemplate',
                         tickets: this.buyTickets
                     };
                 }
+                else if (this.activity.occurence == 'multiple_dates') {
+                    request = {
+                        id: this.activity.id,
+                        activity_date_id: this.multipleDatesActivityDateId,
+                        tickets: this.buyTickets
+                    };
+                }
+                else if (this.activity.occurence == 'one_time') {
+                    request = {
+                        id: this.activity.id,
+                        tickets: this.buyTickets
+                    }
+                }
 
                 var requestJSON = encodeURIComponent(JSON.stringify(request));
 
                 var url = '/api/booking-activities/frontend/add-to-shopping-cart';
+                if (model.requestLanguage != null) {
+                    url += '?lang='+model.requestLanguage;
+                }
 
                 $.ajax({
                     type: 'POST',
@@ -92,7 +135,12 @@ require(['jquery','ysdtemplate',
                     contentType : 'application/json; charset=utf-8',
                     crossDomain: true,
                     success: function(data, textStatus, jqXHR) {
-                         window.location.href='/shopping-cart';
+                         if (model.requestLanguage == null) {
+                             window.location.href = '/shopping-cart';
+                         }
+                         else {
+                             window.location.href = model.requestLanguage + '/shopping-cart';
+                         }
                     },
                     error: function(data, textStatus, jqXHR) {
                         alert('Error obteniendo la información');
@@ -173,6 +221,11 @@ require(['jquery','ysdtemplate',
               model.loadTickets();
             },
 
+            onMultipleDatesDateSelected: function() { /* Multiple dates select date */
+              model.multipleDatesActivityDateId = $('#activity_date_id').val();
+              model.loadTickets();
+            },
+
             onBtnReservationClick: function() { /* Button reservation click */
 
               model.buyTickets = {};
@@ -217,6 +270,59 @@ require(['jquery','ysdtemplate',
                 if (model.activity.occurence === 'cyclic') {
                     this.updateActivityCyclic();
                 }
+                else if (model.activity.occurence === 'multiple_dates') {
+                    this.updateActivityMultipleDates();
+                }
+                else if (model.activity.occurence === 'one_time') {
+                    this.updateActivityOneTime();
+                }
+
+            },
+
+            updateActivityOneTime: function() { // Setup one time
+
+                // Builds the calendar
+                var result = tmpl('script_one_time_selector')({activity: model.activity});
+                $('#buy_selector').html(result);
+
+                model.loadTickets();
+
+            },
+
+            updateActivityMultipleDates: function() { // Setup the multiple dates
+                // Builds the calendar
+                var result = tmpl('script_multiple_dates_selector')({activity: model.activity});
+                $('#buy_selector').html(result);
+
+                // Load the activity dates
+                var activityDatesURL = '/api/booking-activities/frontend/activities/'+model.activity.id+'/dates';
+                if (model.requestLanguage != null) {
+                    activityDatesURL += '?lang='+model.requestLanguage;
+                }
+
+                var dataSourceActivityDates = new RemoteDataSource(activityDatesURL,
+                    {'id':'id','description':'description'});
+                var activityDate = new SelectSelector('activity_date_id',
+                    dataSourceActivityDates, null, false, '',
+                    function() {
+                        $('select[name=activity_date_id] option:first').before($('<option>', {
+                            value: '',
+                            text : '<%=t.front_end_activities.activity_page.multiple_dates_choose_date_title%>'
+                        }));
+                        $('#activity_date_id').selectpicker();
+                        $('#activity_date_id').val('');
+                        $('#activity_date_id').selectpicker('refresh');
+
+                    } );
+
+                $('#activity_date_id').bind('change', function() {
+                    if ($(this).val() != '') {
+                        controller.onMultipleDatesDateSelected();
+                    }
+                    else {
+                        $('#tickets').empty();
+                    }
+                });
 
             },
 

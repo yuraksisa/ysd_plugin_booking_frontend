@@ -15,10 +15,18 @@ module Sinatra
         #
         app.route :get, ['/reserva-actividades/actividades','/excursiones'] do
 
+          locals = {}
+
+          # Load the page
+          title = t.front_end_activities.activities_title
+
           page = settings.frontend_skin ? "#{settings.frontend_skin}_activities" : :activities
+          page_options = {page_title: title, locals: locals, cache: false}
 
-          load_page(page)
+          default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+          page_options.store(:custom_js, 'activities') unless default_js
 
+          load_page(page, page_options)
         end
         
         #
@@ -38,11 +46,18 @@ module Sinatra
         app.get '/reserva-actividades/actividades/:id' do
 
           @activity_id = params[:id]
+          locals = {}
+
+          # Load the page
+          title = nil
 
           page = settings.frontend_skin ? "#{settings.frontend_skin}_activity" : :activity
+          page_options = {page_title: title, locals: locals, cache: false}
 
-          load_page(page)
+          default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+          page_options.store(:custom_js, 'activity') unless default_js
 
+          load_page(page, page_options)
         end
 
         #
@@ -58,8 +73,16 @@ module Sinatra
           # Query activity
           if @activity = ::Yito::Model::Booking::Activity.first(:alias => request.path_info)
             @activity_id = @activity.id
+            # Load the page
+            title = nil
+
             page = settings.frontend_skin ? "#{settings.frontend_skin}_activity" : :activity
-            load_page(page)
+            page_options = {page_title: title, locals: locals, cache: false}
+
+            default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+            page_options.store(:custom_js, 'activity') unless default_js
+
+            load_page(page, page_options)
           else
             pass
           end
@@ -77,8 +100,17 @@ module Sinatra
           @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
           @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
+          # Load the page
+          title = nil
+
           page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_shopping_cart" : :activities_shopping_cart
-          load_page(page)
+          page_options = {page_title: title, locals: locals, cache: false}
+
+          default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+          page_options.store(:custom_js, 'activities_shopping_cart') unless default_js
+
+          load_page(page, page_options)
+
         end
 
 
@@ -126,9 +158,17 @@ module Sinatra
           @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
           @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
+          # Load the page
+          title = t.front_end_activities.order_page.page_title(@order.id)
+
           page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-          load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
-          
+          page_options = {page_title: title, locals: locals, cache: false}
+
+          default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+          page_options.store(:custom_js, 'activities_order') unless default_js
+
+          load_page(page, page_options)
+
         end
 
         # =============== RETURN FROM PAYMENT GATEWAY ===================================
@@ -144,8 +184,17 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+
+              # Load the page
+              title = t.front_end_activities.order_page.page_title(@order.id)
+
               page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-              load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'activities_order') unless default_js
+
+              load_page(page, page_options)
             else
               logger.error "Back from payment gateway - OK - NOT charge in session"
               status 404
@@ -164,8 +213,16 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              # Load the page
+              title = t.front_end_activities.order_page.page_title(@order.id)
+
               page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-              load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'activities_order') unless default_js
+
+              load_page(page, page_options)
             else
               logger.error "Back from payment gateway - CANCEL - NOT charge in session"
               status 404
@@ -183,8 +240,16 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              # Load the page
+              title = t.front_end_activities.order_page.page_title(@order.id)
+
               page = settings.frontend_skin ? "#{settings.frontend_skin}_activities_order" : :activities_order
-              load_page(page, {page_title: t.front_end_activities.order_page.page_title(@order.id), cache: false})
+              page_options = {page_title: title, locals: locals, cache: false}
+
+              default_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', {app: self}).inject(false) { |result, value| result = result or value }
+              page_options.store(:custom_js, 'activities_order') unless default_js
+
+              load_page(page, page_options)
             else
               status 404
             end

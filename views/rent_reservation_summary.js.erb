@@ -1,24 +1,91 @@
-require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
-        'ysdtemplate',
-        'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
-        'jquery.ui.datepicker.validation', 'datejs',
-        'bootstrap', 'bootstrap.select'],
-    function($, RemoteDataSource, SelectSelector, tmpl) {
+require(['jquery','jquery.form','jquery.formparams'],
+    function($) {
 
   model = { // THE MODEL
-      requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
+      bookingId: '<%= @booking.free_access_id%>',
+      pay: function(payment, paymentMethodId) {
+          // Submit the form to start the payment
+          $.form('/reserva/pagar',{ id: model.bookingId,
+                                    payment: payment,
+                                    payment_method_id: paymentMethodId}, 'POST').submit();
+      },
+      update: function() {
+
+          var reservation = $('form[name=booking_information_form]').formParams(false);
+          var booking_line_resources = reservation['booking_line_resources']
+          delete reservation['booking_line_resources'];
+          reservation['booking_line_resources'] = [];
+          for (item in booking_line_resources) {
+              reservation['booking_line_resources'].push(booking_line_resources[item]);
+          }
+
+          var reservationJSON = encodeURIComponent(JSON.stringify(reservation));
+
+          var url = '/api/booking/frontend/booking/' + this.bookingId;
+
+          $.ajax({
+              type: 'PUT',
+              url : url,
+              data: reservationJSON,
+              dataType : 'json',
+              contentType : 'application/json; charset=utf-8',
+              crossDomain: true,
+              success: function(data, textStatus, jqXHR) {
+                  view.update('reservation_updated')
+              },
+              error: function(data, textStatus, jqXHR) {
+                  alert('Error actualizando pedido');
+              }
+          });
+
+      }
   };
 
   controller = { // THE CONTROLLER
 
+     btnPayClick: function() {
+         if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined') {
+             alert('Debe indicar forma de pago');
+         }
+         else {
+             var payment = 'deposit';
+             var paymentMethodId = $('#accordion a').not('.collapsed').attr('data-payment-method');
+             model.pay(payment, paymentMethodId);
+         }
+     },
+     btnUpdateClick: function() {
+         model.update();
+     }
+
   };
 
   view = { // THE VIEW
-
       init: function() {
-
+        this.setupEvents();
+      },
+      setupEvents: function() {
+         $('#btn_pay').bind('click', function(){
+            controller.btnPayClick();
+         });
+         $('#btn_update_reservation').bind('click', function(){
+            controller.btnUpdateClick();
+         });
+      },
+      update: function(action) {
+          switch (action) {
+              case 'reservation_updated':
+                  $.toast({
+                      heading: 'Actualización de datos',
+                      text: 'Los datos se han actualizado correctamente',
+                      position: 'top-right',
+                      bgColor: 'rgb(56, 154, 56)',
+                      textColor: 'white',
+                      loader: false,
+                      stack: false
+                  });
+                  break;
+          }
       }
-
   };
 
   view.init();

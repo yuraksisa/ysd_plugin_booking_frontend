@@ -1,6 +1,7 @@
 require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         'ysdtemplate', 'jquery.formparams','jquery.form',
-	     'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es', 
+	     'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
+        'jquery.ui.datepicker-ca','jquery.ui.datepicker-en','jquery.ui.datepicker-it',
 	     'jquery.ui.datepicker.validation', 'datejs',
 	     'bootstrap', 'bootstrap.select'], 
 	     function($, RemoteDataSource, SelectSelector, tmpl) {
@@ -41,7 +42,13 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
       if (this.shopping_cart != null) {
           for (var idx=0;idx<this.shopping_cart.items.length;idx++) {
-              shoppingCartProducts[this.shopping_cart.items[idx].item_id] = this.products[idx];
+              var itemId = this.shopping_cart.items[idx].item_id;
+              for (var n=0;n<this.products.length;n++){
+                if (this.products[n].code == itemId) {
+                    shoppingCartProducts[itemId] = this.products[n];
+                    break;
+                }
+              }
           }
       }
 
@@ -212,11 +219,18 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
       var reservation = $('form[name=reservation_form]').formParams(false);
       reservation.comments = $('#comments').val();
-      reservation.payment = $('#accordion a').not('.collapsed').attr('data-payment-method');
 
-        var reservationJSON = JSON.stringify(reservation);
+      // Check the payment method
+      if (this.sales_process.can_pay) {
+          reservation.payment = $('#accordion a').not('.collapsed').attr('data-payment-method');
+      }
+      else {
+          reservation.payment = 'none';
+      }
 
-        return reservationJSON;
+      var reservationJSON = JSON.stringify(reservation);
+
+      return reservationJSON;
     },
 
 
@@ -242,7 +256,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 }
             },
             error: function(data, textStatus, jqXHR) {
-                alert('<%=t.front_end_reservation.conditions_not_read%>');
+                alert('Error registrando reserva');
             },
             beforeSend: function(jqXHR) {
                 $('#full_loader').show();
@@ -283,10 +297,22 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
       submitReservationForm: function() {
           if ($('#accept').is(':checked')) {
-              $('form[name=reservation_form]').submit();
+
+              if (model.sales_process.can_pay) {
+                  if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined') {
+                      alert('Debe indicar forma de pago');
+                  }
+                  else {
+                      $('form[name=reservation_form]').submit();
+                  }
+              }
+              else {
+                  $('form[name=reservation_form]').submit();
+              }
+
           }
           else {
-              alert('<%=t.front_end_reservation.conditions_not_read%>');
+              alert("<%=t.front_end_reservation.conditions_not_read%>");
           }
       }
 
@@ -295,17 +321,40 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
   view = { // THE VIEW
 
   	init: function() {
+  	  this.setupControls();
   	  this.setupEvents();
   	  this.setupValidation();
       $('#full_loader').show();
   	  model.loadShoppingCart();
   	},
 
+    setupControls: function() {
+        $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>" ] );
+
+        var locale = $.datepicker.regional["<%=session[:locale] || 'es'%>"];
+        $('#driver_date_of_birth').datepicker({numberOfMonths:1,
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-80:+0"},
+            locale);
+
+        $('#driver_driving_license_date').datepicker({numberOfMonths:1,
+                dateFormat: 'dd/mm/yy',
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-80:+0"},
+            locale);
+
+    },
+
     setupEvents: function() {
 
+  	    /*
   	    $('#accept').bind('click', function(){
   	       controller.conditionsReadClick();
         });
+        */
 
         $('#btn_reservation').bind('click', function() {
            controller.submitReservationForm();
@@ -469,10 +518,17 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
     },
 
-    updatePayment: function() { // Update the payment 
-      var paymentInfo = tmpl('script_payment_detail')(
-                    {sales_process: model.sales_process});
-      $('#payment_detail').html(paymentInfo);
+    updatePayment: function() { // Update the payment
+      if (model.sales_process.can_pay) {
+          var paymentInfo = tmpl('script_payment_detail')(
+              {sales_process: model.sales_process});
+          $('#payment_detail').html(paymentInfo);
+      }
+      // If there is only one option, choose it and hide
+      if ($('#accordion').children().length == 1) {
+          $('#accordion').children().hide();
+          $('#accordion').children().find('a').trigger('click');
+      }
     }
 
   };

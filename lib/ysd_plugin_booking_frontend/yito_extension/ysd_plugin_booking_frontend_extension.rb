@@ -81,17 +81,21 @@ module YsdPluginBookingFrontend
 
       case block_name
         when 'booking_selector_full_v2'
-
           locals.store(:addon_promotion_code, addon_promotion_code)
+
           frontend_skin = SystemConfiguration::Variable.get_value('frontend.skin','rentit')
+          custom_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', context).inject(false) { |result, value| result = result or value }
+
           page = frontend_skin ? "#{frontend_skin}_rent_search_form_full_v2" : :rent_search_form_full_v2
-          js = frontend_skin ? "#{frontend_skin}_rent_search_form_full_v2_js" : :rent_search_form_full_v2_js
+          js = (frontend_skin and custom_js) ? "#{frontend_skin}_rent_search_form_full_v2_js" : :rent_search_form_full_v2_js
+
           if booking_item_family.driver and young_driver_rules and young_driver_rule_definition and !young_driver_rule_definition.driver_age_rules.empty?
             driver_partial = frontend_skin ? "#{frontend_skin}_rent_search_form_full_v2_driver" : :rent_search_form_full_v2_driver
             locals.store(:driver_partial, app.partial(driver_partial, locals: locals))
           else
             locals.store(:driver_partial, nil)
           end
+
           if addon_promotion_code
             promotion_code_partial = frontend_skin ? "#{frontend_skin}_rent_search_form_full_v2_promotion_code" : :rent_search_form_full_v2_promotion_code
             locals.store(:promotion_code_partial, app.partial(promotion_code_partial, locals: locals))
