@@ -73,6 +73,8 @@ module Sinatra
           # Query activity
           if @activity = ::Yito::Model::Booking::Activity.first(:alias => request.path_info)
             @activity_id = @activity.id
+
+            locals = {}
             # Load the page
             title = nil
 
@@ -100,6 +102,7 @@ module Sinatra
           @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
           @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
+          locals = {}
           # Load the page
           title = nil
 
@@ -158,6 +161,7 @@ module Sinatra
           @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
           @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
+          locals = {}
           # Load the page
           title = t.front_end_activities.order_page.page_title(@order.id)
 
@@ -185,6 +189,7 @@ module Sinatra
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 
+              locals = {}
               # Load the page
               title = t.front_end_activities.order_page.page_title(@order.id)
 
@@ -213,6 +218,7 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              locals = {}
               # Load the page
               title = t.front_end_activities.order_page.page_title(@order.id)
 
@@ -240,6 +246,7 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              locals = {}
               # Load the page
               title = t.front_end_activities.order_page.page_title(@order.id)
 
