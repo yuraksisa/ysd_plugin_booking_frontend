@@ -237,6 +237,7 @@ module Sinatra
 							@payment_methods = Payments::PaymentMethod.available_to_web
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
 
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
@@ -272,6 +273,7 @@ module Sinatra
 							@payment_methods = Payments::PaymentMethod.available_to_web
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
 
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
@@ -305,6 +307,7 @@ module Sinatra
 							@payment_methods = Payments::PaymentMethod.available_to_web
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
 
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
