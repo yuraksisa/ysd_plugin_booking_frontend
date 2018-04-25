@@ -382,10 +382,11 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                                                            'description': function(data) {
                                                               var value = data.name;
                                                               if (data.price && data.price > 0) {
-                                                                  value += '(';
+                                                                  value += ' (';
                                                                   value += new Number(data.price).toFixed(2) + '€';
                                                                   value += ')';
                                                               }
+                                                              return value;
                                                            }});
         var pickupPlace = new SelectSelector('pickup_place',
             dataSourcePickupPlaces, null, false, '',
@@ -413,7 +414,16 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         }
 
         var dataSourceReturnPlaces = new RemoteDataSource(returnPlacesURL,
-                                                          {'id':'id','description':'name'});
+                                                          {'id':'id',
+                                                           'description':function(data) {
+                                                               var value = data.name;
+                                                               if (data.price && data.price > 0) {
+                                                                   value += ' (';
+                                                                   value += new Number(data.price).toFixed(2) + '€';
+                                                                   value += ')';
+                                                               }
+                                                               return value;
+                                                           }});
         var returnPlace = new SelectSelector('return_place',
             dataSourcePickupPlaces, null, false, '',
             function() {

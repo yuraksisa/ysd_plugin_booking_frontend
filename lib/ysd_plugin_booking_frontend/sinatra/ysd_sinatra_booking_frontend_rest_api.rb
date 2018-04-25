@@ -50,7 +50,7 @@ module Sinatra
 
           places = BookingDataSystem.pickup_places.map do |item|
             item_translation = item.translate(session[:locale])
-            {id: item.name, name: item_translation.name}
+            {id: item.name, name: item_translation.name, price: item.price}
           end
 
           content_type 'json'
@@ -65,7 +65,7 @@ module Sinatra
 
           places = BookingDataSystem.return_places.map do |item|
             item_translation = item.translate(session[:locale])
-            {id: item.name, name: item_translation.name}
+            {id: item.name, name: item_translation.name, price: item.price}
           end
 
           content_type 'json'
