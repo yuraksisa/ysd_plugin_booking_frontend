@@ -378,7 +378,15 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         }
 
         var dataSourcePickupPlaces = new RemoteDataSource(pickupPlacesURL,
-                                                          {'id':'id','description':'name'});
+                                                          {'id':'id',
+                                                           'description': function(data) {
+                                                              var value = data.name;
+                                                              if (data.price && data.price > 0) {
+                                                                  value += '(';
+                                                                  value += new Number(data.price).toFixed(2) + '€';
+                                                                  value += ')';
+                                                              }
+                                                           }});
         var pickupPlace = new SelectSelector('pickup_place',
             dataSourcePickupPlaces, null, false, '',
             function() {
