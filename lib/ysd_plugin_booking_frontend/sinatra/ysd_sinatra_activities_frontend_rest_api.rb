@@ -355,8 +355,17 @@ module Sinatra
                    customer_address.save
                    order.customer_address = customer_address
                  end
+
                  order.save
                  shopping_cart.destroy
+
+                 begin
+                   if model_request.has_key?(:payment)
+                     order.send_new_order_notifications(model_request[:payment] != 'none')
+                   end
+                 rescue
+                   p "Error sending notifications. Order: #{order.id}"
+                 end
 
                  status 200
                  content_type :json
