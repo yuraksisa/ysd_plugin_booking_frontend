@@ -198,7 +198,15 @@ module Sinatra
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
-
+              @payment = if @booking.can_pay_deposit?
+													 'deposit'
+												 elsif @booking.can_pay_pending?
+													 'pending'
+												 elsif @booking.can_pay_total?
+													 'total'
+												 else
+													 ''
+												 end
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
 
@@ -238,7 +246,13 @@ module Sinatra
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
-
+							@payment = if @booking.can_pay_deposit?
+													 'deposit'
+												 elsif @booking.can_pay_pending?
+													 'pending'
+												 elsif @booking.can_pay_total?
+													 'total'
+												 end
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
 
@@ -274,7 +288,13 @@ module Sinatra
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
-
+							@payment = if @booking.can_pay_deposit?
+													 'deposit'
+												 elsif @booking.can_pay_pending?
+													 'pending'
+												 elsif @booking.can_pay_total?
+													 'total'
+												 end
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
 
@@ -308,7 +328,13 @@ module Sinatra
 							@deposit = SystemConfiguration::Variable.get_value('booking.deposit', '0').to_i
 							@currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
 							@booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
-
+							@payment = if @booking.can_pay_deposit?
+													 'deposit'
+												 elsif @booking.can_pay_pending?
+													 'pending'
+												 elsif @booking.can_pay_total?
+													 'total'
+												 end
 							# Load the page
               title = t.front_end_reservation.summary_page_title(@booking.id)
 

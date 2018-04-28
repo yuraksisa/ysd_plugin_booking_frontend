@@ -337,10 +337,11 @@ module Sinatra
                  order.customer_phone = model_request[:customer_phone]
                  order.customer_language = session[:locale] || 'es'
                  order.init_user_agent_data(request.env["HTTP_USER_AGENT"])
-                 allow_deposit_payment = SystemConfiguration::Variable.get_value('order.allow_deposit_payment','false').to_bool
-                 deposit = SystemConfiguration::Variable.get_value('order.deposit').to_i
-                 if allow_deposit_payment and deposit > 0
-                   order.reservation_amount = (order.total_cost * deposit / 100).round
+                 if order.can_pay_deposit?
+                   deposit = SystemConfiguration::Variable.get_value('order.deposit').to_i
+                   if deposit > 0
+                     order.reservation_amount = (order.total_cost * deposit / 100).round
+                   end
                  end
                  # Update order address
                  if order.request_customer_address

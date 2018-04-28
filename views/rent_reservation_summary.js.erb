@@ -48,7 +48,7 @@ require(['jquery','jquery.form','jquery.formparams'],
              alert('Debe indicar forma de pago');
          }
          else {
-             var payment = 'deposit';
+             var payment = '<%=@payment%>';
              var paymentMethodId = $('#accordion a').not('.collapsed').attr('data-payment-method');
              model.pay(payment, paymentMethodId);
          }
