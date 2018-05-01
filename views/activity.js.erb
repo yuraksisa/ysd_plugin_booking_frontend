@@ -139,7 +139,7 @@ require(['jquery','ysdtemplate', 'YSDRemoteDataSource','YSDSelectSelector',
                              window.location.href = '/shopping-cart';
                          }
                          else {
-                             window.location.href = model.requestLanguage + '/shopping-cart';
+                             window.location.href = '/' + model.requestLanguage + '/shopping-cart';
                          }
                     },
                     error: function(data, textStatus, jqXHR) {
