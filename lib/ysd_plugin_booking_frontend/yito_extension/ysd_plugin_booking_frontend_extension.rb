@@ -13,6 +13,20 @@ module YsdPluginBookingFrontend
     #
     def install(context={})
 
+      SystemConfiguration::Variable.first_or_create(
+          {:name => 'booking.frontend.activities_menu'},
+          {:value => 'false',
+           :description => 'Activities have their own menus',
+           :module => :booking})
+
+      Site::Menu.first_or_create({:name => 'primary_links_activities'},
+                                 {:title => 'Primary links activities menus',
+                                           :description => 'Primary links activities menu'})
+
+      Site::Menu.first_or_create({:name => 'secondary_links_activities'},
+                                 {:title => 'Secondary links activities menu',
+                                           :description => 'Secondary links activities menu'})
+
 
     end
     
@@ -39,7 +53,10 @@ module YsdPluginBookingFrontend
       [
        {:name => 'booking_selector_full_v2',
         :module_name => :booking_frontend,
-        :theme => Themes::ThemeManager.instance.selected_theme.name}        
+        :theme => Themes::ThemeManager.instance.selected_theme.name},
+       {:name => 'booking_activities_shopping_cart',
+        :module_name => :booking_frontend,
+        :theme => Themes::ThemeManager.instance.selected_theme.name}
       ]
         
     end
@@ -56,31 +73,34 @@ module YsdPluginBookingFrontend
     #   The representation of the block
     #    
     def block_view(context, block_name)
-    
+
       app = context[:app]
 
-      booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
-      young_driver_rules = SystemConfiguration::Variable.get_value('booking.driver_min_age.rules', 'false').to_bool
-      young_driver_rule_definition = ::Yito::Model::Booking::BookingDriverAgeRuleDefinition.get(SystemConfiguration::Variable.get_value('booking.driver_min_age.rule_definition'))
-      addons = app.mybooking_addons
-      addon_promotion_code = if addons and addons.has_key?(:addon_promotion_code) and addons[:addon_promotion_code]
-                               addons[:addon_promotion_code]
-                             else
-                               false
-                             end
-      locals = {}
-      locals.store(:booking_min_days,
-        SystemConfiguration::Variable.get_value('booking.min_days', '1').to_i)
-      locals.store(:booking_item_family, booking_item_family)
-      locals.store(:booking_item_type,
-        SystemConfiguration::Variable.get_value('booking.item_type')) 
-      locals.store(:pickup_return_places_configuration,
-        SystemConfiguration::Variable.get_value('booking.pickup_return_places_configuration', 'list'))
-      locals.store(:driver_age_rules, young_driver_rules)
-      locals.store(:driver_age_rule_definition, young_driver_rule_definition)
-
       case block_name
+        when 'booking_activities_shopping_cart'
+          shopping_cart = ::Yito::Model::Order::ShoppingCart.get(app.session[:shopping_cart_id]) || ::Yito::Model::Order::ShoppingCart.new
+          app.partial(:activities_shopping_cart, :locals => {shopping_cart: shopping_cart})
+
         when 'booking_selector_full_v2'
+          booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
+          young_driver_rules = SystemConfiguration::Variable.get_value('booking.driver_min_age.rules', 'false').to_bool
+          young_driver_rule_definition = ::Yito::Model::Booking::BookingDriverAgeRuleDefinition.get(SystemConfiguration::Variable.get_value('booking.driver_min_age.rule_definition'))
+          addons = app.mybooking_addons
+          addon_promotion_code = if addons and addons.has_key?(:addon_promotion_code) and addons[:addon_promotion_code]
+                                   addons[:addon_promotion_code]
+                                 else
+                                   false
+                                 end
+          locals = {}
+          locals.store(:booking_min_days,
+                       SystemConfiguration::Variable.get_value('booking.min_days', '1').to_i)
+          locals.store(:booking_item_family, booking_item_family)
+          locals.store(:booking_item_type,
+                       SystemConfiguration::Variable.get_value('booking.item_type'))
+          locals.store(:pickup_return_places_configuration,
+                       SystemConfiguration::Variable.get_value('booking.pickup_return_places_configuration', 'list'))
+          locals.store(:driver_age_rules, young_driver_rules)
+          locals.store(:driver_age_rule_definition, young_driver_rule_definition)
           locals.store(:addon_promotion_code, addon_promotion_code)
 
           frontend_skin = SystemConfiguration::Variable.get_value('frontend.skin','rentit')

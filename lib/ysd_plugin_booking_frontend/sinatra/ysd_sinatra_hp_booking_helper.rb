@@ -6,6 +6,59 @@ module Sinatra
       MIDDLE_ENDIAN_LANGUAGES = ['en']
 
       #
+      # Check if the request.path_info matches primary_links and secondary_links menu
+      #
+      def primary_secondary_links_menu?
+
+        renting_plan, activities_plan = mybooking_plan
+
+        # If it's a mixed renting and activities plan and the activities has its own menu
+        if renting_plan and activities_plan and SystemConfiguration::Variable.get_value('booking.frontend.activities_menu','false').to_bool
+          paths = %w(/reserva/producto /book/product
+                     /reserva/completar /book/complete
+                     /reserva/pagar /book/pay
+                     /reserva/\w+ /book/\w+
+                     /reserva/payment-gateway-return/ok
+                     /reserva/payment-gateway-return/cancel
+                     /reserva/payment-gateway-return/nok)
+          result = paths.any? { |item| Regexp.new(item).match(request.path_info) }
+
+          unless result
+            menu_items = Site::Menu.first(name: 'primary_links').menu_items.any? do |menu_item|
+                           home_page = SystemConfiguration::Variable.get_value('site.anonymous_front_page', nil)
+                           (menu_item.content.nil? and (!menu_item.link_route.nil? and (Regexp.new(menu_item.link_route).match(request.path_info) or
+                                                                                        (menu_item.link_route == home_page and !home_page.nil? and Regexp.new(home_page).match(request.path_info))))) or
+                           (!menu_item.content.nil? and (!menu_item.content.alias.nil? and (Regexp.new(menu_item.content.alias).match(request.path_info) or
+                                                                                            (menu_item.content.alias == home_page and !home_page.nil? and Regexp.new(home_page).match(request.path_info)))))
+                         end
+            if !menu_items
+              menu_itms = Site::Menu.first(name: 'secondary_links').menu_items.any? do |menu_item|
+                            home_page = SystemConfiguration::Variable.get_value('site.anonymous_front_page', nil)
+                              (menu_item.content.nil? and (!menu_item.link_route.nil? and (Regexp.new(menu_item.link_route).match(request.path_info) or
+                                                                                           (menu_item.link_route == home_page and !home_page.nil? and Regexp.new(home_page).match(request.path_info))))) or
+                              (!menu_item.content.nil? and (!menu_item.content.alias.nil? and (Regexp.new(menu_item.content.alias).match(request.path_info) or
+                                                                                               (menu_item.content.alias == home_page and !home_page.nil? and Regexp.new(home_page).match(request.path_info)))))
+                          end
+            end
+            result = menu_items
+          end
+        else
+          result = true
+        end
+
+        return result
+
+      end
+
+      def activities_summaries_pages?
+        paths = %w(/reserva-actividades/pedido/\w+
+                   /reserva-actividades/payment-gateway-return/ok
+                   /reserva-actividades/payment-gateway-return/cancel
+                   /reserva-actividades/payment-gateway-return/nok)
+        result = paths.any? { |item| Regexp.new(item).match(request.path_info) }
+      end
+
+      #
       # Build the shopping representation to be exported to JSON
       #
       def build_shopping_cart(shopping_cart, locale)
