@@ -9,6 +9,7 @@ Plugins::SinatraAppPlugin.register :booking_frontend do
    hooker       YsdPluginBookingFrontend::BookingFrontendExtension
    sinatra_extension Sinatra::YitoExtension::BookingFrontend
    sinatra_helper Sinatra::YitoExtension::BookingFrontendRESTApiHelper
+   sinatra_helper Sinatra::YitoExtension::BookingActivitiesFrontendRESTApiHelper
    sinatra_extension Sinatra::YitoExtension::BookingFrontendRESTApi
    sinatra_extension Sinatra::YitoExtension::BookingActivitiesFrontend
    sinatra_extension Sinatra::YitoExtension::BookingActivitiesFrontendRESTApi   

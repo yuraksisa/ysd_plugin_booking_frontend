@@ -122,6 +122,7 @@ front_end_activities:
     book: Reservar
   checkout_page:
     activities_information_title: Su compra
+    shopping_cart_empty: El carrito de la compra está vacío
     summary_title: Detalle de la reserva
     summary_price: Precio
     summary_total: Total

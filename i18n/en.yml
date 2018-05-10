@@ -102,6 +102,7 @@ front_end_activities:
     book: Book Now
   checkout_page:
     activities_information_title: Checkout
+    shopping_cart_empty: The shopping cart is empty
     summary_title: Reservation detail
     summary_price: Price
     summary_total: Total

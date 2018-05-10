@@ -108,8 +108,7 @@ module Sinatra
          app.route :get, ['/api/booking-activities/frontend/shopping-cart',
                           '/api/booking-activities/frontend/shopping-cart/:free_access_id'] do
 
-           shopping_cart = products = nil
-           products_hash = {}
+           shopping_cart = nil
 
            # Get the shopping cart
            if params[:free_access_id]
@@ -118,34 +117,13 @@ module Sinatra
              shopping_cart = ::Yito::Model::Order::ShoppingCart.get(session[:shopping_cart_id])
            end
 
-           # Build the products hash with full information about the products in the shopping cart
-           unless shopping_cart.nil?
-             products = ::Yito::Model::Booking::Activity.all(fields: [:id, :code, :name, :short_description, :description] ,
-                                                             conditions: {code: (shopping_cart.shopping_cart_items.map { |item| item.item_id}).uniq} ).map do |activity|
-                          activity.translate(session[:locale])
-                        end
-             domain = SystemConfiguration::Variable.get_value('site.domain')
-             products.each do |product|
-               full_photo = nil
-               full_photo = product.photo_url_full.match(/^https?:/) ? product.photo_url_full : File.join(domain, product.photo_url_full) if product.photo_url_full
-               medium_photo = nil
-               medium_photo = product.photo_url_medium.match(/^https?:/) ? product.photo_url_medium : File.join(domain, product.photo_url_medium) if product.photo_url_medium
-               products_hash.store(product.code, {id: product.id, code: product.code, name: product.name,
-                                                  short_description: product.short_description,
-                                                  description: product.description,
-                                                  full_photo: full_photo,
-                                                  medium_photo: medium_photo})
-             end
+           if shopping_cart.nil?
+             halt 404, 'Shopping cart not found'
            end
-           
-           # Prepare the response
-           p_json = products_hash.to_json
-           sc_json = shopping_cart.to_json(methods: [:shopping_cart_items_group_by_date_time_item_id, 
-                                                     :can_make_request, :can_pay_deposit, :can_pay_total])
 
            status 200
            content_type :json
-           "{\"shopping_cart\": #{sc_json}, \"products\": #{p_json}}"
+           activities_shopping_cart_to_json(shopping_cart)
 
          end
 
@@ -283,6 +261,54 @@ module Sinatra
          #
          app.route :post, ['/api/booking-activities/frontend/remove-from-shopping-cart',
                            '/api/booking-activities/frontend/remove-from-shopping-cart/:free_access_id'] do
+
+           # Extract the data parameters
+           begin
+             request.body.rewind
+             model_request = JSON.parse(URI.unescape(request.body.read)).symbolize_keys!
+           rescue JSON::ParserError
+             halt 422, {error: 'Invalid request. Expected a JSON with data params'}.to_json
+           end
+
+           # Retrieve the shopping cart
+           if params[:free_access_id]
+             shopping_cart = ::Yito::Model::Order::ShoppingCart.get_by_free_access_id(params[:free_access_id])
+           elsif session.has_key?(:shopping_cart_id)
+             shopping_cart = ::Yito::Model::Order::ShoppingCart.get(session[:shopping_cart_id])
+           end
+
+           # Request parameters
+           date = model_request[:date]
+           time = model_request[:time]
+           item_id = model_request[:item_id]
+
+           if !model_request.has_key?(:date) or !model_request.has_key?(:time) or !model_request.has_key?(:item_id)
+             halt 422, {error: 'Invalid request parameters'}.to_json
+           end
+
+           # Retrieve the shopping cart
+           if params[:free_access_id]
+             shopping_cart = ::Yito::Model::Order::ShoppingCart.get_by_free_access_id(params[:free_access_id])
+           elsif session.has_key?(:shopping_cart_id)
+             shopping_cart = ::Yito::Model::Order::ShoppingCart.get(session[:shopping_cart_id])
+           end
+
+           if shopping_cart.nil?
+             halt 404, {error: 'Shopping cart not found'}.to_json
+           end
+
+           begin
+              shopping_cart.transaction do
+                shopping_cart.remove_item(date, time, item_id)
+                status 200
+                content_type :json
+                activities_shopping_cart_to_json(shopping_cart)
+              end
+           rescue DataMapper::SaveFailureError => error
+             p "Error removing item from shopping cart. #{error.inspect} #{error.resource.full_messages.inspect}"
+             raise error
+           end
+
 
          end
 

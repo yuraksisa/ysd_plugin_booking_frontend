@@ -50,6 +50,9 @@ module Sinatra
 
       end
 
+      #
+      # Check if the request.path
+      #
       def activities_summaries_pages?
         paths = %w(/reserva-actividades/pedido/\w+
                    /reserva-actividades/payment-gateway-return/ok

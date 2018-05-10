@@ -41,7 +41,44 @@ require(['jquery','ysdtemplate',
               });
           },
 
-          createOrder: function() {
+          removeShoppingCartItem: function(date, time, itemId) {
+
+              var request = {date: date, time: time, item_id: itemId};
+              var requestJSON = JSON.stringify(request);
+
+              $.ajax({
+                 type: 'POST',
+                 url: '/api/booking-activities/frontend/remove-from-shopping-cart',
+                 data: requestJSON,
+                 dataType: 'json',
+                 crossDomain: true,
+                 success: function(data, textStatus, jqXHR) {
+                     model.shoppingCart = data.shopping_cart;
+                     model.shoppingCartProducts = data.products;
+                     // setup the payment option (deposit or total)
+                     if (model.shoppingCart.can_pay_deposit) {
+                         model.payment = 'deposit';
+                     }
+                     else if (model.shoppingCart.can_pay_total) {
+                         model.payment = 'total';
+                     }
+                     view.updateShoppingCart();
+                 },
+                 error: function (data, textStatus, jqXHR) {
+                     alert('Error obteniendo la información');
+                 },
+                 beforeSend: function(jqXHR) {
+                      $('#full_loader').show();
+                 },
+                 complete: function(jqXHR, textStatus) {
+                      $('#full_loader').hide();
+                 }
+              });
+
+
+          },
+
+          createOrder: function() { // It creates an order from the shopping cart
 
               if (this.shoppingCart.can_pay_deposit || this.shoppingCart.can_pay_total) {
                   this.paymentMethod = $('#accordion a').not('.collapsed').attr('data-payment-method');
@@ -102,6 +139,12 @@ require(['jquery','ysdtemplate',
               else {
                   alert('<%=t.front_end_activities.checkout_page.conditions_not_read%>');
               }
+          },
+
+          removeShoppingCartItemButtonClick: function(date, time, itemId) {
+
+              model.removeShoppingCartItem(date, time, itemId);
+
           }
 
       };
@@ -110,7 +153,6 @@ require(['jquery','ysdtemplate',
 
           init: function() {
               this.setupEvents();
-              this.setupValidation();
               model.loadShoppingCart();
           },
 
@@ -209,9 +251,43 @@ require(['jquery','ysdtemplate',
           },
 
           updateShoppingCart: function() { /* Update the shopping cart */
-              this.updateShoppingCartProducts();
+              $('#customer_container').empty();
+              $('#comments_container').empty();
+              $('#payment_detail').empty();
               this.updateShoppingCartSummary();
-              this.updatePayment();
+              if (model.shoppingCart && model.shoppingCart.shopping_cart_items_group_by_date_time_item_id &&
+                  !$.isEmptyObject(model.shoppingCart.shopping_cart_items_group_by_date_time_item_id)) {
+                  this.updateCustomer();
+                  this.updateComments();
+                  this.updateShoppingCartProducts();
+                  this.updatePayment();
+                  $('.btn-delete-shopping-cart-item').bind('click', function () {
+                      controller.removeShoppingCartItemButtonClick($(this).attr('data-date'),
+                          $(this).attr('data-time'),
+                          $(this).attr('data-item-id'));
+                  });
+                  $('#reservation_buttons_container').show();
+              }
+              else {
+                  this.updateShoppingCartEmpty();
+                  $('#reservation_buttons_container').hide();
+              }
+          },
+
+          updateCustomer: function() {
+              var customerForm = tmpl('script_customer');
+              $('#customer_container').html(customerForm);
+              this.setupValidation();
+          },
+
+          updateComments: function() {
+              var commentsForm = tmpl('script_comments');
+              $('#comments_container').html(commentsForm);
+          },
+
+          updateShoppingCartEmpty: function() {
+              var shoppingCartEmptyHtml = tmpl('script_shopping_cart_empty');
+              $('#selected_products').html(shoppingCartEmptyHtml);
           },
 
           updateShoppingCartProducts: function() { /* Update the shopping cart products */
