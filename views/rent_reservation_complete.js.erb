@@ -524,6 +524,22 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
             $('#extras_container').show();
         }
 
+        $('.fa-info-extra').bind('click', function() {
+            var code=$(this).attr('rel');
+            var extra=null;
+            for (var idx=0;idx<model.extras.length;idx++) {
+                if (model.extras[idx].code == code) {
+                    extra = model.extras[idx];
+                    break;
+                }
+            }
+            if (extra) {
+                $('#bs_modal .modal-title').html(extra.name);
+                $('#bs_modal .modal-body').html(extra.description);
+                $('#bs_modal').modal('show');
+            }
+        });
+
     },
 
     updatePayment: function() { // Update the payment

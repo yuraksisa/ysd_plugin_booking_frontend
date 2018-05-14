@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.37] - 2018-05-14
+### Updated
+- Renting: Extra detail
+
 ## [0.1.36] - 2018-05-10
 ### Added
 - Activities shopping cart: Show empty shopping cart
