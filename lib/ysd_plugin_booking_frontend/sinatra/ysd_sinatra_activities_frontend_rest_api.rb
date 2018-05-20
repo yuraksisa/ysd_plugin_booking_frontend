@@ -171,6 +171,7 @@ module Sinatra
                    request_customer_weight: activity.request_customer_weight,
                    request_customer_allergies_intolerances: activity.request_customer_allergies_intolerances,
                    uses_planning_resources: activity.uses_planning_resources,
+                   own_contract: activity.own_contract,
                    custom_payment_allow_deposit_payment: activity.custom_payment_allow_deposit_payment,
                    custom_payment_deposit: activity.custom_payment_deposit,
                    custom_payment_allow_total_payment: activity.custom_payment_allow_total_payment,
@@ -210,7 +211,7 @@ module Sinatra
                                          activity.price_1_description,
                                          custom_customers_pickup_place,
                                          customers_pickup_place,
-                                         activity.price_1_affects_capacity ? activity_options : {})
+                                         activity_options)
                end
 
                if !tickets.nil? and tickets.has_key?(:"2") and tickets[:"2"] > 0
@@ -224,7 +225,7 @@ module Sinatra
                                          activity.price_2_description,
                                          custom_customers_pickup_place,
                                          customers_pickup_place,
-                                         activity.price_2_affects_capacity ? activity_options : {})
+                                         activity_options)
                end
 
                if !tickets.nil? and tickets.has_key?(:"3") and tickets[:"3"] > 0
@@ -238,7 +239,7 @@ module Sinatra
                                          activity.price_3_description,
                                          custom_customers_pickup_place,
                                          customers_pickup_place,
-                                         activity.price_3_affects_capacity ? activity_options : {})
+                                         activity_options)
                end
 
                status 200

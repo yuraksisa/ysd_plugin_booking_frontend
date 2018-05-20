@@ -288,10 +288,14 @@ module Sinatra
             shopping_cart.additional_driver_1_phone = request_data['additional_driver_1_phone'] if request_data.has_key?('additional_driver_1_phone')
             shopping_cart.additional_driver_1_email = request_data['additional_driver_1_email'] if request_data.has_key?('additional_driver_1_email')
             # Flight
+            shopping_cart.flight_airport_origin = request_data['flight_airport_origin'] if request_data.has_key?('flight_airport_origin')
             shopping_cart.flight_company = request_data['flight_company'] if request_data.has_key?('flight_company')
             shopping_cart.flight_number = request_data['flight_number'] if request_data.has_key?('flight_number')
             shopping_cart.flight_time = request_data['flight_time'] if request_data.has_key?('flight_time')
-
+            shopping_cart.flight_airport_destination = request_data['flight_airport_destination'] if request_data.has_key?('flight_airport_destination')
+            shopping_cart.flight_company_departure = request_data['flight_company_departure'] if request_data.has_key?('flight_company_departure')
+            shopping_cart.flight_number_departure = request_data['flight_number_departure'] if request_data.has_key?('flight_number_departure')
+            shopping_cart.flight_time_departure = request_data['flight_time_departure'] if request_data.has_key?('flight_time_departure')
             begin
               shopping_cart.save
             rescue DataMapper::SaveFailureError => error
