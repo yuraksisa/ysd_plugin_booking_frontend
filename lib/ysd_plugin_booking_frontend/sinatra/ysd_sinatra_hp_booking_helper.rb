@@ -10,7 +10,7 @@ module Sinatra
       #
       def primary_secondary_links_menu?
 
-        renting_plan, activities_plan = mybooking_plan
+        renting_plan, activities_plan = mybooking_plan_type
 
         # If it's a mixed renting and activities plan and the activities has its own menu
         if renting_plan and activities_plan and SystemConfiguration::Variable.get_value('booking.frontend.activities_menu','false').to_bool

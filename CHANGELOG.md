@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.38] - 2018-05-25
+### Updated
+- Plans refactoring
+
 ## [0.1.37] - 2018-05-14
 ### Updated
 - Renting: Extra detail
