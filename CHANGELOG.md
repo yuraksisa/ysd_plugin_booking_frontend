@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.40] - 2018-05-29
+### Updated
+- Translations
+
 ## [0.1.38] - 2018-05-25
 ### Updated
 - Plans refactoring

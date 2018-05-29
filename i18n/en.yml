@@ -82,12 +82,31 @@ front_end_reservation:
     fill_data_message: Please complete the information to speed up the completion of the activity on the scheduled date
     customer_address: Customer's address
     data_of_the_participants: Data of the participants in the activities
+    address_street: Street
+    address_number: Number
+    address_complement: Complement
+    address_city: City
+    address_state: State
+    address_zip: Zip
+    address_country: Country
     participant: Participant
+    participant_name: Name
+    participant_surname: Surname
+    participant_document_id: ID or Passport
+    participant_phone_number: Phone number
+    participant_email: Email
+    participant_height: Height (cm)
+    participant_weight: Weight (kg)
     update_data_button: Update data
+    error_updating_reservation: Error updating reservation
+    reservation_updated_title: Reservation data update
+    reservation_updated_message: Reservation data updated successfuly
+    payment_method_not_selected: Payment method not selected
 front_end_activities:
   activities_title: Activities & excursions
   from: From
   book: Book now
+  error_loading_data: Error loading data
   activity_page:
     reservation_title: Reservation
     multiple_dates_choose_date_title: Select date
@@ -130,6 +149,8 @@ front_end_activities:
       title: Payment
       deposit_title: To confirm the order requires a deposit of %1% of the total amount of the order
       total_title: To confirm the order is required to pay the total amount of the order
+    error_creating_order: We are sorry. An error occurred while creating order
+    payment_method_not_selected: Payment method not selected
   order_page:
     page_title: Order %1
     order_detail_title: Your order is %1
@@ -142,6 +163,30 @@ front_end_activities:
     order_detail_customer_name: Full name
     order_detail_customer_email: Email
     order_detail_customer_phone_number: Phone numbers
+    fill_data_message: Please complete the information to speed up the completion of the activity on the scheduled date
+    address_title: Customer address
+    address_street: Street
+    address_number: Number
+    address_complement: Complement
+    address_city: City
+    address_state: State
+    address_zip: Zip
+    address_country: Country
+    data_of_the_participants: Data of the participants in the activities
+    participant: Participant
+    participant_name: Name
+    participant_surname: Surname
+    participant_document_id: ID or Passport
+    participant_phone_number: Phone number
+    participant_email: Email
+    participant_height: Height (cm)
+    participant_weight: Weight (kg)
+    participant_allergies_intolerances: Allergies or intolerances
+    update_data_button: Update data
+    error_updating_reservation: Error updating reservation
+    reservation_updated_title: Reservation data update
+    reservation_updated_message: Reservation data updated successfuly
+    payment_method_not_selected: Payment method not selected
     summary_title: Order detail
     summary_price: Price
     summary_total: Total

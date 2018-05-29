@@ -41,7 +41,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                         view.update('order_updated')
                     },
                     error: function(data, textStatus, jqXHR) {
-                        alert('Error actualizando pedido');
+                        alert('<%=t.front_end_activities.order_page.error_updating_reservation%>');
                     }
                 });
 
@@ -51,7 +51,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         controller = { // THE CONTROLLER
             btnPayClick: function() {
                 if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined') {
-                    alert('Debe indicar forma de pago');
+                    alert("<%=t.front_end_activities.order_page.payment_method_not_selected%>");
                 }
                 else {
                   <% if @order.can_pay_deposit? %>
@@ -87,8 +87,8 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 switch (action) {
                     case 'order_updated':
                         $.toast({
-                            heading: 'Actualización de datos',
-                            text: 'Los datos se han actualizado correctamente',
+                            heading: '<%=t.front_end_activities.order_page.reservation_updated_title%>',
+                            text: '<%=t.front_end_activities.order_page.reservation_updated_message%>',
                             position: 'top-right',
                             bgColor: 'rgb(56, 154, 56)',
                             textColor: 'white',

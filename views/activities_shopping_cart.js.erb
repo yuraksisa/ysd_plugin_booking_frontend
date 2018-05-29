@@ -36,7 +36,7 @@ require(['jquery','ysdtemplate',
                       view.updateShoppingCart();
                   },
                   error: function (data, textStatus, jqXHR) {
-                      alert('Error obteniendo la información');
+                      alert('<%=t.front_end_activities.error_loading_data%>');
                   }
               });
           },
@@ -65,7 +65,7 @@ require(['jquery','ysdtemplate',
                      view.updateShoppingCart();
                  },
                  error: function (data, textStatus, jqXHR) {
-                     alert('Error obteniendo la información');
+                     alert('<%=t.front_end_activities.error_loading_data%>');
                  },
                  beforeSend: function(jqXHR) {
                       $('#full_loader').show();
@@ -112,7 +112,7 @@ require(['jquery','ysdtemplate',
                       }
                   },
                   error: function(data, textStatus, jqXHR) {
-                      alert('Error creando pedido');
+                      alert('<%=t.front_end_activities.checkout_page.error_creating_order%>');
                   }
               });
 
@@ -126,7 +126,7 @@ require(['jquery','ysdtemplate',
               if ($('#accept').is(':checked')) {
                   if (model.shoppingCart.can_pay_deposit || model.shoppingCart.can_pay_total) {
                       if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined') {
-                          alert('Debe indicar forma de pago');
+                          alert('<%=t.front_end_activities.checkout_page.payment_method_not_selected%>');
                       }
                       else {
                           $('form[name=reservation_form]').submit();

@@ -102,12 +102,31 @@ front_end_reservation:
     fill_data_message: Por favor, complete los datos para agilizar la realización de la actividad en la fecha prevista
     customer_address: Dirección del cliente
     data_of_the_participants: Datos de los participantes en las actividades
+    address_street: Calle
+    address_number: Número
+    address_complement: Complemento (piso y puerta)
+    address_city: Ciudad
+    address_state: Provincia
+    address_zip: Código postal
+    address_country: País
     participant: Participante
+    participant_name: Nombre
+    participant_surname: Apellidos
+    participant_document_id: DNI / Pasaporte
+    participant_phone_number: Teléfono
+    participant_email: Correo electrónico
+    participant_height: Altura (cm)
+    participant_weight: Peso (kg)
     update_data_button: Actualizar datos
+    error_updating_reservation: Error actualizando reserva
+    reservation_updated_title: Actualización de datos
+    reservation_updated_message: Los datos se han actualizado correctamente
+    payment_method_not_selected: Debe indicar la forma de pago
 front_end_activities:
-  activities_title: Actividades y/o excursiones
+  activities_title: Actividades y excursiones
   from: Desde
   book: Reservar
+  error_loading_data: Error obteniendo la información
   activity_page:
     reservation_title: Reserva
     multiple_dates_choose_date_title: Seleccionar la fecha
@@ -150,6 +169,8 @@ front_end_activities:
       title: Pago
       deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% del importe total del pedido
       total_title: Para confirmar el pedido se requiere el importe del total del pedido
+    error_creating_order: Error creando reserva
+    payment_method_not_selected: Debe indicar la forma de pago
   order_page:
     page_title: Pedido %1
     order_detail_title: su pedido está %1
@@ -162,6 +183,30 @@ front_end_activities:
     order_detail_customer_name: Nombre
     order_detail_customer_email: Correo electrónico
     order_detail_customer_phone_number: Teléfono(s)
+    fill_data_message: Por favor, complete los datos para agilizar la realización de la actividad en la fecha prevista
+    address_title: Dirección del cliente
+    address_street: Calle
+    address_number: Número
+    address_complement: Complemento (piso y puerta)
+    address_city: Ciudad
+    address_state: Provincia
+    address_zip: Código postal
+    address_country: País
+    data_of_the_participants: Datos de los participantes en las actividades
+    participant: Participante
+    participant_name: Nombre
+    participant_surname: Apellidos
+    participant_document_id: DNI / Pasaporte
+    participant_phone_number: Teléfono
+    participant_email: Correo electrónico
+    participant_height: Altura (cm)
+    participant_weight: Peso (kg)
+    participant_allergies_intolerances: Alergias o intolerancias
+    update_data_button: Actualizar datos
+    error_updating_reservation: Error actualizando reserva
+    reservation_updated_title: Actualización de datos
+    reservation_updated_message: Los datos se han actualizado correctamente
+    payment_method_not_selected: Debe indicar la forma de pago
     summary_title: Detalle del pedido
     summary_price: Precio
     summary_total: Total
