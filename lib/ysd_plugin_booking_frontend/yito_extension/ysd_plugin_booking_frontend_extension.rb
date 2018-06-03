@@ -19,6 +19,13 @@ module YsdPluginBookingFrontend
            :description => 'Activities have their own menus',
            :module => :booking})
 
+      SystemConfiguration::Variable.first_or_create(
+          {name: 'booking.frontend.confirmation_step_2'},
+          {value: 'false',
+           description: 'Allows to define a step to confirm a reservation. Only in case you want to ',
+           module: :booking_frontend}
+      )
+
       Site::Menu.first_or_create({:name => 'primary_links_activities'},
                                  {:title => 'Primary links activities menus',
                                            :description => 'Primary links activities menu'})

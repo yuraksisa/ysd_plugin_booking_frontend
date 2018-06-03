@@ -341,14 +341,14 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
         var locale = $.datepicker.regional["<%=session[:locale] || 'es'%>"];
         $('#driver_date_of_birth').datepicker({numberOfMonths:1,
-                dateFormat: 'dd/mm/yy',
+                //dateFormat: 'dd/mm/yy',
                 changeMonth: true,
                 changeYear: true,
                 yearRange: "-80:+0"},
             locale);
 
         $('#driver_driving_license_date').datepicker({numberOfMonths:1,
-                dateFormat: 'dd/mm/yy',
+                //dateFormat: 'dd/mm/yy',
                 changeMonth: true,
                 changeYear: true,
                 yearRange: "-80:+0"},

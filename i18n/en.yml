@@ -89,6 +89,18 @@ front_end_reservation:
     address_state: State
     address_zip: Zip
     address_country: Country
+    fieldset_driver: Driver information
+    driver_name: Name
+    driver_surname: Surname
+    driver_document_id: Document ID / Passport
+    driver_date_of_birth: Date of birth
+    driver_driving_license_number: License number
+    driver_driving_license_date: License date
+    driver_driving_license_country: License country
+    fieldset_flight: Flight information
+    flight_company: Flight Company
+    flight_number: Flight number
+    flight_time: Flight time
     participant: Participant
     participant_name: Name
     participant_surname: Surname

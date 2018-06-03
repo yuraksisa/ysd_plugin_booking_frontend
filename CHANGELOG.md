@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.41] - 2018-06-03
+### Added
+- Step 2: Confirm booking on complete information
+### Updated
+- Summary: New fields and translations
+- Complete/Summary: Date default format
+
 ## [0.1.40] - 2018-05-29
 ### Updated
 - Translations

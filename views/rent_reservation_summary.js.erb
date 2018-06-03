@@ -61,7 +61,34 @@ require(['jquery','jquery.form','jquery.formparams'],
 
   view = { // THE VIEW
       init: function() {
+        this.setupControls();
         this.setupEvents();
+      },
+      setupControls: function() {
+          <% if @booking_item_family.driver_license %>
+            $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>" ] );
+            var locale = $.datepicker.regional["<%=session[:locale] || 'es'%>"];
+            $('#driver_date_of_birth').datepicker({numberOfMonths:1,
+                    //dateFormat: 'dd/mm/yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-80:+0"},
+                locale);
+            <% unless @booking.driver_date_of_birth.nil? %>
+              $('#driver_date_of_birth').datepicker('setDate', '<%=format_date(@booking.driver_date_of_birth,@booking.customer_language)%>');
+            <% end %>
+
+            $('#driver_driving_license_date').datepicker({numberOfMonths:1,
+                    //dateFormat: 'dd/mm/yy',
+                    changeMonth: true,
+                    changeYear: true,
+                    yearRange: "-80:+0"},
+                locale);
+            <% unless @booking.driver_driving_license_date.nil? %>
+              $('#driver_driving_license_date').datepicker('setDate', '<%=format_date(@booking.driver_driving_license_date, @booking.customer_language)%>');
+            <% end %>
+          <% end %>
+
       },
       setupEvents: function() {
          $('#btn_pay').bind('click', function(){

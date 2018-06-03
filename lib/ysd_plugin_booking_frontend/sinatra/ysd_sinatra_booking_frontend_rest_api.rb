@@ -223,117 +223,122 @@ module Sinatra
                             ::Yito::Model::Booking::ShoppingCartRenting.get(session[:shopping_cart_renting_id])
                           end
 
-          # Do the process
+          # Create the order from the shopping cart
           if shopping_cart
-            # Basic data: customer, payment and comments
-            shopping_cart.customer_name = request_data['customer_name'] || request_data['driver_name']
-            shopping_cart.customer_surname = request_data['customer_surname'] || request_data['driver_surname']
-            shopping_cart.customer_email = request_data['customer_email']
-            shopping_cart.customer_phone = request_data['customer_phone']
-            shopping_cart.customer_mobile_phone = request_data['customer_mobile_phone']
-            shopping_cart.customer_document_id = request_data['customer_document_id'] || request_data['driver_document_id']
-            shopping_cart.customer_language = request_data['customer_language'] if request_data.has_key?('customer_language')
-            shopping_cart.comments = request_data['comments']
-            shopping_cart.destination_accommodation = request_data['destination_accommodation'] if request_data.has_key?('destination_accommodation')
-            shopping_cart.pay_now =  (request_data['payment'] != 'none')
-            shopping_cart.payment_method_id = (request_data['payment'] != 'none' ? request_data['payment'] : nil)
-            # Number of adults/children (accomodation)
-            shopping_cart.number_of_adults = request_data['number_of_adults'] if request_data.has_key?('number_of_adults')
-            shopping_cart.number_of_children = request_data['number_of_children'] if request_data.has_key?('number_of_children')
-            # Driver data (car/bike/truck renting)
-            shopping_cart.driver_name = request_data['driver_name'] if request_data.has_key?('driver_name')
-            shopping_cart.driver_surname = request_data['driver_surname']  if request_data.has_key?('driver_surname')
-            shopping_cart.driver_document_id = request_data['driver_document_id'] if request_data.has_key?('driver_document_id')
-            shopping_cart.driver_date_of_birth = parse_date(request_data['driver_date_of_birth'], shopping_cart.customer_language)  if request_data.has_key?('driver_date_of_birth') and !request_data['driver_date_of_birth'].nil? and !request_data['driver_date_of_birth'].to_s.empty?
-            shopping_cart.driver_driving_license_number = request_data['driver_driving_license_number'] if request_data.has_key?('driver_driving_license_number')
-            shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_date') and !request_data['driver_driving_license_date'].nil? and !request_data['driver_driving_license_date'].to_s.empty?
-            shopping_cart.driver_driving_license_country = request_data['driver_driving_license_country'] if request_data.has_key?('driver_driving_license_country')
-            shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_expiration_date') and !request_data['driver_driving_license_expiration_date'].nil? and !request_data['driver_driving_license_expiration_date'].to_s.empty?
-
-            booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
-            if booking_item_family and booking_item_family.driver_date_of_birth
-              shopping_cart.driver_age = BookingDataSystem::Booking.completed_years(shopping_cart.date_from,
-                                                                                    shopping_cart.driver_date_of_birth) unless shopping_cart.driver_date_of_birth.nil?
-            end
-            if booking_item_family and booking_item_family.driver_license
-              shopping_cart.driver_driving_license_years = BookingDataSystem::Booking.completed_years(shopping_cart.date_from,
-                                                                                                      shopping_cart.driver_driving_license_date) unless shopping_cart.driver_driving_license_date.nil?
-            end
-
-            shopping_cart.calculate_cost(true, true) # Calculate cost using driver real date of birth and driving license date
-
-            if shopping_cart.driver_address.nil?
-              shopping_cart.driver_address = LocationDataSystem::Address.new
-            end
-            shopping_cart.driver_address.street = request_data['street'] if request_data.has_key?('street')
-            shopping_cart.driver_address.number = request_data['number']  if request_data.has_key?('number')
-            shopping_cart.driver_address.complement = request_data['complement']  if request_data.has_key?('complement')
-            shopping_cart.driver_address.city = request_data['city']  if request_data.has_key?('city')
-            shopping_cart.driver_address.state = request_data['state']  if request_data.has_key?('state')
-            shopping_cart.driver_address.country = request_data['country']  if request_data.has_key?('country')
-            shopping_cart.driver_address.zip = request_data['zip']  if request_data.has_key?('zip')
-            # Additional driver
-            shopping_cart.additional_driver_1_name = request_data['additional_driver_1_name'] if request_data.has_key?('additional_driver_1_name')
-            shopping_cart.additional_driver_1_surname = request_data['additional_driver_1_surname'] if request_data.has_key?('additional_driver_1_surname')
-            shopping_cart.additional_driver_1_document_id = request_data['additional_driver_1_document_id'] if request_data.has_key?('additional_driver_1_document_id')
-            shopping_cart.additional_driver_1_document_id_date = parse_date(request_data['additional_driver_1_document_id_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_date') and !request_data['additional_driver_1_document_id_date'].nil? and !request_data['additional_driver_1_document_id_date'].to_s.empty?
-            shopping_cart.additional_driver_1_document_id_expiration_date = parse_date(request_data['additional_driver_1_document_id_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_expiration_date') and !request_data['additional_driver_1_document_id_expiration_date'].nil? and !request_data['additional_driver_1_document_id_expiration_date'].to_s.empty?
-            shopping_cart.additional_driver_1_origin_country = request_data['additional_driver_1_origin_country'] if request_data.has_key?('additional_driver_1_origin_country')
-            shopping_cart.additional_driver_1_date_of_birth = parse_date(request_data['additional_driver_1_date_of_birth'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_date_of_birth') and !request_data['additional_driver_1_date_of_birth'].nil? and !request_data['additional_driver_1_date_of_birth'].to_s.empty?
-            shopping_cart.additional_driver_1_age = age(Date.today, shopping_cart.additional_driver_1_date_of_birth) if !shopping_cart.additional_driver_1_date_of_birth.nil?
-            shopping_cart.additional_driver_1_driving_license_number = request_data['additional_driver_1_driving_license_number'] if request_data.has_key?('additional_driver_1_driving_license_number')
-            shopping_cart.additional_driver_1_driving_license_date = parse_date(request_data['additional_driver_1_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_date') and !request_data['additional_driver_1_driving_license_date'].nil? and !request_data['additional_driver_1_driving_license_date'].to_s.empty?
-            shopping_cart.additional_driver_1_driving_license_country = request_data['additional_driver_1_driving_license_country'] if request_data.has_key?('additional_driver_1_driving_license_country')
-            shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_expiration_date') and !request_data['additional_driver_1_driving_license_expiration_date'].nil? and !request_data['additional_driver_1_driving_license_expiration_date'].to_s.empty?
-            shopping_cart.additional_driver_1_phone = request_data['additional_driver_1_phone'] if request_data.has_key?('additional_driver_1_phone')
-            shopping_cart.additional_driver_1_email = request_data['additional_driver_1_email'] if request_data.has_key?('additional_driver_1_email')
-            # Flight
-            shopping_cart.flight_airport_origin = request_data['flight_airport_origin'] if request_data.has_key?('flight_airport_origin')
-            shopping_cart.flight_company = request_data['flight_company'] if request_data.has_key?('flight_company')
-            shopping_cart.flight_number = request_data['flight_number'] if request_data.has_key?('flight_number')
-            shopping_cart.flight_time = request_data['flight_time'] if request_data.has_key?('flight_time')
-            shopping_cart.flight_airport_destination = request_data['flight_airport_destination'] if request_data.has_key?('flight_airport_destination')
-            shopping_cart.flight_company_departure = request_data['flight_company_departure'] if request_data.has_key?('flight_company_departure')
-            shopping_cart.flight_number_departure = request_data['flight_number_departure'] if request_data.has_key?('flight_number_departure')
-            shopping_cart.flight_time_departure = request_data['flight_time_departure'] if request_data.has_key?('flight_time_departure')
-            begin
-              shopping_cart.save
-            rescue DataMapper::SaveFailureError => error
-              unless shopping_cart.valid?
-                logger.error "Error saving shopping cart : #{shopping_cart.errors.inspect} -- #{shopping_cart.errors.full_messages.inspect}"
-                halt 422, {error: shopping_cart.errors.full_messages}.to_json
+            shopping_cart.transaction do
+              booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
+              # Basic data: customer, payment and comments
+              shopping_cart.customer_name = request_data['customer_name'] || request_data['driver_name']
+              shopping_cart.customer_surname = request_data['customer_surname'] || request_data['driver_surname']
+              shopping_cart.customer_email = request_data['customer_email']
+              shopping_cart.customer_phone = request_data['customer_phone']
+              shopping_cart.customer_mobile_phone = request_data['customer_mobile_phone']
+              shopping_cart.customer_document_id = request_data['customer_document_id'] || request_data['driver_document_id']
+              shopping_cart.customer_language = request_data['customer_language'] if request_data.has_key?('customer_language')
+              shopping_cart.comments = request_data['comments']
+              shopping_cart.destination_accommodation = request_data['destination_accommodation'] if request_data.has_key?('destination_accommodation')
+              shopping_cart.pay_now =  (request_data['payment'] != 'none')
+              shopping_cart.payment_method_id = (request_data['payment'] != 'none' ? request_data['payment'] : nil)
+              # Number of adults/children (accomodation)
+              shopping_cart.number_of_adults = request_data['number_of_adults'] if request_data.has_key?('number_of_adults')
+              shopping_cart.number_of_children = request_data['number_of_children'] if request_data.has_key?('number_of_children')
+              # Driver data (car/bike/truck renting)
+              if booking_item_family and booking_item_family.driver
+                shopping_cart.driver_name = request_data['driver_name'] if request_data.has_key?('driver_name')
+                shopping_cart.driver_surname = request_data['driver_surname']  if request_data.has_key?('driver_surname')
+                shopping_cart.driver_document_id = request_data['driver_document_id'] if request_data.has_key?('driver_document_id')
+                shopping_cart.driver_date_of_birth = parse_date(request_data['driver_date_of_birth'], shopping_cart.customer_language)  if request_data.has_key?('driver_date_of_birth') and !request_data['driver_date_of_birth'].nil? and !request_data['driver_date_of_birth'].to_s.empty?
+                shopping_cart.driver_driving_license_number = request_data['driver_driving_license_number'] if request_data.has_key?('driver_driving_license_number')
+                shopping_cart.driver_driving_license_date = parse_date(request_data['driver_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_date') and !request_data['driver_driving_license_date'].nil? and !request_data['driver_driving_license_date'].to_s.empty?
+                shopping_cart.driver_driving_license_country = request_data['driver_driving_license_country'] if request_data.has_key?('driver_driving_license_country')
+                shopping_cart.driver_driving_license_expiration_date = parse_date(request_data['driver_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('driver_driving_license_expiration_date') and !request_data['driver_driving_license_expiration_date'].nil? and !request_data['driver_driving_license_expiration_date'].to_s.empty?
+                if booking_item_family and booking_item_family.driver_date_of_birth
+                  shopping_cart.driver_age = BookingDataSystem::Booking.completed_years(shopping_cart.date_from,
+                                                                                        shopping_cart.driver_date_of_birth) unless shopping_cart.driver_date_of_birth.nil?
+                end
+                if booking_item_family and booking_item_family.driver_license
+                  shopping_cart.driver_driving_license_years = BookingDataSystem::Booking.completed_years(shopping_cart.date_from,
+                                                                                                          shopping_cart.driver_driving_license_date) unless shopping_cart.driver_driving_license_date.nil?
+                end
+                shopping_cart.calculate_cost(true, true) # Calculate cost using driver real date of birth and driving license date
               end
-              if shopping_cart.driver_address and !shopping_cart.driver_address.valid?
-                logger.error "Error saving shopping cart - driver address : #{shopping_cart.driver_address.errors.inspect} -- #{shopping_cart.driver_address.errors.full_messages.inspect}"
-                halt 422, {error: shopping_cart.driver_address.errors.full_messages}.to_json
+              # Address
+              if shopping_cart.driver_address.nil?
+                shopping_cart.driver_address = LocationDataSystem::Address.new
               end
-              logger.error "Error during checkout process. Details: #{error.resource.inspect} #{error.resource.errors.full_messages.inspect}"
-              halt 422, {error: error.resource.errors.full_messages}.to_json
+              shopping_cart.driver_address.street = request_data['street'] if request_data.has_key?('street')
+              shopping_cart.driver_address.number = request_data['number']  if request_data.has_key?('number')
+              shopping_cart.driver_address.complement = request_data['complement']  if request_data.has_key?('complement')
+              shopping_cart.driver_address.city = request_data['city']  if request_data.has_key?('city')
+              shopping_cart.driver_address.state = request_data['state']  if request_data.has_key?('state')
+              shopping_cart.driver_address.country = request_data['country']  if request_data.has_key?('country')
+              shopping_cart.driver_address.zip = request_data['zip']  if request_data.has_key?('zip')
+              # Additional driver
+              if booking_item_family and booking_item_family.driver_license
+                shopping_cart.additional_driver_1_name = request_data['additional_driver_1_name'] if request_data.has_key?('additional_driver_1_name')
+                shopping_cart.additional_driver_1_surname = request_data['additional_driver_1_surname'] if request_data.has_key?('additional_driver_1_surname')
+                shopping_cart.additional_driver_1_document_id = request_data['additional_driver_1_document_id'] if request_data.has_key?('additional_driver_1_document_id')
+                shopping_cart.additional_driver_1_document_id_date = parse_date(request_data['additional_driver_1_document_id_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_date') and !request_data['additional_driver_1_document_id_date'].nil? and !request_data['additional_driver_1_document_id_date'].to_s.empty?
+                shopping_cart.additional_driver_1_document_id_expiration_date = parse_date(request_data['additional_driver_1_document_id_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_document_id_expiration_date') and !request_data['additional_driver_1_document_id_expiration_date'].nil? and !request_data['additional_driver_1_document_id_expiration_date'].to_s.empty?
+                shopping_cart.additional_driver_1_origin_country = request_data['additional_driver_1_origin_country'] if request_data.has_key?('additional_driver_1_origin_country')
+                shopping_cart.additional_driver_1_date_of_birth = parse_date(request_data['additional_driver_1_date_of_birth'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_date_of_birth') and !request_data['additional_driver_1_date_of_birth'].nil? and !request_data['additional_driver_1_date_of_birth'].to_s.empty?
+                shopping_cart.additional_driver_1_age = age(Date.today, shopping_cart.additional_driver_1_date_of_birth) if !shopping_cart.additional_driver_1_date_of_birth.nil?
+                shopping_cart.additional_driver_1_driving_license_number = request_data['additional_driver_1_driving_license_number'] if request_data.has_key?('additional_driver_1_driving_license_number')
+                shopping_cart.additional_driver_1_driving_license_date = parse_date(request_data['additional_driver_1_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_date') and !request_data['additional_driver_1_driving_license_date'].nil? and !request_data['additional_driver_1_driving_license_date'].to_s.empty?
+                shopping_cart.additional_driver_1_driving_license_country = request_data['additional_driver_1_driving_license_country'] if request_data.has_key?('additional_driver_1_driving_license_country')
+                shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_expiration_date') and !request_data['additional_driver_1_driving_license_expiration_date'].nil? and !request_data['additional_driver_1_driving_license_expiration_date'].to_s.empty?
+                shopping_cart.additional_driver_1_phone = request_data['additional_driver_1_phone'] if request_data.has_key?('additional_driver_1_phone')
+                shopping_cart.additional_driver_1_email = request_data['additional_driver_1_email'] if request_data.has_key?('additional_driver_1_email')
+              end
+              # Flight
+              if booking_item_family and booking_item_family.flight
+                shopping_cart.flight_airport_origin = request_data['flight_airport_origin'] if request_data.has_key?('flight_airport_origin')
+                shopping_cart.flight_company = request_data['flight_company'] if request_data.has_key?('flight_company')
+                shopping_cart.flight_number = request_data['flight_number'] if request_data.has_key?('flight_number')
+                shopping_cart.flight_time = request_data['flight_time'] if request_data.has_key?('flight_time')
+                shopping_cart.flight_airport_destination = request_data['flight_airport_destination'] if request_data.has_key?('flight_airport_destination')
+                shopping_cart.flight_company_departure = request_data['flight_company_departure'] if request_data.has_key?('flight_company_departure')
+                shopping_cart.flight_number_departure = request_data['flight_number_departure'] if request_data.has_key?('flight_number_departure')
+                shopping_cart.flight_time_departure = request_data['flight_time_departure'] if request_data.has_key?('flight_time_departure')
+              end
+              begin
+                shopping_cart.save
+              rescue DataMapper::SaveFailureError => error
+                unless shopping_cart.valid?
+                  logger.error "Error saving shopping cart : #{shopping_cart.errors.inspect} -- #{shopping_cart.errors.full_messages.inspect}"
+                  halt 422, {error: shopping_cart.errors.full_messages}.to_json
+                end
+                if shopping_cart.driver_address and !shopping_cart.driver_address.valid?
+                  logger.error "Error saving shopping cart - driver address : #{shopping_cart.driver_address.errors.inspect} -- #{shopping_cart.driver_address.errors.full_messages.inspect}"
+                  halt 422, {error: shopping_cart.driver_address.errors.full_messages}.to_json
+                end
+                logger.error "Error during checkout process. Details: #{error.resource.inspect} #{error.resource.errors.full_messages.inspect}"
+                halt 422, {error: error.resource.errors.full_messages}.to_json
+              end
+
+              logger.debug "Updated shopping cart"
+
+              # Creates the booking
+              booking = nil
+              begin
+                booking = BookingDataSystem::Booking.create_from_shopping_cart(shopping_cart,
+                                                                               request.env["HTTP_USER_AGENT"],
+                                                                               false)
+                shopping_cart.destroy # Destroy the converted shopping cart
+              rescue DataMapper::SaveFailureError => error
+                logger.error "Error creating booking from shopping cart #{error.inspect}"
+                logger.error "Error details: #{error.resource.errors.full_messages.inspect}"
+                halt 422, {error: error.resource.errors.full_messages}.to_json
+              end
+              logger.debug "Created booking"
+              # Remove the shopping_cart_renting_id from the session
+              session.delete(:shopping_cart_renting_id)
+              # Add the booking_id to the session
+              session[:booking_id] = booking.id
+              # Prepare response
+              content_type :json
+              booking.to_json(only: [:free_access_id, :pay_now, :payment, :payment_method_id, :total_cost, :customer_email, :customer_name, :customer_surname])
             end
-
-            logger.debug "Updated shopping cart"
-
-            # Creates the booking
-            booking = nil
-            begin
-              booking = BookingDataSystem::Booking.create_from_shopping_cart(shopping_cart,
-                                                                             request.env["HTTP_USER_AGENT"],
-                                                                             false)
-              shopping_cart.destroy # Destroy the converted shopping cart
-            rescue DataMapper::SaveFailureError => error
-              logger.error "Error creating booking from shopping cart #{error.inspect}"
-              logger.error "Error details: #{error.resource.errors.full_messages.inspect}"
-              halt 422, {error: error.resource.errors.full_messages}.to_json
-            end
-
-            logger.debug "Created booking"
-            # Remove the shopping_cart_renting_id from the session
-            session.delete(:shopping_cart_renting_id)
-            # Add the booking_id to the session
-            session[:booking_id] = booking.id
-            # Prepare response
-            content_type :json
-            booking.to_json(only: [:free_access_id, :pay_now, :payment, :payment_method_id, :total_cost, :customer_email, :customer_name, :customer_surname])
           else
             logger.error "Shopping cart does not exist"
             content_type 'json'
@@ -514,48 +519,50 @@ module Sinatra
 
           if @booking = BookingDataSystem::Booking.get_by_free_access_id(params[:free_access_id])
             @booking.transaction do
-              begin
-                if model_request.has_key?(:customer_address)
-                  @booking.driver_address = LocationDataSystem::Address.new if @booking.driver_address.nil?
-                  @booking.driver_address.street = model_request[:customer_address][:street] if model_request[:customer_address].has_key?(:street)
-                  @booking.driver_address.number = model_request[:customer_address][:number] if model_request[:customer_address].has_key?(:number)
-                  @booking.driver_address.complement = model_request[:customer_address][:complement] if model_request[:customer_address].has_key?(:complement)
-                  @booking.driver_address.city = model_request[:customer_address][:city] if model_request[:customer_address].has_key?(:city)
-                  @booking.driver_address.state = model_request[:customer_address][:state] if model_request[:customer_address].has_key?(:state)
-                  @booking.driver_address.country = model_request[:customer_address][:country] if model_request[:customer_address].has_key?(:country)
-                  @booking.driver_address.zip = model_request[:customer_address][:zip] if model_request[:customer_address].has_key?(:zip)
-                  @booking.driver_address.save
-                  @booking.save
-                end
-                if model_request.has_key?(:booking_line_resources)
-                  model_request[:booking_line_resources].each do |item|
-                    if booking_line_resource = BookingDataSystem::BookingLineResource.get(item[:id])
-                      booking_line_resource.resource_user_name = item[:resource_user_name] if item.has_key?(:resource_user_name)
-                      booking_line_resource.resource_user_surname = item[:resource_user_surname] if item.has_key?(:resource_user_surname)
-                      booking_line_resource.resource_user_document_id = item[:resource_user_document_id] if item.has_key?(:resource_user_document_id)
-                      booking_line_resource.resource_user_phone = item[:resource_user_phone] if item.has_key?(:resource_user_phone)
-                      booking_line_resource.resource_user_email = item[:resource_user_email] if item.has_key?(:resource_user_email)
-                      booking_line_resource.customer_height = item[:customer_height] if item.has_key?(:customer_height)
-                      booking_line_resource.customer_weight = item[:customer_weight] if item.has_key?(:customer_weight)
-                      booking_line_resource.resource_user_2_name = item[:resource_user_2_name] if item.has_key?(:resource_user_2_name)
-                      booking_line_resource.resource_user_2_surname = item[:resource_user_2_surname] if item.has_key?(:resource_user_2_surname)
-                      booking_line_resource.resource_user_2_document_id = item[:resource_user_2_document_id] if item.has_key?(:resource_user_2_document_id)
-                      booking_line_resource.resource_user_2_phone = item[:resource_user_2_phone] if item.has_key?(:resource_user_2_phone)
-                      booking_line_resource.resource_user_2_email = item[:resource_user_2_email] if item.has_key?(:resource_user_2_email)
-                      booking_line_resource.customer_2_height = item[:customer_2_height] if item.has_key?(:customer_2_height)
-                      booking_line_resource.customer_2_weight = item[:customer_2_weight] if item.has_key?(:customer_2_weight)
-                      booking_line_resource.save
-                    end
-                  end
-                end
-              rescue DataMapper::SaveFailureError => error
-                logger.error "Error updating order. #{@booking.inspect} #{@booking.errors.full_messages.inspect}"
-                raise error
-              end
+              # Updates the booking
+              update_booking_from_request(model_request)
             end
+            # Prepare response
             status 200
             content_type :json
             true.to_json
+          else
+            halt 404
+          end
+
+        end
+
+        #
+        # Reservation confirm (step 2) : Only for mybooking instances that uses confirmation step 2
+        #
+        app.put '/api/booking/frontend/booking/:free_access_id/confirm' do
+
+          if SystemConfiguration::Variable.get_value('booking.frontend.confirmation_step_2', 'false').to_bool
+
+            # Extract the data parameters
+            begin
+              request.body.rewind
+              model_request = JSON.parse(URI.unescape(request.body.read)).symbolize_keys!
+            rescue JSON::ParserError
+              halt 422, {error: 'Invalid request. Expected a JSON with data params'}.to_json
+            end
+
+            if @booking = BookingDataSystem::Booking.get_by_free_access_id(params[:free_access_id])
+              @booking.transaction do
+                # Updates the booking
+                update_booking_from_request(model_request)
+                # Confirm the reservation
+                @booking.confirm!
+              end
+              # Prepare response
+              status 200
+              content_type :json
+              true.to_json
+            else
+              halt 404
+            end
+
+
           else
             halt 404
           end

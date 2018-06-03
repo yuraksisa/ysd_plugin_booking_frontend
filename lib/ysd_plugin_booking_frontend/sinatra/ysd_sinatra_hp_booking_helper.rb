@@ -489,6 +489,17 @@ module Sinatra
       end
 
       #
+      # Format date
+      #
+      def format_date(date, language=nil)
+        if language and MIDDLE_ENDIAN_LANGUAGES.include?(language)
+          return date.strftime('%m/%d/%Y')
+        else
+          return date.strftime('%d/%m/%Y')
+        end
+      end
+
+      #
       # Calculates age
       #
       def age(date_of_reference, date_of_birth)
@@ -498,6 +509,122 @@ module Sinatra
           return nil
         else
           (date_of_reference.year-date_of_birth.year) + (date_of_birth.month>date_of_reference.month ? 1:0)
+        end
+
+      end
+
+      #
+      # Updates the booking
+      #
+      def update_booking_from_request(model_request)
+
+        begin
+          booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
+          @booking.destination_accommodation = model_request[:destination_accommodation] if model_request.has_key?(:destination_accommodation)
+          # Driver/Contact data
+          if booking_item_family.driver
+            @booking.driver_name = model_request[:driver_name] if model_request.has_key?(:driver_name)
+            @booking.driver_surname = model_request[:driver_surname]  if model_request.has_key?(:driver_surname)
+            @booking.driver_document_id = model_request[:driver_document_id] if model_request.has_key?(:driver_document_id)
+            @booking.driver_document_id_date = parse_date(model_request[:driver_document_id_date], @booking.customer_language) if model_request.has_key?(:driver_document_id_date) and
+                                                                                                                                 !model_request[:driver_document_id_date].nil? and
+                                                                                                                                 !model_request[:driver_document_id_date].to_s.empty?
+            @booking.driver_date_of_birth = parse_date(model_request[:driver_date_of_birth], @booking.customer_language) if model_request.has_key?(:driver_date_of_birth) and
+                !model_request[:driver_date_of_birth].nil? and !model_request[:driver_date_of_birth].to_s.empty?
+            @booking.driver_driving_license_number = model_request[:driver_driving_license_number] if model_request.has_key?(:driver_driving_license_number)
+            @booking.driver_driving_license_date = parse_date(model_request[:driver_driving_license_date], @booking.customer_language) if model_request.has_key?(:driver_driving_license_date) and
+                !model_request[:driver_driving_license_date].nil? and
+                !model_request[:driver_driving_license_date].to_s.empty?
+            @booking.driver_driving_license_country = model_request[:driver_driving_license_country] if model_request.has_key?(:driver_driving_license_country)
+            @booking.driver_driving_license_expiration_date = parse_date(model_request[:driver_driving_license_expiration_date], @booking.customer_language) if model_request.has_key?(:driver_driving_license_expiration_date) and
+                !model_request[:driver_driving_license_expiration_date].nil? and
+                !model_request[:driver_driving_license_expiration_date].to_s.empty?
+            if booking_item_family and booking_item_family.driver_date_of_birth
+              @booking.driver_age = BookingDataSystem::Booking.completed_years(@booking.date_from,
+                                                                               @booking.driver_date_of_birth) unless @booking.driver_date_of_birth.nil?
+            end
+            if booking_item_family and booking_item_family.driver_license
+              @booking.driver_driving_license_years = BookingDataSystem::Booking.completed_years(@booking.date_from,
+                                                                                                 @booking.driver_driving_license_date) unless @booking.driver_driving_license_date.nil?
+            end
+            @booking.calculate_cost(true, true) # Calculate cost using driver real date of birth and driving license date
+          end
+          # Customer address
+          if model_request.has_key?(:customer_address)
+            @booking.driver_address = LocationDataSystem::Address.new if @booking.driver_address.nil?
+            @booking.driver_address.street = model_request[:customer_address][:street] if model_request[:customer_address].has_key?(:street)
+            @booking.driver_address.number = model_request[:customer_address][:number] if model_request[:customer_address].has_key?(:number)
+            @booking.driver_address.complement = model_request[:customer_address][:complement] if model_request[:customer_address].has_key?(:complement)
+            @booking.driver_address.city = model_request[:customer_address][:city] if model_request[:customer_address].has_key?(:city)
+            @booking.driver_address.state = model_request[:customer_address][:state] if model_request[:customer_address].has_key?(:state)
+            @booking.driver_address.country = model_request[:customer_address][:country] if model_request[:customer_address].has_key?(:country)
+            @booking.driver_address.zip = model_request[:customer_address][:zip] if model_request[:customer_address].has_key?(:zip)
+            @booking.driver_address.save
+          end
+          # Additional driver
+          if booking_item_family and booking_item_family.driver_license
+            @booking.additional_driver_1_name = model_request[:additional_driver_1_name] if model_request.has_key?(:additional_driver_1_name)
+            @booking.additional_driver_1_surname = model_request[:additional_driver_1_surname] if model_request.has_key?(:additional_driver_1_surname)
+            @booking.additional_driver_1_document_id = model_request[:additional_driver_1_document_id] if model_request.has_key?(:additional_driver_1_document_id)
+            @booking.additional_driver_1_document_id_date = parse_date(model_request[:additional_driver_1_document_id_date], @booking.customer_language) if model_request.has_key?(:additional_driver_1_document_id_date) and
+                !model_request[:additional_driver_1_document_id_date].nil? and
+                !model_request[:additional_driver_1_document_id_date].to_s.empty?
+            @booking.additional_driver_1_document_id_expiration_date = parse_date(model_request[:additional_driver_1_document_id_expiration_date], @booking.customer_language) if model_request.has_key?(:additional_driver_1_document_id_expiration_date) and
+                !model_request[:additional_driver_1_document_id_expiration_date].nil? and
+                !model_request[:additional_driver_1_document_id_expiration_date].to_s.empty?
+            @booking.additional_driver_1_origin_country = model_request[:additional_driver_1_origin_country] if model_request.has_key?(:additional_driver_1_origin_country)
+            @booking.additional_driver_1_date_of_birth = parse_date(model_request[:additional_driver_1_date_of_birth], @booking.customer_language) if model_request.has_key?(:additional_driver_1_date_of_birth) and
+                !model_request[:additional_driver_1_date_of_birth].nil? and
+                !model_request[:additional_driver_1_date_of_birth].to_s.empty?
+            @booking.additional_driver_1_age = age(Date.today, @booking.additional_driver_1_date_of_birth) if !@booking.additional_driver_1_date_of_birth.nil?
+            @booking.additional_driver_1_driving_license_number = model_request[:additional_driver_1_driving_license_number] if model_request.has_key?(:additional_driver_1_driving_license_number)
+            @booking.additional_driver_1_driving_license_date = parse_date(model_request[:additional_driver_1_driving_license_date], @booking.customer_language) if model_request.has_key?(:additional_driver_1_driving_license_date) and
+                !model_request[:additional_driver_1_driving_license_date].nil? and
+                !model_request[:additional_driver_1_driving_license_date].to_s.empty?
+            @booking.additional_driver_1_driving_license_country = model_request[:additional_driver_1_driving_license_country] if model_request.has_key?(:additional_driver_1_driving_license_country)
+            @booking.additional_driver_1_driving_license_expiration_date = parse_date(model_request[:additional_driver_1_driving_license_expiration_date], @booking.customer_language) if model_request.has_key?(:additional_driver_1_driving_license_expiration_date) and
+                !model_request[:additional_driver_1_driving_license_expiration_date].nil? and
+                !model_request[:additional_driver_1_driving_license_expiration_date].to_s.empty?
+            @booking.additional_driver_1_phone = model_request[:additional_driver_1_phone] if model_request.has_key?(:additional_driver_1_phone)
+            @booking.additional_driver_1_email = model_request[:additional_driver_1_email] if model_request.has_key?(:additional_driver_1_email)
+          end
+          # Flight
+          if booking_item_family and booking_item_family.flight
+            @booking.flight_airport_origin = model_request[:flight_airport_origin] if model_request.has_key?(:flight_airport_origin)
+            @booking.flight_company = model_request[:flight_company] if model_request.has_key?(:flight_company)
+            @booking.flight_number = model_request[:flight_number] if model_request.has_key?(:flight_number)
+            @booking.flight_time = model_request[:flight_time] if model_request.has_key?(:flight_time)
+            @booking.flight_airport_destination = model_request[:flight_airport_destination] if model_request.has_key?(:flight_airport_destination)
+            @booking.flight_company_departure = model_request[:flight_company_departure] if model_request.has_key?(:flight_company_departure)
+            @booking.flight_number_departure = model_request[:flight_number_departure] if model_request.has_key?(:flight_number_departure)
+            @booking.flight_time_departure = model_request[:flight_time_departure] if model_request.has_key?(:flight_time_departure)
+          end
+          @booking.save
+          # Line resource insformation
+          if model_request.has_key?(:booking_line_resources)
+            model_request[:booking_line_resources].each do |item|
+              if booking_line_resource = BookingDataSystem::BookingLineResource.get(item[:id])
+                booking_line_resource.resource_user_name = item[:resource_user_name] if item.has_key?(:resource_user_name)
+                booking_line_resource.resource_user_surname = item[:resource_user_surname] if item.has_key?(:resource_user_surname)
+                booking_line_resource.resource_user_document_id = item[:resource_user_document_id] if item.has_key?(:resource_user_document_id)
+                booking_line_resource.resource_user_phone = item[:resource_user_phone] if item.has_key?(:resource_user_phone)
+                booking_line_resource.resource_user_email = item[:resource_user_email] if item.has_key?(:resource_user_email)
+                booking_line_resource.customer_height = item[:customer_height] if item.has_key?(:customer_height)
+                booking_line_resource.customer_weight = item[:customer_weight] if item.has_key?(:customer_weight)
+                booking_line_resource.resource_user_2_name = item[:resource_user_2_name] if item.has_key?(:resource_user_2_name)
+                booking_line_resource.resource_user_2_surname = item[:resource_user_2_surname] if item.has_key?(:resource_user_2_surname)
+                booking_line_resource.resource_user_2_document_id = item[:resource_user_2_document_id] if item.has_key?(:resource_user_2_document_id)
+                booking_line_resource.resource_user_2_phone = item[:resource_user_2_phone] if item.has_key?(:resource_user_2_phone)
+                booking_line_resource.resource_user_2_email = item[:resource_user_2_email] if item.has_key?(:resource_user_2_email)
+                booking_line_resource.customer_2_height = item[:customer_2_height] if item.has_key?(:customer_2_height)
+                booking_line_resource.customer_2_weight = item[:customer_2_weight] if item.has_key?(:customer_2_weight)
+                booking_line_resource.save
+              end
+            end
+          end
+        rescue DataMapper::SaveFailureError => error
+          logger.error "Error updating order. #{@booking.inspect} #{@booking.errors.full_messages.inspect}"
+          raise error
         end
 
       end

@@ -109,6 +109,18 @@ front_end_reservation:
     address_state: Provincia
     address_zip: Código postal
     address_country: País
+    fieldset_driver: Datos del conductor
+    driver_name: Nombre
+    driver_surname: Apellidos
+    driver_document_id: Nif / Pasaporte
+    driver_date_of_birth: Fecha de nacimiento
+    driver_driving_license_number: Permiso de conducir
+    driver_driving_license_date: Fecha permiso conducir
+    driver_driving_license_country: País permiso conducir
+    fieldset_flight: Datos del vuelo
+    flight_company: Compañía
+    flight_number: Número de vuelo
+    flight_time: Hora de llegada
     participant: Participante
     participant_name: Nombre
     participant_surname: Apellidos
