@@ -48,13 +48,30 @@ require(['jquery','jquery.form','jquery.formparams'],
              alert("<%=t.front_end_reservation.summary_page.payment_method_not_selected%>");
          }
          else {
+
              var payment = '<%=@payment%>';
+
+             if ($('#accordion a').not('.collapsed').attr('data-payment-method') != 'none') {
+                 <% if @booking.can_pay_deposit? and @booking.can_pay_total? %>
+                     if (!$('#payment_amount_form input[name=payment]').is(':checked')) {
+                         alert('Debe indicar la cantidad a pagar : la paga y señal o el total');
+                         return;
+                     }
+                     payment = $('input[name=payment]:checked', '#payment_amount_form').val();
+                 <% end %>
+             }
              var paymentMethodId = $('#accordion a').not('.collapsed').attr('data-payment-method');
+             //alert('payment:'+payment+ ' '+paymentMethodId);
              model.pay(payment, paymentMethodId);
          }
      },
      btnUpdateClick: function() {
          model.update();
+     },
+     paymentMethodChanged: function() {
+         <% if @booking.can_pay_deposit? and @booking.can_pay_total? %>
+         $('#payment_amount_container').show();
+         <% end %>
      }
 
   };
@@ -69,7 +86,7 @@ require(['jquery','jquery.form','jquery.formparams'],
             $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>" ] );
             var locale = $.datepicker.regional["<%=session[:locale] || 'es'%>"];
             $('#driver_date_of_birth').datepicker({numberOfMonths:1,
-                    //dateFormat: 'dd/mm/yy',
+                    dateFormat: 'dd/mm/yy',
                     changeMonth: true,
                     changeYear: true,
                     yearRange: "-80:+0"},
@@ -79,7 +96,7 @@ require(['jquery','jquery.form','jquery.formparams'],
             <% end %>
 
             $('#driver_driving_license_date').datepicker({numberOfMonths:1,
-                    //dateFormat: 'dd/mm/yy',
+                    dateFormat: 'dd/mm/yy',
                     changeMonth: true,
                     changeYear: true,
                     yearRange: "-80:+0"},
@@ -96,6 +113,9 @@ require(['jquery','jquery.form','jquery.formparams'],
          });
          $('#btn_update_reservation').bind('click', function(){
             controller.btnUpdateClick();
+         });
+         $('#accordion a[data-parent=#accordion]').bind('click', function() {
+              controller.paymentMethodChanged();
          });
       },
       update: function(action) {

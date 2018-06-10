@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.42] - 2018-06-10
+### Updated
+- Payment: deposit - total - deposit and total
+
 ## [0.1.41] - 2018-06-03
 ### Added
 - Step 2: Confirm booking on complete information

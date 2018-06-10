@@ -236,6 +236,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
     sendBookingRequest: function() { /** Send a booking request **/
 
+
       $.ajax({
             type: 'POST',
             url : '/api/booking/frontend/shopping-cart/checkout',
@@ -248,7 +249,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 var payment_method_id = data.payment_method_id;
                 if (payNow && payment_method_id != null && payment_method_id != '') {
                     var payment = null;
-                    if (model.sales_process.can_pay_deposit) {
+                    if (model.sales_process.can_pay_deposit && model.sales_process.can_pay_total) {
+                        payment = $('input[name=payment]:checked', '#payment_amount_form').val();
+                    }
+                    else if (model.sales_process.can_pay_deposit) {
                         payment = 'deposit';
                     }
                     else if (model.sales_process.can_pay_total) {
@@ -303,6 +307,21 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           }
       },
 
+      paymentChanged: function() {
+
+          if ($('#accordion a.collapsed').attr('data-payment-method') == 'none') {
+              $('#btn_reservation').html('<%=t.front_end_reservation.request_reservation%>');
+              $('#payment_amount_container').hide();
+          }
+          else {
+              $('#btn_reservation').html('<%=t.front_end_reservation.booking_detail_pay_button%>');
+              if (model.sales_process.can_pay_deposit && model.sales_process.can_pay_total) {
+                  $('#payment_amount_container').show();
+              }
+          }
+
+      },
+
       submitReservationForm: function() {
           if ($('#accept').is(':checked')) {
 
@@ -311,6 +330,14 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                       alert('Debe indicar forma de pago');
                   }
                   else {
+                      if ($('#accordion a').not('.collapsed').attr('data-payment-method') != 'none') {
+                          if (model.sales_process.can_pay_deposit && model.sales_process.can_pay_total) {
+                              if (!$('#payment_amount_form input[name=payment]').is(':checked')) {
+                                  alert('Debe indicar la cantidad a pagar : la paga y señal o el total');
+                                  return;
+                              }
+                          }
+                      }
                       $('form[name=reservation_form]').submit();
                   }
               }
@@ -341,14 +368,14 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
         var locale = $.datepicker.regional["<%=session[:locale] || 'es'%>"];
         $('#driver_date_of_birth').datepicker({numberOfMonths:1,
-                //dateFormat: 'dd/mm/yy',
+                dateFormat: 'dd/mm/yy',
                 changeMonth: true,
                 changeYear: true,
                 yearRange: "-80:+0"},
             locale);
 
         $('#driver_driving_license_date').datepicker({numberOfMonths:1,
-                //dateFormat: 'dd/mm/yy',
+                dateFormat: 'dd/mm/yy',
                 changeMonth: true,
                 changeYear: true,
                 yearRange: "-80:+0"},
@@ -553,6 +580,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           $('#accordion').children().hide();
           $('#accordion').children().find('a').trigger('click');
       }
+      $('#accordion a[data-parent=#accordion]').bind('click', function() {
+          controller.paymentChanged();
+      });
     }
 
   };

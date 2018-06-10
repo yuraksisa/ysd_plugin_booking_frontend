@@ -13,6 +13,22 @@ module Sinatra
 	      app.set :bookingcharge_gateway_return_cancel, '/reserva/payment-gateway-return/cancel'
 	      app.set :bookingcharge_gateway_return_nok, '/reserva/payment-gateway-return/nok'
 
+				# =================== PRODUCTS =================================================================
+
+				#
+				# Step 1 - B : Products
+				#
+				app.route :get, :post, ['/reserva/productos', '/book/products'] do
+
+				end
+
+				#
+				# Step 2 - B : Product
+				#
+				app.route :get, :post, ['/reserva/producto/:id', 'book/produc/:id'] do
+
+				end
+
   		  # =================== RESERVATION PROCESS (FRONT-END) ==========================================
 
       	#

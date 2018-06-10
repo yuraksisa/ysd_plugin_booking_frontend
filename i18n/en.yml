@@ -44,6 +44,9 @@ front_end_reservation:
   credit_card_payment: Credit card (to confirm booking a %1% deposit is required)
   paypal_payment: PayPal (to confirm booking a %1% deposit is required)
   conditions_not_read: We\'re sorry. You haven't agreed with our rental terms
+  payment_amount: Payment amount
+  payment_amount_deposit: Deposit
+  payment_amount_total: Total
   form_errors: Please, check the form. It contains invalid data.
   product_information_title: Product information
   products_information_title: Products information

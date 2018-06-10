@@ -406,15 +406,17 @@ module Sinatra
         #
         # TODO : Take into account sales channel payment configuration
         #
+        booking_payment = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool
+        booking_payment_amount = SystemConfiguration::Variable.get_value('booking.payment_amount_setup', 'deposit')
         if shopping_cart.sales_channel_code.nil? or shopping_cart.sales_channel_code.empty?
           payment_cadence = BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
-          can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool && payment_cadence
-          can_pay_deposit = can_pay && (SystemConfiguration::Variable.get_value('booking.payment_amount_setup', 'deposit') == 'deposit') && payment_cadence
-          can_pay_total = can_pay && (SystemConfiguration::Variable.get_value('booking.payment_amount_setup', 'deposit') == 'total') && payment_cadence
+          can_pay = booking_payment && payment_cadence
+          can_pay_deposit = can_pay && (['deposit','deposit_and_total'].include?(booking_payment_amount)) && payment_cadence
+          can_pay_total = can_pay && (['total','deposit_and_total'].include?(booking_payment_amount)) && payment_cadence
         else
-          can_pay = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool && payment_cadence
-          can_pay_deposit = can_pay && (SystemConfiguration::Variable.get_value('booking.payment_amount_setup', 'deposit') == 'deposit') && payment_cadence
-          can_pay_total = can_pay && (SystemConfiguration::Variable.get_value('booking.payment_amount_setup', 'deposit') == 'total') && payment_cadence
+          can_pay = booking_payment && payment_cadence
+          can_pay_deposit = can_pay && (['deposit','deposit_and_total'].include?(booking_payment_amount)) && payment_cadence
+          can_pay_total = can_pay && (['total','deposit_and_total'].include?(booking_payment_amount)) && payment_cadence
         end
         server_timestamp = DateTime.now
         sales_process = {can_pay: can_pay, can_pay_deposit: can_pay_deposit, can_pay_total: can_pay_total,
@@ -472,9 +474,27 @@ module Sinatra
           return nil
         elsif /\d{2}\/\d{2}\/\d{4}/.match(date_str) # Little endian / Middle endian date format
           if language and MIDDLE_ENDIAN_LANGUAGES.include?(language)
-            return DateTime.strptime(date_str,'%m/%d/%Y')
+            begin
+              return DateTime.strptime(date_str,'%m/%d/%Y')
+            rescue ArgumentError
+              begin
+                return DateTime.strptime(date_str,'%d/%m/%Y')
+              rescue ArgumentError
+                logger.error "Invalid date #{date_str} -- #{language}"
+                return nil
+              end
+            end
           else
-            return DateTime.strptime(date_str,'%d/%m/%Y')
+            begin
+              return DateTime.strptime(date_str,'%d/%m/%Y')
+            rescue ArgumentError
+              begin
+                return DateTime.strptime(date_str,'%m/%d/%Y')
+              rescue ArgumentError
+                logger.error "Invalid date #{date_str} -- #{language}"
+                return nil
+              end
+            end
           end
         elsif /\d{4}\/\d{2}\/\d{2}/.match(date_str) # Big endian date format
           return DateTime.strptime(date_str,'%Y/%m/%d')

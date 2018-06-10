@@ -44,6 +44,9 @@ front_end_reservation:
   credit_card_payment: Credit card
   paypal_payment: PayPal
   conditions_not_read: Lo sentimos. No ha marcado que ha leído las condiciones de alquiler
+  payment_amount: Cantidad a pagar
+  payment_amount_deposit: Paga y señal
+  payment_amount_total: Total
   form_errors: Por favor, revise el formulario. Contiene datos no válidos.
   product_information_title: Informazioni sul prodotto
   products_information_title: Informazioni sul produrre
