@@ -262,9 +262,14 @@ module Sinatra
                                })
 
         booking_summary.merge!({ # Flight
+                                 flight_airport_origin: booking.flight_airport_origin,
                                  flight_company: booking.flight_company,
                                  flight_number: booking.flight_number,
-                                 flight_time: booking.flight_time
+                                 flight_time: booking.flight_time,
+                                 flight_airport_destination: booking.flight_airport_destination,
+                                 flight_company_departure: booking.flight_company_departure,
+                                 flight_number_departure: booking.flight_number_departure,
+                                 flight_time_departure: booking.flight_time_departure
                                })
 
         booking_summary.merge!({ # Payment information

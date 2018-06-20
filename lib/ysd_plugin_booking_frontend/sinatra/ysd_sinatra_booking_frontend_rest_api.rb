@@ -557,7 +557,7 @@ module Sinatra
               # Prepare response
               status 200
               content_type :json
-              true.to_json
+              booking_to_json(@booking)
             else
               halt 404
             end

@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.43] - 2018-06-20
+### Updated
+- Booking JSON : Include flight fields
+- Step 2: Confirmation - return
+
 ## [0.1.42] - 2018-06-10
 ### Updated
 - Payment: deposit - total - deposit and total
