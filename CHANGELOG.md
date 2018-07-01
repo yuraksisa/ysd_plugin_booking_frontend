@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.44] - 2018-07-01
+### Updated
+- Improve selectpicker
+- Hability to other selectors with trigger change
+- Translations
+
 ## [0.1.43] - 2018-06-20
 ### Updated
 - Booking JSON : Include flight fields
