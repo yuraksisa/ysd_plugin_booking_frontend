@@ -177,8 +177,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                           text : '<%=t.front_end_reservation.another_place%>'
                       }));
                   }
-                	$('#pickup_place').selectpicker();
-                  $('#pickup_place').selectpicker('refresh');
+                	$('#pickup_place.selectpicker').selectpicker();
+                  $('#pickup_place.selectpicker').selectpicker('refresh');
+                  $('#pickup_place').trigger('change');
                 } );
 
         if (selectorModel.allowCustomPlaces) {
@@ -213,8 +214,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                           text : '<%=t.front_end_reservation.another_place%>'
                       }));
                   }
-                	$('#return_place').selectpicker();
-                	$('#return_place').selectpicker('refresh');
+                	$('#return_place.selectpicker').selectpicker();
+                	$('#return_place.selectpicker').selectpicker('refresh');
+                  $('#return_place').trigger('change');
                 } );
 
         if (selectorModel.allowCustomPlaces) {
@@ -236,16 +238,18 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         var pickupTime = new SelectSelector('time_from', 
         		dataSourcePickupReturnTime, '10:00', false, '',
                 function() { 
-                	$('#time_from').selectpicker();
+                	$('#time_from.selectpicker').selectpicker();
 					        $('#time_from').val('10:00');
-					        $('#time_from').selectpicker('refresh');
+					        $('#time_from.selectpicker').selectpicker('refresh');
+					        $('#time_from').trigger('change');
                 } );             
         var returnTime = new SelectSelector('time_to', 
         		dataSourcePickupReturnTime, '10:00', false, '',
                 function() { 
-                	$('#time_to').selectpicker();
-					$('#time_to').val('10:00');
-					$('#time_to').selectpicker('refresh');                	 
+                	$('#time_to.selectpicker').selectpicker();
+					        $('#time_to').val('10:00');
+					        $('#time_to.selectpicker').selectpicker('refresh');
+					        $('#time_to').trigger('change');
                 } );  
 
   	}

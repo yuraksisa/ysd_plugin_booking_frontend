@@ -19,6 +19,8 @@ front_end_reservation:
   another_place: Altro posto
   pickup_place_address: Si prega di scrivere l'indirizzo di consegna
   return_place_address: Si prega di scrivere l'indirizzo di ritorno
+  choose_product:
+    choose_quantity: Choose quantity
   update: Aggiornare
   product: Prodotto
   select: Selezionare

@@ -19,6 +19,8 @@ front_end_reservation:
   another_place: Altre lloc
   pickup_place_address: Si us plau, escrigui l'adreça lliurament
   return_place_address: Si us plau, escrigui l'adreça devolució
+  choose_product:
+    choose_quantity: Seleccioni quantitat
   update: Actualitzar
   product: Producte
   select: Seleccionar

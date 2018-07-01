@@ -397,7 +397,8 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                         text : '<%=t.front_end_reservation.another_place%>'
                     }));
                 }
-                $('#pickup_place').selectpicker();
+                $('#pickup_place.selectpicker').selectpicker();
+                $('#pickup_place').trigger('change');
                 model.loadedPickupPlaces = true;
                 model.checkLoading();
             } );
@@ -433,7 +434,8 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                         text : '<%=t.front_end_reservation.another_place%>'
                     }));
                 }
-                $('#return_place').selectpicker();
+                $('#return_place.selectpicker').selectpicker();
+                $('#return_place').trigger('change');
                 model.loadedReturnPlaces = true;
                 model.checkLoading();
             } );
@@ -459,9 +461,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         var pickupTime = new SelectSelector('time_from',
             dataSourcePickupTime, '10:00', false, '',
             function() {
-                $('#time_from').selectpicker();
+                $('#time_from.selectpicker').selectpicker();
                 $('#time_from').val('10:00');
-                $('#time_from').selectpicker('refresh');
+                $('#time_from.selectpicker').selectpicker('refresh');
+                $('#time_from').trigger('change');
                 model.loadedPickupTimes = true;
                 model.checkLoading();
             } );
@@ -469,9 +472,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         var returnTime = new SelectSelector('time_to',
             dataSourceReturnTime, '10:00', false, '',
             function() {
-                $('#time_to').selectpicker();
+                $('#time_to.selectpicker').selectpicker();
                 $('#time_to').val('10:00');
-                $('#time_to').selectpicker('refresh');
+                $('#time_to.selectpicker').selectpicker('refresh');
+                $('#time_to').trigger('change');
                 model.loadedReturnTimes = true;
                 model.checkLoading();
             } );
@@ -500,7 +504,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         else {
             $('#pickup_place').val(model.shopping_cart.pickup_place ? model.shopping_cart.pickup_place.replace(/\+/g, ' ') : model.shopping_cart.pickup_place);
         }
-        $('#pickup_place').selectpicker('refresh');
+        $('#pickup_place.selectpicker').selectpicker('refresh');
 
         if (model.shopping_cart.custom_return_place) {
             $('#return_place').val('other');
@@ -511,7 +515,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         else {
             $('#return_place').val(model.shopping_cart.return_place ? model.shopping_cart.return_place.replace(/\+/g, ' ') : model.shopping_cart.return_place);
         }
-        $('#return_place').selectpicker('refresh');
+        $('#return_place.selectpicker').selectpicker('refresh');
 
         if (model.shopping_cart.date_from instanceof Date) {
             var date_from = model.shopping_cart.date_from.getDate() + '/' + (model.shopping_cart.date_from.getMonth()+1)+ '/' + model.shopping_cart.date_from.getFullYear();
@@ -529,11 +533,11 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
         $('#date_from').datepicker("setDate", date_from);
         $('#time_from').val(model.shopping_cart.time_from);
-        $('#time_from').selectpicker('refresh');
+        $('#time_from.selectpicker').selectpicker('refresh');
 
         $('#date_to').datepicker("setDate", date_to);
         $('#time_to').val(model.shopping_cart.time_to);
-        $('#time_to').selectpicker('refresh');
+        $('#time_to.selectpicker').selectpicker('refresh');
 
         <% if booking_item_family.driver and booking_driver_min_age_rules %>
         $('#driver_age_rule').html(model.shopping_cart.driver_age_rule_description_customer_translation);
@@ -550,7 +554,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         $('#product_listing').html(result);
 
         <% if booking_item_family and booking_item_family.multiple_items? %>
-        $('.select-choose-product').selectpicker();
+        $('.select-choose-product.selectpicker').selectpicker();
+        $('.select-choose-product.select2').select2();
+        $('.select-choose-product').trigger('change');
         $('.select-choose-product').bind('change', function() {
             var productCode = $(this).attr('data-value');
             var productQuantity = $(this).val();

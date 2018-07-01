@@ -19,6 +19,8 @@ front_end_reservation:
   another_place: Another place
   pickup_place_address: Please, write the pick-up address
   return_place_address: Please, write the return address
+  choose_product:
+    choose_quantity: Choose quantity
   update: Update
   product: Product
   select: Select
