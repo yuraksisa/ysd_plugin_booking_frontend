@@ -307,9 +307,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           }
       },
 
-      paymentChanged: function() {
+      paymentChanged: function(paymentMethod) {
 
-          if ($('#accordion a.collapsed').attr('data-payment-method') == 'none') {
+          // $('#accordion a.collapsed').attr('data-payment-method')
+          if (paymentMethod == 'none') {
               $('#btn_reservation').html('<%=t.front_end_reservation.request_reservation%>');
               $('#payment_amount_container').hide();
           }
@@ -529,10 +530,13 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                     extrasInShoppingCart: model.getShoppingCartExtras()
                 });
             }
+            if (result.trim().length == 0) {
+                $('#extras_title').hide();
+            }
             $('#extras_listing').html(result);
 
             // Setup events
-            $('.extra-select').selectpicker();
+            $('.extra-select.selectpicker').selectpicker();
             $('.extra-checkbox').bind('change', function () {
                 var extraCode = $(this).attr('data-value');
                 var checked = $(this).is(':checked');
@@ -549,6 +553,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 controller.extraQuantityChanged(extraCode, extraQuantity);
             });
             $('#extras_container').show();
+        }
+        else {
+            $('#extras_title').hide();
         }
 
         $('.fa-info-extra').bind('click', function() {
@@ -581,7 +588,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           $('#accordion').children().find('a').trigger('click');
       }
       $('#accordion a[data-parent=#accordion]').bind('click', function() {
-          controller.paymentChanged();
+          controller.paymentChanged($(this).attr('data-payment-method'));
       });
     }
 

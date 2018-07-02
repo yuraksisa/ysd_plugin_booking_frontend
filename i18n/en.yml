@@ -43,8 +43,8 @@ front_end_reservation:
   payment_to_confirm_reservation: To confirm the reservation a %1% %2 deposit is required
   conditions_read: I've read and accept <a href="%1" target="blank">the general terms and conditions</a>
   request_reservation: Request reservation
-  credit_card_payment: Credit card (to confirm booking a %1% deposit is required)
-  paypal_payment: PayPal (to confirm booking a %1% deposit is required)
+  credit_card_payment: Credit card
+  paypal_payment: PayPal
   conditions_not_read: We\'re sorry. You haven't agreed with our rental terms
   payment_amount: Payment amount
   payment_amount_deposit: Deposit
