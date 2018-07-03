@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.46] - 2018-07-03
+### Updated
+- Translations footer
+- select2 integration
+
 ## [0.1.44] - 2018-07-01
 ### Updated
 - Improve selectpicker

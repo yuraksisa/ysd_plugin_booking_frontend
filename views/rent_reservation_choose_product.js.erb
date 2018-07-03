@@ -3,7 +3,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 	      'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
         'jquery.ui.datepicker-en','jquery.ui.datepicker-it', 'jquery.ui.datepicker-ca',
 	      'jquery.ui.datepicker.validation', 'datejs',
-	      'bootstrap', 'bootstrap.select'],
+	      'bootstrap', 'bootstrap.select'/*, 'select2'*/],
 	     function($, RemoteDataSource, SelectSelector, tmpl) {
 
   model = {
@@ -555,7 +555,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
         <% if booking_item_family and booking_item_family.multiple_items? %>
         $('.select-choose-product.selectpicker').selectpicker();
-        //$('.select-choose-product.select2').select2();
+        if ($.fn.select2) {
+            $('.select-choose-product.select2').select2();
+        }
         $('.select-choose-product').trigger('change');
         $('.select-choose-product').bind('change', function() {
             var productCode = $(this).attr('data-value');

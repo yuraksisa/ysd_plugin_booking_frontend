@@ -3,7 +3,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 	     'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
         'jquery.ui.datepicker-ca','jquery.ui.datepicker-en','jquery.ui.datepicker-it',
 	     'jquery.ui.datepicker.validation', 'datejs',
-	     'bootstrap', 'bootstrap.select'], 
+	     'bootstrap', 'bootstrap.select'/*, 'select2'*/],
 	     function($, RemoteDataSource, SelectSelector, tmpl) {
 
   model = { // THE MODEL
@@ -537,6 +537,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
             // Setup events
             $('.extra-select.selectpicker').selectpicker();
+            if ($.fn.select2) {
+                $('.extra-select.select2').select2();
+            }
             $('.extra-checkbox').bind('change', function () {
                 var extraCode = $(this).attr('data-value');
                 var checked = $(this).is(':checked');
