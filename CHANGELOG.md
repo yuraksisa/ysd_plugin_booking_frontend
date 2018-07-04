@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.47] - 2018-07-04
+### Updated
+- Choose product JS
+
 ## [0.1.46] - 2018-07-03
 ### Updated
 - Translations footer
