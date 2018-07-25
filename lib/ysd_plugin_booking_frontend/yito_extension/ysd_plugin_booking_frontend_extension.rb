@@ -109,6 +109,7 @@ module YsdPluginBookingFrontend
           locals.store(:driver_age_rules, young_driver_rules)
           locals.store(:driver_age_rule_definition, young_driver_rule_definition)
           locals.store(:addon_promotion_code, addon_promotion_code)
+          locals.store(:custom_pickup_return_place_price, SystemConfiguration::Variable.get_value('booking.custom_pickup_return_place_price', '0').to_i)
 
           frontend_skin = SystemConfiguration::Variable.get_value('frontend.skin','rentit')
           custom_js = Plugins::Plugin.plugin_invoke_all('frontend_skin_custom_js', context).inject(false) { |result, value| result = result or value }

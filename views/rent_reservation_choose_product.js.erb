@@ -11,6 +11,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
     requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
     minDays: <%=booking_min_days%>,
     allowCustomPlaces : <%=pickup_return_places_configuration == 'list+custom'%>,
+    customPlacePrice: <%=custom_pickup_return_place_price%>,
     pickupReturnPlaces: <% if booking_item_family.pickup_return_place%>true<%else%>false<%end%>,
     timeToFrom: <% if booking_item_family.time_to_from%>true<%else%>false<%end%>,
     data : null,
@@ -310,6 +311,12 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
             }
         }
 
+    },
+
+    showProductDetailModalClick: function(code) {
+
+        view.showProductDetailModal(code);
+
     }
 
   };
@@ -392,10 +399,18 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
             dataSourcePickupPlaces, null, false, '',
             function() {
                 if (model.allowCustomPlaces) {
-                    $('#pickup_place').append($('<option>', {
-                        value: 'other',
-                        text : '<%=t.front_end_reservation.another_place%>'
-                    }));
+                    if (model.customPlacePrice && model.customPlacePrice != '' && model.customPlacePrice > 0) {
+                        $('#pickup_place').append($('<option>', {
+                            value: 'other',
+                            text: '<%=t.front_end_reservation.another_place%>' + ' (' + model.customPlacePrice + '.00€)'
+                        }));
+                    }
+                    else {
+                        $('#pickup_place').append($('<option>', {
+                            value: 'other',
+                            text: '<%=t.front_end_reservation.another_place%>'
+                        }));
+                    }
                 }
                 $('#pickup_place.selectpicker').selectpicker();
                 $('#pickup_place').trigger('change');
@@ -431,7 +446,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 if (model.allowCustomPlaces) {
                     $('#return_place').append($('<option>', {
                         value: 'other',
-                        text : '<%=t.front_end_reservation.another_place%>'
+                        text : '<%=t.front_end_reservation.another_place%>' + ' (' + model.customPlacePrice + '.00€)'
                     }));
                 }
                 $('#return_place.selectpicker').selectpicker();
@@ -559,22 +574,45 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
         <% if booking_item_family and booking_item_family.multiple_items? %>
         $('.select-choose-product.selectpicker').selectpicker();
-        if ($.fn.select2) {
-            $('.select-choose-product.select2').select2();
-        }
-        $('.select-choose-product').trigger('change');
-        $('.select-choose-product').bind('change', function() {
-            var productCode = $(this).attr('data-value');
-            var productQuantity = $(this).val();
-            controller.productQuantityChanged(productCode, productQuantity);
-        });
+          if ($.fn.select2) {
+              $('.select-choose-product.select2').select2();
+          }
+          $('.select-choose-product').trigger('change');
+          $('.select-choose-product').bind('change', function() {
+              var productCode = $(this).attr('data-value');
+              var productQuantity = $(this).val();
+              controller.productQuantityChanged(productCode, productQuantity);
+          });
         <% else %>
-        // Prepare onclick event to select the product
-        $('.btn-choose-product').bind('click', function() {
-            controller.selectProductBtnClick($(this).attr('data-product'));
-        });
+          // Prepare onclick event to select the product
+          $('.btn-choose-product').bind('click', function() {
+              controller.selectProductBtnClick($(this).attr('data-product'));
+          });
         <% end %>
 
+        $('.product-detail').bind('click', function(){
+           controller.showProductDetailModalClick($(this).attr('data-product'));
+        });
+    },
+
+    showProductDetailModal: function(code) {
+        var product=null;
+        for (var idx=0;idx<model.products.length;idx++) {
+            if (model.products[idx].code == code) {
+                product = model.products[idx];
+                break;
+            }
+        }
+        if (product) {
+
+            var descriptionHtml = '<img src="' + product.full_photo + '" style="display: block; margin: 0 auto; max-width: 100%">';
+            descriptionHtml += '<br>';
+            descriptionHtml += product.description;
+
+            $('#bs_modal .modal-title').html(product.name);
+            $('#bs_modal .modal-body').html(descriptionHtml);
+            $('#bs_modal').modal('show');
+        }
     }
 
   };

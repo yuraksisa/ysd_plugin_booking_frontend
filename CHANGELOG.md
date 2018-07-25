@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.48] - 2018-07-25
+### Added
+- Show product detail on product list (modal)
+### Updated
+- Show other pickup/return place cost
+- Show photo in extras detail (modal)
+
 ## [0.1.47] - 2018-07-04
 ### Updated
 - Choose product JS

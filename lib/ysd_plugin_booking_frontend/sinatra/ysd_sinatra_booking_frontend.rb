@@ -112,6 +112,7 @@ module Sinatra
 												 SystemConfiguration::Variable.get_value('booking.pickup_return_places_configuration', 'list'))
 						locals.store(:booking_driver_min_age_rules,
 						  SystemConfiguration::Variable.get_value('booking.driver_min_age.rules','false').to_bool)
+						locals.store(:custom_pickup_return_place_price, SystemConfiguration::Variable.get_value('booking.custom_pickup_return_place_price', '0').to_i)
 
       	  	# Load the page
 						title = booking_item_family.multiple_items? ? t.front_end_reservation.choose_products_page_title : t.front_end_reservation.choose_product_page_title

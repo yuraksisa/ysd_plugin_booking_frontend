@@ -5,6 +5,8 @@ module Sinatra
 
       def self.registered(app)
 
+        # ------------------- Querying -------------------------------------------------------------------------
+
         #
         # Get information from the server
         #
@@ -83,7 +85,246 @@ module Sinatra
 
         end
 
-        # ------------------------------- Product ---------------------------------------------------
+        # =============================== PRODUCTS INFORMATION =============================================
+
+        #
+        # Get the products
+        #
+        # Parameters:
+        #
+        # * For pagination
+        # - offset [from the item]
+        # - limit  [# of items]
+        #
+        # * To order
+        # - order [column]
+        #
+        # Result:
+        #
+        # {"total":2,
+        #  "offset":1,
+        #  "limit":1,
+        #  "data":[{"code":"K2","name":"Kayak doble","short_description":"Kayak doble",
+        #           "description":"<p>Kayak Doble</p>","from_price":"0.0","from_price_offer":"0.0",
+        #           "photo_path":"https://demo-kayak.mybooking.es/uploads/5/36/55/medium/kayak-doble.png",
+        #           "full_photo_path":"https://demo-kayak.mybooking.es/uploads/5/36/55/kayak-doble.png"}]}
+        #
+        app.get '/api/booking/frontend/products' do
+
+          offset = params[:offset].to_i
+          limit = params[:limit].to_i
+          if limit == 0
+            limit = 20
+          end
+
+          order = if params[:order]
+                    [params[:order]]
+                  else
+                    [:code]
+                  end
+          conditions = {active: true, web_public: true}
+
+          domain = SystemConfiguration::Variable.get_value('site.domain')
+          total = ::Yito::Model::Booking::BookingCategory.count(conditions: conditions)
+          data = ::Yito::Model::Booking::BookingCategory.all(
+              fields: [:code, :name, :short_description, :description, :from_price, :from_price_offer],
+              conditions: conditions,
+              order: order,
+              offset: offset,
+              limit: limit).map do |item|
+
+            photo = item.album ? item.album.thumbnail_medium_url : nil
+            full_photo = item.album ? item.album.image_url : nil
+            photo_path = nil
+            if photo
+              photo_path = (photo.match(/^https?:/) ? photo : File.join(domain, photo))
+            end
+            full_photo_path = nil
+            if full_photo
+              full_photo_path = (full_photo.match(/^https?:/) ? full_photo : File.join(domain, full_photo))
+            end
+
+            {code: item.code, name: item.name,
+             short_description: item.short_description, description: item.description,
+             from_price: item.from_price, from_price_offer: item.from_price_offer,
+             photo_path: photo_path, full_photo_path: full_photo_path}
+          end
+
+          result = {total: total, offset: offset, limit: limit, data: data}
+
+          content_type :json
+          result.to_json
+
+        end
+
+
+        #
+        # Get a product detail
+        #
+        # Result
+        #
+        # {"code":"K2","name":"Kayak doble","short_description":"Kayak doble",
+        #  "description":"<p>Kayak Doble</p>",
+        #  "from_price":"0.0","from_price_offer":"0.0",
+        #  "photo_path":"https://demo-kayak.mybooking.es/uploads/5/36/55/medium/kayak-doble.png",
+        #  "full_photo_path":"https://demo-kayak.mybooking.es/uploads/5/36/55/kayak-doble.png"}
+        #
+        app.get '/api/booking/frontend/products/:id' do
+
+          if product = ::Yito::Model::Booking::BookingCategory.get(params[:id])
+
+            # Build the photo
+            domain = SystemConfiguration::Variable.get_value('site.domain')
+            photo = product.album ? product.album.thumbnail_medium_url : nil
+            full_photo = product.album ? product.album.image_url : nil
+            photo_path = nil
+            if photo
+              photo_path = (photo.match(/^https?:/) ? photo : File.join(domain, photo))
+            end
+            full_photo_path = nil
+            if full_photo
+              full_photo_path = (full_photo.match(/^https?:/) ? full_photo : File.join(domain, full_photo))
+            end
+
+            # Build the data
+            data = {code: product.code, name: product.name,
+             short_description: product.short_description, description: product.description,
+             from_price: product.from_price, from_price_offer: product.from_price_offer,
+             photo_path: photo_path, full_photo_path: full_photo_path}
+
+            content_type :json
+            data.to_json
+
+          else
+            status 404
+          end
+
+        end
+
+        #
+        # Get a product availability for a period [Use to ensure reservation of category of resources product - 1 to n -]
+        #
+        # Parameters:
+        #
+        # * Period
+        # - from
+        # - time_from
+        # - to
+        # - time_to
+        # * Others
+        # - sales_channel
+        #
+        # Result:
+        #
+        #  {"code":"K2","name":"Kayak doble","short_description":"Kayak doble",
+        #   "description":"<p>Kayak Doble</p>",
+        #   "photo":"https://demo-kayak.mybooking.es/uploads/5/36/55/medium/kayak-doble.png",
+        #   "full_photo":"https://demo-kayak.mybooking.es/uploads/5/36/55/kayak-doble.png",
+        #   "base_price":"603.0",
+        #   "price":"603.0",
+        #   "deposit":"0.0",
+        #   "availability":true,
+        #   "payment_availibility":true,
+        #   "stock":4,
+        #   "busy":0}}
+        #
+        app.get '/api/booking/frontend/products/:id/availability' do
+
+          booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
+
+          date_from = params[:from]
+          time_from = params[:time_from]
+          date_to = params[:to]
+          time_to = params[:time_to]
+          unless date_from.nil?
+            date_from = Date.parse(date_from)
+          end
+          unless date_to.nil?
+            date_to = Date.parse(date_to)
+          end
+          time_from ||= booking_item_family.time_start
+          time_to ||= booking_item_family.time_end
+
+          if date_from.nil? or date_to.nil?
+            halt 422, 'date_from or date_to not assigned'
+          end
+
+          days = BookingDataSystem::Booking.calculate_days(date_from, time_from, date_to, time_to)[:days]
+
+          sales_channel = params[:sales_channel]
+
+          if product = ::Yito::Model::Booking::BookingCategory.get(params[:id])
+            search = ::Yito::Model::Booking::BookingCategory.search(date_from,
+                                                                    date_to,
+                                                                    days,
+                                                                    {
+                                                                        locale: session[:locale],
+                                                                        full_information: true,
+                                                                        product_code: product.code,
+                                                                        web_public: true,
+                                                                        sales_channel_code: sales_channel,
+                                                                        apply_promotion_code: false,
+                                                                        promotion_code: nil
+                                                                    })
+
+            content_type :json
+            {data: search}.to_json
+          else
+            status 404
+          end
+
+        end
+
+        #
+        # Get a product occupation detail for a period [Use to check information for resource category - 1 to 1 - ]
+        #
+        # Parameters:
+        #
+        # * Period
+        # - from
+        # - time_from
+        # - to
+        # - time_to
+        #
+        # Result
+        #
+        # {"occupation":{"2018-Dic-25":{"free":true,"available":4},
+        #                "2018-Dic-26":{"free":true,"available":4}}
+        #
+        app.get '/api/booking/frontend/products/:id/occupation' do
+
+          booking_item_family = ::Yito::Model::Booking::ProductFamily.get(SystemConfiguration::Variable.get_value('booking.item_family'))
+
+          date_from = params[:from]
+          date_to = params[:to]
+
+          today = Date.today
+          if date_from.nil?
+            date_from ||= (today - 10)
+          else
+            date_from = Date.parse(date_from)
+          end
+          if date_to.nil?
+            date_to ||= (today + 10)
+          else
+            date_to = Date.parse(date_to)
+          end
+
+          if product = ::Yito::Model::Booking::BookingCategory.get(params[:id])
+            occupation = {}
+            BookingDataSystem::Booking.period_occupation(date_from, date_to, product.code)[product.code].each do |key, value|
+              occupation[key] = {free: (value[:occupied] < value[:total]), available: (value[:total] - value[:occupied])} unless key == :total
+            end
+
+            content_type :json
+            {occupation: occupation}.to_json
+          else
+            status 404
+          end
+
+        end
+
+        # =============================== SHOPPING CART =============================================
 
         #
         # Set/add the product
@@ -122,8 +363,6 @@ module Sinatra
           end
 
         end
-
-        # ------------------------------- Extras ---------------------------------------------------
 
         #
         # Set an extra
@@ -204,10 +443,8 @@ module Sinatra
 
         end
 
-        # ------------------------------- Checkout (confirm) ----------------------------------------------
-
         #
-        # Confirm reservation
+        # Confirm reservation : CHECKOUT
         #
         app.route :post, ['/api/booking/frontend/shopping-cart/checkout',
                           '/api/booking/frontend/shopping-cart/:free_access_id/checkout'] do
@@ -348,8 +585,6 @@ module Sinatra
 
         end
 
-        # -------------------- Shopping cart -----------------------------------------
-
         #
         # Get the renting shopping cart
         #
@@ -483,7 +718,7 @@ module Sinatra
 
         end
 
-        # ----------------------------- Reservation -----------------------------------------
+        # =============================== RESERVATION =============================================
 
         #
         # Get the reservation

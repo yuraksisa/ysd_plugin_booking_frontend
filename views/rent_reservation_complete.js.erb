@@ -350,6 +350,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           else {
               alert("<%=t.front_end_reservation.conditions_not_read%>");
           }
+      },
+
+      showExtraDetailInfoClick: function(code) {
+          view.showExtraDetailInfo(code);
       }
 
   };
@@ -562,19 +566,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         }
 
         $('.fa-info-extra').bind('click', function() {
-            var code=$(this).attr('rel');
-            var extra=null;
-            for (var idx=0;idx<model.extras.length;idx++) {
-                if (model.extras[idx].code == code) {
-                    extra = model.extras[idx];
-                    break;
-                }
-            }
-            if (extra) {
-                $('#bs_modal .modal-title').html(extra.name);
-                $('#bs_modal .modal-body').html(extra.description);
-                $('#bs_modal').modal('show');
-            }
+            controller.showExtraDetailInfoClick($(this).attr('rel'));
         });
 
     },
@@ -593,6 +585,31 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
       $('#accordion a[data-parent=#accordion]').bind('click', function() {
           controller.paymentChanged($(this).attr('data-payment-method'));
       });
+    },
+
+    showExtraDetailInfo: function(code) {
+        var extra=null;
+        for (var idx=0;idx<model.extras.length;idx++) {
+            if (model.extras[idx].code == code) {
+                extra = model.extras[idx];
+                break;
+            }
+        }
+        if (extra) {
+
+            var descriptionHtml = '';
+            if (extra.full_photo && extra.full_photo != '')
+            {
+              description += '<img src="' + extra.full_photo + '" style="display: block; margin: 0 auto; max-width: 100%">';
+              descriptionHtml += '<br>';
+            }
+            descriptionHtml += extra.description;
+
+            $('#bs_modal .modal-title').html(extra.name);
+            $('#bs_modal .modal-body').html(descriptionHtml);
+            $('#bs_modal').modal('show');
+        }
+
     }
 
   };

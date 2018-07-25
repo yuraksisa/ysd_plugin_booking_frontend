@@ -11,6 +11,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
       requestLanguage: <% if locale=locale_to_translate_into %>'<%=locale%>'<%else%>null<%end%>,
       minDays   : <%=booking_min_days%>,
       allowCustomPlaces : <%=pickup_return_places_configuration == 'list+custom'%>,
+      customPlacePrice: <%=custom_pickup_return_place_price%>,
       pickupReturnPlaces: <%if booking_item_family.pickup_return_place%>true<%else%>false<%end%>,
       timeToFrom: <%if booking_item_family.time_to_from%>true<%else%>false<%end%>
   };
@@ -172,10 +173,18 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         		dataSourcePickupPlaces, null, false, '',
                 function() {
                   if (selectorModel.allowCustomPlaces) {
-                      $('#pickup_place').append($('<option>', {
-                          value: 'other',
-                          text : '<%=t.front_end_reservation.another_place%>'
-                      }));
+                      if (selectorModel.customPlacePrice && selectorModel.customPlacePrice != '' && selectorModel.customPlacePrice > 0) {
+                          $('#pickup_place').append($('<option>', {
+                              value: 'other',
+                              text: '<%=t.front_end_reservation.another_place%>' + ' (' + selectorModel.customPlacePrice + '.00€)'
+                          }));
+                      }
+                      else {
+                          $('#pickup_place').append($('<option>', {
+                              value: 'other',
+                              text: '<%=t.front_end_reservation.another_place%>'
+                          }));
+                      }
                   }
                 	$('#pickup_place.selectpicker').selectpicker();
                   $('#pickup_place.selectpicker').selectpicker('refresh');
@@ -209,10 +218,18 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
         		dataSourcePickupPlaces, null, false, '',
                 function() {
                   if (selectorModel.allowCustomPlaces) {
-                      $('#return_place').append($('<option>', {
-                          value: 'other',
-                          text : '<%=t.front_end_reservation.another_place%>'
-                      }));
+                      if (selectorModel.customPlacePrice && selectorModel.customPlacePrice > 0) {
+                          $('#return_place').append($('<option>', {
+                              value: 'other',
+                              text: '<%=t.front_end_reservation.another_place%>' + ' (' + selectorModel.customPlacePrice + '.00€)'
+                          }));
+                      }
+                      else {
+                          $('#return_place').append($('<option>', {
+                              value: 'other',
+                              text: '<%=t.front_end_reservation.another_place%>'
+                          }));
+                      }
                   }
                 	$('#return_place.selectpicker').selectpicker();
                 	$('#return_place.selectpicker').selectpicker('refresh');
