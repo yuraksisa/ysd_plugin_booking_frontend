@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.49] - 2018-07-28
+### Updated
+- Availability refactoring: Take into account pick up and return time
+- Detailed occupation refactoring
+
 ## [0.1.48] - 2018-07-25
 ### Added
 - Show product detail on product list (modal)

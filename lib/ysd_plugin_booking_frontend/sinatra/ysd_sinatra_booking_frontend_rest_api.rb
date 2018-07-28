@@ -255,7 +255,9 @@ module Sinatra
 
           if product = ::Yito::Model::Booking::BookingCategory.get(params[:id])
             search = ::Yito::Model::Booking::BookingCategory.search(date_from,
+                                                                    time_from,
                                                                     date_to,
+                                                                    time_to,
                                                                     days,
                                                                     {
                                                                         locale: session[:locale],
@@ -312,7 +314,7 @@ module Sinatra
 
           if product = ::Yito::Model::Booking::BookingCategory.get(params[:id])
             occupation = {}
-            BookingDataSystem::Booking.period_occupation(date_from, date_to, product.code)[product.code].each do |key, value|
+            BookingDataSystem::Booking.category_daily_detailed_period_occupation(date_from, date_to, product.code)[product.code].each do |key, value|
               occupation[key] = {free: (value[:occupied] < value[:total]), available: (value[:total] - value[:occupied])} unless key == :total
             end
 
