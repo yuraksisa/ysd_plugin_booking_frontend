@@ -54,7 +54,7 @@ require(['jquery','jquery.form','jquery.formparams'],
              if ($('#accordion a').not('.collapsed').attr('data-payment-method') != 'none') {
                  <% if @booking.can_pay_deposit? and @booking.can_pay_total? %>
                      if (!$('#payment_amount_form input[name=payment]').is(':checked')) {
-                         alert('Debe indicar la cantidad a pagar : la paga y señal o el total');
+                         alert('<%=t.front_end_reservation.summary_page.payment_method_amount%>');
                          return;
                      }
                      payment = $('input[name=payment]:checked', '#payment_amount_form').val();
@@ -69,9 +69,15 @@ require(['jquery','jquery.form','jquery.formparams'],
          model.update();
      },
      paymentMethodChanged: function() {
-         <% if @booking.can_pay_deposit? and @booking.can_pay_total? %>
-         $('#payment_amount_container').show();
-         <% end %>
+         if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) != 'undefined') {
+           <% if @booking.can_pay_deposit? and @booking.can_pay_total? %>
+           $('#payment_amount_container').show();
+           <% end %>
+         }
+         else {
+           $('#payment_amount_container').hide();
+           $('input[name=payment]').prop('checked', false);
+         }
      }
 
   };
@@ -114,9 +120,13 @@ require(['jquery','jquery.form','jquery.formparams'],
          $('#btn_update_reservation').bind('click', function(){
             controller.btnUpdateClick();
          });
-         $('#accordion a[data-parent=#accordion]').bind('click', function() {
+
+          $('#accordion').bind('hidden.bs.collapse', function() {
               controller.paymentMethodChanged();
-         });
+          });
+          $('#accordion').bind('shown.bs.collapse', function() {
+              controller.paymentMethodChanged();
+          });
       },
       update: function(action) {
           switch (action) {

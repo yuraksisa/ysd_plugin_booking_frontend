@@ -40,10 +40,31 @@ front_end_reservation:
   field_customer_email_confirm: Confirm e-mail
   field_customer_main_phone_number: Phone number
   field_customer_alternative_phone_number: Alternative phone number
+  fieldset_driver: Driver information
+  field_driver_name: Name
+  field_driver_surname: Surname
+  field_driver_date_of_birth: Date of birth
+  field_driver_document_id: Document id or passport
+  field_driver_driving_license_number: Driving license number
+  field_driver_driving_license_date: Driving license date
+  field_driver_driving_license_country: Driving license country
+  fieldset_driver_address: Address
+  field_driver_address_street: Street
+  field_driver_address_number: Number
+  field_driver_address_complement: Complement
+  field_driver_address_city: City
+  field_driver_address_state: State
+  field_driver_address_country: Country
+  field_driver_address_zip: Zip
+  fieldset_flight: Flight
+  field_flight_company: Company
+  field_flight_number: Flight number
+  field_flight_time: Time
   additional_information_title: Additional information
   field_comments: Comments
-  payment_title: Pay
+  payment_title: Request reservation / Payment
   payment_to_confirm_reservation: To confirm the reservation a %1% %2 deposit is required
+  payment_pending_title: You can pay the reservation pending amount, %1
   conditions_read: I've read and accept <a href="%1" target="blank">the general terms and conditions</a>
   request_reservation: Request reservation
   credit_card_payment: Credit card
@@ -52,6 +73,8 @@ front_end_reservation:
   payment_amount: Payment amount
   payment_amount_deposit: Deposit
   payment_amount_total: Total
+  payment_method_not_selected: Please, select the payment method or request reservation if available
+  payment_method_amount: "Please, select the payment amount: deposit or total"
   form_errors: Please, check the form. It contains invalid data.
   product_information_title: Product information
   products_information_title: Products information
@@ -121,7 +144,8 @@ front_end_reservation:
     error_updating_reservation: Error updating reservation
     reservation_updated_title: Reservation data update
     reservation_updated_message: Reservation data updated successfuly
-    payment_method_not_selected: Payment method not selected
+    payment_method_not_selected: Please, select the payment method
+    payment_method_amount: "Please, select the payment amount: deposit or total"
 front_end_activities:
   activities_title: Activities & excursions
   from: From
@@ -157,7 +181,7 @@ front_end_activities:
     field_customer_alternative_phone_number: Alternative telephone number
     additional_information_title: Additional data
     field_comments: Comments
-    payment_title: Payment
+    payment_title: Request reservation / Payment
     credit_card_payment: Credit card
     paypal_payment: Paypal
     request_reservation: Request reservation
@@ -169,8 +193,11 @@ front_end_activities:
       title: Payment
       deposit_title: To confirm the order requires a deposit of %1% of the total amount of the order
       total_title: To confirm the order is required to pay the total amount of the order
+      payment_amount_deposit: Deposit
+      payment_amount_total: Total
     error_creating_order: We are sorry. An error occurred while creating order
-    payment_method_not_selected: Payment method not selected
+    payment_method_not_selected: Please, select the payment method or request reservation if available
+    payment_method_amount: "Please, select the payment amount: deposit or total"
   order_page:
     page_title: Order %1
     order_detail_title: Your order is %1
@@ -217,3 +244,4 @@ front_end_activities:
       deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% %2 del importe total del pedido
       pending_title: Puede proceder al pago del importe pendiente %1 del pedido
       total_title: To confirm the order is required to pay the total amount of the order
+      payment_method_amount: "Please, select the payment amount: deposit or total"

@@ -307,10 +307,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           }
       },
 
-      paymentChanged: function(paymentMethod) {
+      paymentChanged: function() {
 
-          // $('#accordion a.collapsed').attr('data-payment-method')
-          if (paymentMethod == 'none') {
+          if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined' ||
+              $('#accordion a').not('.collapsed').attr('data-payment-method') == 'none') {
               $('#btn_reservation').html('<%=t.front_end_reservation.request_reservation%>');
               $('#payment_amount_container').hide();
           }
@@ -328,13 +328,13 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
 
               if (model.sales_process.can_pay) {
                   if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined') {
-                      alert('Debe indicar forma de pago');
+                      alert('<%=t.front_end_reservation.payment_method_not_selected%>');
                   }
                   else {
                       if ($('#accordion a').not('.collapsed').attr('data-payment-method') != 'none') {
                           if (model.sales_process.can_pay_deposit && model.sales_process.can_pay_total) {
                               if (!$('#payment_amount_form input[name=payment]').is(':checked')) {
-                                  alert('Debe indicar la cantidad a pagar : la paga y señal o el total');
+                                  alert('<%=t.front_end_reservation.payment_method_amount%>');
                                   return;
                               }
                           }
@@ -582,8 +582,16 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
           $('#accordion').children().hide();
           $('#accordion').children().find('a').trigger('click');
       }
+      /*
       $('#accordion a[data-parent=#accordion]').bind('click', function() {
           controller.paymentChanged($(this).attr('data-payment-method'));
+      });
+      */
+      $('#accordion').bind('hidden.bs.collapse', function() {
+          controller.paymentChanged();
+      });
+      $('#accordion').bind('shown.bs.collapse', function() {
+          controller.paymentChanged();
       });
     },
 

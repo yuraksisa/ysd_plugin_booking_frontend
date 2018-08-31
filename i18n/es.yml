@@ -62,8 +62,9 @@ front_end_reservation:
   field_flight_time: Hora prevista
   additional_information_title: Información adicional
   field_comments: Comentarios
-  payment_title: Pago
+  payment_title: Solicitud de reserva / Pago
   payment_to_confirm_reservation: Para confirmar la reserva se requiere una paga y señal del %1% %2 del importe total de la reserva
+  payment_pending_title: Puede proceder al pago del importe pendiente %1 de la reserva
   conditions_read: He leído y acepto las <a href="%1" target="blank">condiciones</a> del alquiler
   request_reservation: Solicitar reserva
   credit_card_payment: Tarjeta de crédito
@@ -72,6 +73,8 @@ front_end_reservation:
   payment_amount: Cantidad a pagar
   payment_amount_deposit: Paga y señal
   payment_amount_total: Total
+  payment_method_not_selected: Debe indicar la forma de pago o solicitar reserva si está disponible
+  payment_method_amount: "Debe indicar la cantidad a pagar : la paga y señal o el total"
   form_errors: Por favor, revise el formulario. Contiene datos no válidos.
   product_information_title: Información del producto
   products_information_title: Información de los productos
@@ -142,6 +145,7 @@ front_end_reservation:
     reservation_updated_title: Actualización de datos
     reservation_updated_message: Los datos se han actualizado correctamente
     payment_method_not_selected: Debe indicar la forma de pago
+    payment_method_amount: "Debe indicar la cantidad a pagar : la paga y señal o el total"
 front_end_activities:
   activities_title: Actividades y excursiones
   from: Desde
@@ -177,7 +181,7 @@ front_end_activities:
     field_customer_alternative_phone_number: Teléfono alternativo
     additional_information_title: Información adicional
     field_comments: Comentarios
-    payment_title: Pago
+    payment_title: Solicitud de reserva / Pago
     credit_card_payment: Tarjeta de crédito
     paypal_payment: Paypal
     request_reservation: Solicitar reserva
@@ -189,8 +193,11 @@ front_end_activities:
       title: Pago
       deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% del importe total del pedido
       total_title: Para confirmar el pedido se requiere el importe del total del pedido
+      payment_amount_deposit: Paga y señal
+      payment_amount_total: Total
     error_creating_order: Error creando reserva
-    payment_method_not_selected: Debe indicar la forma de pago
+    payment_method_not_selected: Debe indicar la forma de pago o solicitar reserva si está disponible
+    payment_method_amount: "Debe indicar la cantidad a pagar : la paga y señal o el total"
   order_page:
     page_title: Pedido %1
     order_detail_title: su pedido está %1
@@ -237,3 +244,4 @@ front_end_activities:
       deposit_title: Para confirmar el pedido se requiere una paga y señal del %1% %2 del importe total del pedido
       pending_title: Puede proceder al pago del importe pendiente %1 del pedido
       total_title: Para confirmar el pedido se requiere el pago del importe del total del pedido
+      payment_method_amount: "Debe indicar la cantidad a pagar : la paga y señal o el total"

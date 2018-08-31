@@ -129,6 +129,14 @@ require(['jquery','ysdtemplate',
                           alert('<%=t.front_end_activities.checkout_page.payment_method_not_selected%>');
                       }
                       else {
+                          if ($('#accordion a').not('.collapsed').attr('data-payment-method') != 'none') {
+                              if (model.shoppingCart.can_pay_deposit && model.shoppingCart.can_pay_total) {
+                                  if (!$('#payment_amount_form input[name=payment]').is(':checked')) {
+                                      alert('<%=t.front_end_activities.checkout_page.payment_method_amount%>');
+                                      return;
+                                  }
+                              }
+                          }
                           $('form[name=reservation_form]').submit();
                       }
                   }
@@ -145,7 +153,25 @@ require(['jquery','ysdtemplate',
 
               model.removeShoppingCartItem(date, time, itemId);
 
-          }
+          },
+
+          paymentChanged: function(paymentMethod) {
+
+              if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) === 'undefined' ||
+                  $('#accordion a').not('.collapsed').attr('data-payment-method') == 'none') {
+                  $('#btn_reservation').html('<%=t.front_end_activities.checkout_page.request_reservation%>');
+                  $('#payment_amount_container').hide();
+                  $('input[name=payment]').prop('checked', false);
+              }
+              else {
+                  $('#btn_reservation').html('<%=t.front_end_activities.checkout_page.pay%>');
+                  if (model.shoppingCart.can_pay_deposit && model.shoppingCart.can_pay_total) {
+                      $('#payment_amount_container').show();
+                  }
+              }
+
+          },
+
 
       };
 
@@ -324,6 +350,13 @@ require(['jquery','ysdtemplate',
                   $('#accordion').children().hide();
                   $('#accordion').children().find('a').trigger('click');
               }
+
+              $('#accordion').bind('hidden.bs.collapse', function() {
+                  controller.paymentChanged();
+              });
+              $('#accordion').bind('shown.bs.collapse', function() {
+                  controller.paymentChanged();
+              });
 
           }
 

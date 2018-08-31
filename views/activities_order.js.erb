@@ -54,19 +54,35 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                     alert("<%=t.front_end_activities.order_page.payment_method_not_selected%>");
                 }
                 else {
-                  <% if @order.can_pay_deposit? %>
-                  var payment = 'deposit';
-                  <% elsif @order.can_pay_pending? %>
-                  var payment = 'pending';
-                  <% elsif @order.can_pay_total? %>
-                  var payment = 'total';
-                  <% end %>
+
+                  var payment = '<%=@payment%>';
+                  if ($('#accordion a').not('.collapsed').attr('data-payment-method') != 'none') {
+                      <% if @order.can_pay_deposit? and @order.can_pay_total? %>
+                      if (!$('#payment_amount_form input[name=payment]').is(':checked')) {
+                          alert('<%=t.front_end_activities.order_page.payment_group.payment_method_amount%>');
+                          return;
+                      }
+                      payment = $('input[name=payment]:checked', '#payment_amount_form').val();
+                      <% end %>
+                  }
+
                   var paymentMethodId = $('#accordion a').not('.collapsed').attr('data-payment-method');
                   model.pay(payment, paymentMethodId);
                 }
             },
             btnUpdateClick: function() {
                 model.update();
+            },
+            paymentMethodChanged: function() {
+                if ((typeof $('#accordion a').not('.collapsed').attr('data-payment-method')) != 'undefined') {
+                <% if @order.can_pay_deposit? and @order.can_pay_total? %>
+                    $('#payment_amount_container').show();
+                <% end %>
+                }
+                else {
+                    $('#payment_amount_container').hide();
+                    $('input[name=payment]').prop('checked', false);
+                }
             }
         };
 
@@ -82,6 +98,14 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 $('#btn_update_order').bind('click', function(){
                     controller.btnUpdateClick();
                 });
+
+                $('#accordion').bind('hidden.bs.collapse', function() {
+                    controller.paymentMethodChanged();
+                });
+                $('#accordion').bind('shown.bs.collapse', function() {
+                    controller.paymentMethodChanged();
+                });
+
             },
             update: function(action) {
                 switch (action) {

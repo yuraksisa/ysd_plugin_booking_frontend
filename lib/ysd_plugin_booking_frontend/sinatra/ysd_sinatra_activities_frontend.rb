@@ -160,7 +160,16 @@ module Sinatra
           @payment_methods = Payments::PaymentMethod.available_to_web
           @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
           @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
-
+          @payment = if @order.can_pay_deposit?
+                       'deposit'
+                     elsif @order.can_pay_pending?
+                       'pending'
+                     elsif @order.can_pay_total?
+                       'total'
+                     else
+                       ''
+                     end
+          
           locals = {}
           # Load the page
           title = t.front_end_activities.order_page.page_title(@order.id)
@@ -188,7 +197,16 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
-
+              @payment = if @order.can_pay_deposit?
+                           'deposit'
+                         elsif @order.can_pay_pending?
+                           'pending'
+                         elsif @order.can_pay_total?
+                           'total'
+                         else
+                           ''
+                         end
+              
               locals = {}
               # Load the page
               title = t.front_end_activities.order_page.page_title(@order.id)
@@ -218,6 +236,16 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              @payment = if @order.can_pay_deposit?
+                           'deposit'
+                         elsif @order.can_pay_pending?
+                           'pending'
+                         elsif @order.can_pay_total?
+                           'total'
+                         else
+                           ''
+                         end
+              
               locals = {}
               # Load the page
               title = t.front_end_activities.order_page.page_title(@order.id)
@@ -246,6 +274,16 @@ module Sinatra
               @payment_methods = Payments::PaymentMethod.available_to_web
               @deposit = SystemConfiguration::Variable.get_value('order.deposit', '0').to_i
               @currency = SystemConfiguration::Variable.get_value('payments.default_currency', 'EUR')
+              @payment = if @order.can_pay_deposit?
+                           'deposit'
+                         elsif @order.can_pay_pending?
+                           'pending'
+                         elsif @order.can_pay_total?
+                           'total'
+                         else
+                           ''
+                         end
+              
               locals = {}
               # Load the page
               title = t.front_end_activities.order_page.page_title(@order.id)

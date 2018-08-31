@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.50] - 2018-08-31
+### Updated
+- Payment in activities: total - pending - deposit
+- JS to manage payment and amount in renting and activities
+
 ## [0.1.49] - 2018-07-28
 ### Updated
 - Availability refactoring: Take into account pick up and return time
