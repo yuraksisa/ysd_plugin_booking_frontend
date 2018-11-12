@@ -514,6 +514,7 @@ module Sinatra
               shopping_cart.driver_address.zip = request_data['zip']  if request_data.has_key?('zip')
               # Additional driver
               if booking_item_family and booking_item_family.driver_license
+                # Aditional driver 1
                 shopping_cart.additional_driver_1_name = request_data['additional_driver_1_name'] if request_data.has_key?('additional_driver_1_name')
                 shopping_cart.additional_driver_1_surname = request_data['additional_driver_1_surname'] if request_data.has_key?('additional_driver_1_surname')
                 shopping_cart.additional_driver_1_document_id = request_data['additional_driver_1_document_id'] if request_data.has_key?('additional_driver_1_document_id')
@@ -528,6 +529,21 @@ module Sinatra
                 shopping_cart.additional_driver_1_driving_license_expiration_date = parse_date(request_data['additional_driver_1_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_1_driving_license_expiration_date') and !request_data['additional_driver_1_driving_license_expiration_date'].nil? and !request_data['additional_driver_1_driving_license_expiration_date'].to_s.empty?
                 shopping_cart.additional_driver_1_phone = request_data['additional_driver_1_phone'] if request_data.has_key?('additional_driver_1_phone')
                 shopping_cart.additional_driver_1_email = request_data['additional_driver_1_email'] if request_data.has_key?('additional_driver_1_email')
+                # Additional driver 2
+                shopping_cart.additional_driver_2_name = request_data['additional_driver_2_name'] if request_data.has_key?('additional_driver_2_name')
+                shopping_cart.additional_driver_2_surname = request_data['additional_driver_2_surname'] if request_data.has_key?('additional_driver_2_surname')
+                shopping_cart.additional_driver_2_document_id = request_data['additional_driver_2_document_id'] if request_data.has_key?('additional_driver_2_document_id')
+                shopping_cart.additional_driver_2_document_id_date = parse_date(request_data['additional_driver_2_document_id_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_2_document_id_date') and !request_data['additional_driver_2_document_id_date'].nil? and !request_data['additional_driver_2_document_id_date'].to_s.empty?
+                shopping_cart.additional_driver_2_document_id_expiration_date = parse_date(request_data['additional_driver_2_document_id_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_2_document_id_expiration_date') and !request_data['additional_driver_2_document_id_expiration_date'].nil? and !request_data['additional_driver_2_document_id_expiration_date'].to_s.empty?
+                shopping_cart.additional_driver_2_origin_country = request_data['additional_driver_2_origin_country'] if request_data.has_key?('additional_driver_2_origin_country')
+                shopping_cart.additional_driver_2_date_of_birth = parse_date(request_data['additional_driver_2_date_of_birth'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_2_date_of_birth') and !request_data['additional_driver_2_date_of_birth'].nil? and !request_data['additional_driver_2_date_of_birth'].to_s.empty?
+                shopping_cart.additional_driver_2_age = age(Date.today, shopping_cart.additional_driver_2_date_of_birth) if !shopping_cart.additional_driver_2_date_of_birth.nil?
+                shopping_cart.additional_driver_2_driving_license_number = request_data['additional_driver_2_driving_license_number'] if request_data.has_key?('additional_driver_2_driving_license_number')
+                shopping_cart.additional_driver_2_driving_license_date = parse_date(request_data['additional_driver_2_driving_license_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_2_driving_license_date') and !request_data['additional_driver_2_driving_license_date'].nil? and !request_data['additional_driver_2_driving_license_date'].to_s.empty?
+                shopping_cart.additional_driver_2_driving_license_country = request_data['additional_driver_2_driving_license_country'] if request_data.has_key?('additional_driver_2_driving_license_country')
+                shopping_cart.additional_driver_2_driving_license_expiration_date = parse_date(request_data['additional_driver_2_driving_license_expiration_date'], shopping_cart.customer_language) if request_data.has_key?('additional_driver_2_driving_license_expiration_date') and !request_data['additional_driver_2_driving_license_expiration_date'].nil? and !request_data['additional_driver_2_driving_license_expiration_date'].to_s.empty?
+                shopping_cart.additional_driver_2_phone = request_data['additional_driver_2_phone'] if request_data.has_key?('additional_driver_2_phone')
+                shopping_cart.additional_driver_2_email = request_data['additional_driver_2_email'] if request_data.has_key?('additional_driver_2_email')
               end
               # Flight
               if booking_item_family and booking_item_family.flight
