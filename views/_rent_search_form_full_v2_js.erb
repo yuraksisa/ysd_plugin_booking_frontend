@@ -16,7 +16,8 @@ require(['jquery', 'YSDRemoteDataSource', 'YSDMemoryDataSource', 'YSDSelectSelec
       pickupReturnPlacesSameRentalLocation: <%= pickup_return_places_same_rental_location %>,
       timeToFrom: <%if booking_item_family.time_to_from%>true<%else%>false<%end%>,
       dataSourcePickupPlaces: null,
-      dataSourceReturnPlaces: null
+      dataSourceReturnPlaces: null,
+      returnPlace: null
   };
 
   selectorController = {
@@ -277,7 +278,12 @@ require(['jquery', 'YSDRemoteDataSource', 'YSDMemoryDataSource', 'YSDSelectSelec
     },
 
     setupReturnPlaceSelector: function(dataSource) {
-        var returnPlace = new SelectSelector('return_place', 
+
+        if (selectorModel.returnPlace != null) {
+          selectorModel.returnPlace.stop();
+        }
+
+        selectorModel.returnPlace = new SelectSelector('return_place', 
             dataSource, null, false, '',
                 function() {
                   if (selectorModel.allowCustomPlaces) {
