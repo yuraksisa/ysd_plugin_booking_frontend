@@ -31,7 +31,6 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
     driver_age_rule: null,
     loading : true, // control the loading process
     loadedPickupPlaces: false,
-    loadedReturnPlaces: false,
     loadedPickupTimes: false,
     loadedReturnTimes: false,
 
@@ -87,7 +86,6 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
     checkLoading: function() {
 
        if (this.loadedPickupPlaces &&
-           this.loadedReturnPlaces &&
            this.loadedPickupTimes &&
            this.loadedReturnTimes &&
            this.loading) {
@@ -357,11 +355,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
       $('#full_loader').show();
 
       if (model.pickupReturnPlaces) {
-          this.loadPickupReturnPlaces();
+          this.loadPickupPlaces();
       }
       else {
           model.loadedPickupPlaces = true;
-          model.loadedReturnPlaces = true;
       }
       if (model.timeToFrom) {
           this.loadPickupReturnTime();
@@ -377,7 +374,6 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
 
 
   	},
-
 
     setupDateControls: function() {
       $.datepicker.setDefaults( $.datepicker.regional["<%=session[:locale] || 'es'%>" ] );
@@ -402,13 +398,13 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
          });
     },
 
-    loadPickupReturnPlaces: function() {
+    loadPickupPlaces: function() {
 
         var pickupPlacesURL = '/api/booking/frontend/pickup-places';
         if (model.requestLanguage != null) {
             pickupPlacesURL += '?lang='+model.requestLanguage;
         }
-
+        // Create the datasource
         model.dataSourcePickupPlaces = new RemoteDataSource(pickupPlacesURL,
                                                           {'id':'id',
                                                            'description': function(data) {
@@ -420,6 +416,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                                                               }
                                                               return value;
                                                            }});
+        // Create the selector from the datasource
         var pickupPlace = new SelectSelector('pickup_place',
             model.dataSourcePickupPlaces, null, false, '',
             function() {
@@ -440,14 +437,12 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                 $('#pickup_place.selectpicker').selectpicker();
                 $('#pickup_place').trigger('change');
                 model.loadedPickupPlaces = true;
-                view.loadReturnPlaces();
+                model.checkLoading();
             } );
-
-        if (model.allowCustomPlaces) {
-            $('#pickup_place').bind('change', function() {
-                controller.pickupPlaceChanged();
-            });
-        }
+        // Bind event change pickup place 
+        $('#pickup_place').bind('change', function() {
+            controller.pickupPlaceChanged();
+        });
 
     },
 
@@ -506,8 +501,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
           model.returnPlace.stop();
         }
         model.returnPlace = new SelectSelector('return_place', 
-            dataSource, null, false, '',
+            dataSource, model.shopping_cart ? model.shopping_cart.rental_location_code : null, false, '',
                 function() {
+                  // Append other
                   if (model.allowCustomPlaces) {
                       if (model.customPlacePrice && model.customPlacePrice > 0) {
                           $('#return_place').append($('<option>', {
@@ -522,18 +518,30 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                           }));
                       }
                   }
+                  // Set up selectpicker
                   $('#return_place.selectpicker').selectpicker();
+                  // Check shopping cart value
+                  if (model.shopping_cart.custom_return_place) {
+                      $('#return_place').val('other');
+                      $('#return_place_other').html(model.shopping_cart.return_place);
+                      $('input[name=custom_return_place]').val('true');
+                      $('#another_return_place_group').show();
+                  }
+                  else {
+                      $('#return_place').val(model.shopping_cart.return_place ? model.shopping_cart.return_place.replace(/\+/g, ' ') : model.shopping_cart.return_place);
+                  }
+                  if (model.shopping_cart.return_place == '' || $("#return_place option[value='"+model.shopping_cart.return_place+"']").length == 0) {
+                    $("#return_place").val($("#pickup_place").val());
+                  }
                   $('#return_place.selectpicker').selectpicker('refresh');
                   $('#return_place').trigger('change');
-                  model.loadedReturnPlaces = true;
-                  model.checkLoading();
-                } );
+                  // Bind event
+                  $('#return_place').bind('change', function() {
+                      controller.returnPlaceChanged();
+                  });
+                  
+                });
 
-        if (model.allowCustomPlaces) {
-            $('#return_place').bind('change', function() {
-                controller.returnPlaceChanged();
-            });
-        }
     },    
 
     loadPickupReturnTime: function() {
@@ -595,17 +603,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
         $('#pickup_place.selectpicker').selectpicker('refresh');
         $('#pickup_place').trigger('change');
 
-        if (model.shopping_cart.custom_return_place) {
-            $('#return_place').val('other');
-            $('#return_place_other').html(model.shopping_cart.return_place);
-            $('input[name=custom_return_place]').val('true');
-            $('#another_return_place_group').show();
-        }
-        else {
-            $('#return_place').val(model.shopping_cart.return_place ? model.shopping_cart.return_place.replace(/\+/g, ' ') : model.shopping_cart.return_place);
-        }
-        $('#return_place.selectpicker').selectpicker('refresh');
-        $('#return_place').trigger('change');
+        view.loadReturnPlaces();
 
         if (model.shopping_cart.date_from instanceof Date) {
             var date_from = model.shopping_cart.date_from.getDate() + '/' + (model.shopping_cart.date_from.getMonth()+1)+ '/' + model.shopping_cart.date_from.getFullYear();

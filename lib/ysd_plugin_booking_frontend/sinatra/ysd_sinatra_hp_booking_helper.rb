@@ -92,7 +92,8 @@ module Sinatra
                return_place_cost: shopping_cart.return_place_cost,
                promotion_code: shopping_cart.promotion_code,
                comments: shopping_cart.comments,
-               destination_accommodation: shopping_cart.destination_accommodation
+               destination_accommodation: shopping_cart.destination_accommodation,
+               rental_location_code: shopping_cart.rental_location_code,
         }
         sc.merge!({
                       date_from_short_format: SystemConfiguration::Settings.instance.format_date(shopping_cart.date_from, :short, locale),
