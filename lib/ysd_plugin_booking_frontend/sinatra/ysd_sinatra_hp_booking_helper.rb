@@ -32,7 +32,7 @@ module Sinatra
                                                                                             (menu_item.content.alias == home_page and !home_page.nil? and Regexp.new(home_page).match(request.path_info)))))
                          end
             if !menu_items
-              menu_itms = Site::Menu.first(name: 'secondary_links').menu_items.any? do |menu_item|
+              menu_items = Site::Menu.first(name: 'secondary_links').menu_items.any? do |menu_item|
                             home_page = SystemConfiguration::Variable.get_value('site.anonymous_front_page', nil)
                               (menu_item.content.nil? and (!menu_item.link_route.nil? and (Regexp.new(menu_item.link_route).match(request.path_info) or
                                                                                            (menu_item.link_route == home_page and !home_page.nil? and Regexp.new(home_page).match(request.path_info))))) or
@@ -400,7 +400,8 @@ module Sinatra
                                   sales_channel_code: shopping_cart.sales_channel_code,
                                   apply_promotion_code: (shopping_cart.promotion_code and !shopping_cart.promotion_code.empty?) ? true : false,
                                   promotion_code: shopping_cart.promotion_code}
-        p_json = ::Yito::Model::Booking::BookingCategory.search(shopping_cart.date_from,
+        p_json = ::Yito::Model::Booking::BookingCategory.search(shopping_cart.rental_location_code,
+                                                                shopping_cart.date_from,
                                                                 shopping_cart.time_from,
                                                                 shopping_cart.date_to,
                                                                 shopping_cart.time_to,
@@ -429,6 +430,7 @@ module Sinatra
         end
         server_timestamp = DateTime.now
         sales_process = {can_pay: can_pay, can_pay_deposit: can_pay_deposit, can_pay_total: can_pay_total,
+                         pickup_return_places_same_rental_location: BookingDataSystem::Booking.pickup_return_places_same_rental_location, 
                          server_date: server_timestamp.strftime('%Y-%m-%d'), server_time: server_timestamp.strftime('%H:%M')}
         sales_process_json = sales_process.to_json
 

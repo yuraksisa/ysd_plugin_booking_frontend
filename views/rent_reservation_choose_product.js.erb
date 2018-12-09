@@ -1,10 +1,10 @@
-require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
+require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelector',
         'ysdtemplate',
 	      'jquery.validate', 'jquery.ui', 'jquery.ui.datepicker-es',
         'jquery.ui.datepicker-en','jquery.ui.datepicker-it', 'jquery.ui.datepicker-ca',
 	      'jquery.ui.datepicker.validation', 'datejs',
 	      'bootstrap', 'bootstrap.select'/*, 'select2'*/],
-	     function($, RemoteDataSource, SelectSelector, tmpl) {
+	     function($, RemoteDataSource, MemoryDataSource, SelectSelector, tmpl) {
 
   model = {
 
@@ -13,7 +13,10 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
     allowCustomPlaces : <%=pickup_return_places_configuration == 'list+custom'%>,
     customPlacePrice: <%=custom_pickup_return_place_price%>,
     pickupReturnPlaces: <% if booking_item_family.pickup_return_place%>true<%else%>false<%end%>,
+    pickupReturnPlacesSameRentalLocation: <%= pickup_return_places_same_rental_location %>,
     timeToFrom: <% if booking_item_family.time_to_from%>true<%else%>false<%end%>,
+    dataSourcePickupPlaces: null,
+    dataSourceReturnPlaces: null,    
     data : null,
     shopping_cart: null,
     products: null,
@@ -296,6 +299,27 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
             }
         }
 
+        // Filter the return places to match the pickup places rental location
+        if (model.pickupReturnPlacesSameRentalLocation && model.dataSourceReturnPlaces != null) {
+           var pickupPlace = model.dataSourcePickupPlaces.data.find(function(element){
+              return $('#pickup_place').val() == element.id;
+           });
+           var returnPlaces = model.dataSourceReturnPlaces.data.filter(function(element){
+             return element.rental_location_code == pickupPlace.rental_location_code
+           });
+           dataSource = new MemoryDataSource(returnPlaces, {'id':'id',
+                                                           'description':function(data) {
+                                                               var value = data.name;
+                                                               if (data.price && data.price > 0) {
+                                                                   value += ' (';
+                                                                   value += new Number(data.price).toFixed(2) + '€';
+                                                                   value += ')';
+                                                               }
+                                                               return value;
+                                                           }});
+           view.setupReturnPlaceSelector(dataSource);
+        }        
+
     },
 
     returnPlaceChanged: function() {
@@ -384,7 +408,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
             pickupPlacesURL += '?lang='+model.requestLanguage;
         }
 
-        var dataSourcePickupPlaces = new RemoteDataSource(pickupPlacesURL,
+        model.dataSourcePickupPlaces = new RemoteDataSource(pickupPlacesURL,
                                                           {'id':'id',
                                                            'description': function(data) {
                                                               var value = data.name;
@@ -396,7 +420,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                                                               return value;
                                                            }});
         var pickupPlace = new SelectSelector('pickup_place',
-            dataSourcePickupPlaces, null, false, '',
+            model.dataSourcePickupPlaces, null, false, '',
             function() {
                 if (model.allowCustomPlaces) {
                     if (model.customPlacePrice && model.customPlacePrice != '' && model.customPlacePrice > 0) {
@@ -415,7 +439,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                 $('#pickup_place.selectpicker').selectpicker();
                 $('#pickup_place').trigger('change');
                 model.loadedPickupPlaces = true;
-                model.checkLoading();
+                view.loadReturnPlaces();
             } );
 
         if (model.allowCustomPlaces) {
@@ -424,12 +448,16 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
             });
         }
 
+    },
+
+    loadReturnPlaces: function() {
+
         var returnPlacesURL = '/api/booking/frontend/return-places';
         if (model.requestLanguage != null) {
             returnPlacesURL += '?lang='+model.requestLanguage;
         }
 
-        var dataSourceReturnPlaces = new RemoteDataSource(returnPlacesURL,
+        model.dataSourceReturnPlaces = new RemoteDataSource(returnPlacesURL,
                                                           {'id':'id',
                                                            'description':function(data) {
                                                                var value = data.name;
@@ -440,28 +468,65 @@ require(['jquery', 'YSDRemoteDataSource','YSDSelectSelector',
                                                                }
                                                                return value;
                                                            }});
-        var returnPlace = new SelectSelector('return_place',
-            dataSourcePickupPlaces, null, false, '',
-            function() {
-                if (model.allowCustomPlaces) {
-                    $('#return_place').append($('<option>', {
-                        value: 'other',
-                        text : '<%=t.front_end_reservation.another_place%>' + ' (' + model.customPlacePrice + '.00€)'
-                    }));
-                }
-                $('#return_place.selectpicker').selectpicker();
-                $('#return_place').trigger('change');
-                model.loadedReturnPlaces = true;
-                model.checkLoading();
-            } );
+        model.dataSourceReturnPlaces.addListener('data_available', function(event) {
+           if (model.pickupReturnPlacesSameRentalLocation) {
+             var pickupPlace = model.dataSourcePickupPlaces.data.find(function(element){
+                return $('#pickup_place').val() == element.id;
+             });
+             var returnPlaces = model.dataSourceReturnPlaces.data.filter(function(element){
+               return element.rental_location_code == pickupPlace.rental_location_code
+             });
+             dataSource = new MemoryDataSource(returnPlaces, {'id':'id',
+                                                             'description':function(data) {
+                                                                 var value = data.name;
+                                                                 if (data.price && data.price > 0) {
+                                                                     value += ' (';
+                                                                     value += new Number(data.price).toFixed(2) + '€';
+                                                                     value += ')';
+                                                                 }
+                                                                 return value;
+                                                             }});
+             view.setupReturnPlaceSelector(dataSource);
+           }
+           else {
+             view.setupReturnPlaceSelector(model.dataSourceReturnPlaces);
+           }
+        });
+        model.dataSourceReturnPlaces.retrieveData();
+
+    },
+
+    setupReturnPlaceSelector: function(dataSource) {
+        var returnPlace = new SelectSelector('return_place', 
+            dataSource, null, false, '',
+                function() {
+                  if (model.allowCustomPlaces) {
+                      if (model.customPlacePrice && model.customPlacePrice > 0) {
+                          $('#return_place').append($('<option>', {
+                              value: 'other',
+                              text: '<%=t.front_end_reservation.another_place%>' + ' (' + model.customPlacePrice + '.00€)'
+                          }));
+                      }
+                      else {
+                          $('#return_place').append($('<option>', {
+                              value: 'other',
+                              text: '<%=t.front_end_reservation.another_place%>'
+                          }));
+                      }
+                  }
+                  $('#return_place.selectpicker').selectpicker();
+                  $('#return_place.selectpicker').selectpicker('refresh');
+                  $('#return_place').trigger('change');
+                  model.loadedReturnPlaces = true;
+                  model.checkLoading();
+                } );
 
         if (model.allowCustomPlaces) {
             $('#return_place').bind('change', function() {
                 controller.returnPlaceChanged();
             });
         }
-
-    },
+    },    
 
     loadPickupReturnTime: function() {
 

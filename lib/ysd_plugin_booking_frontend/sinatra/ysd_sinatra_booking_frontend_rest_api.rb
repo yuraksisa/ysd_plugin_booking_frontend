@@ -39,6 +39,7 @@ module Sinatra
 
           settings = {server_date: server_timestamp.strftime('%Y-%m-%d'),
                       server_time: server_timestamp.strftime('%H:%M'),
+                      pickup_return_places_same_rental_location: BookingDataSystem::Booking.pickup_return_places_same_rental_location,
                       products: products}
 
           content_type 'json'
@@ -52,7 +53,7 @@ module Sinatra
 
           places = BookingDataSystem.pickup_places.map do |item|
             item_translation = item.translate(session[:locale])
-            {id: item.name, name: item_translation.name, price: item.price}
+            {id: item.name, name: item_translation.name, price: item.price, rental_location_code: item.rental_location_code}
           end
 
           content_type 'json'
@@ -67,7 +68,7 @@ module Sinatra
 
           places = BookingDataSystem.return_places.map do |item|
             item_translation = item.translate(session[:locale])
-            {id: item.name, name: item_translation.name, price: item.price}
+            {id: item.name, name: item_translation.name, price: item.price, rental_location_code: item.rental_location_code}
           end
 
           content_type 'json'
@@ -252,9 +253,11 @@ module Sinatra
           days = BookingDataSystem::Booking.calculate_days(date_from, time_from, date_to, time_to)[:days]
 
           sales_channel = params[:sales_channel]
+          rental_location_code = params[:rental_location_code]
 
           if product = ::Yito::Model::Booking::BookingCategory.get(params[:id])
-            search = ::Yito::Model::Booking::BookingCategory.search(date_from,
+            search = ::Yito::Model::Booking::BookingCategory.search(rental_location_code,
+                                                                    date_from,
                                                                     time_from,
                                                                     date_to,
                                                                     time_to,
@@ -664,7 +667,7 @@ module Sinatra
             time_to = model_request[:time_to]
             # Retrieve pickup/return place
             pickup_place, custom_pickup_place, pickup_place_customer_translation,
-            return_place, custom_return_place, return_place_customer_translation = request_pickup_return_place(model_request)
+            return_place, custom_return_place, return_place_customer_translation, rental_location_code = request_pickup_return_place(model_request)
             # Retrieve number of adutls and children
             number_of_adults = model_request[:number_of_adults] if model_request.has_key?(:number_of_adults)
             number_of_children = model_request[:number_of_children] if model_request.has_key?(:number_of_childen)
