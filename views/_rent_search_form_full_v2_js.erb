@@ -245,7 +245,7 @@ require(['jquery', 'YSDRemoteDataSource', 'YSDMemoryDataSource', 'YSDSelectSelec
                                                                return value;
                                                            }});
         selectorModel.dataSourceReturnPlaces.addListener('data_available', function(event) {
-
+           selectorModel.dataSourceReturnPlaces.removeListener('data_available', this); 
            if (selectorModel.pickupReturnPlacesSameRentalLocation) {
              var pickupPlace = selectorModel.dataSourcePickupPlaces.data.find(function(element){
                 return $('#pickup_place').val() == element.id;

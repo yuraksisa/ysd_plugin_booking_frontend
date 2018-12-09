@@ -469,6 +469,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                                                                return value;
                                                            }});
         model.dataSourceReturnPlaces.addListener('data_available', function(event) {
+           model.dataSourceReturnPlaces.removeListener('data_available', this);
            if (model.pickupReturnPlacesSameRentalLocation) {
              var pickupPlace = model.dataSourcePickupPlaces.data.find(function(element){
                 return $('#pickup_place').val() == element.id;
