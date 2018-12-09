@@ -468,8 +468,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                                                                }
                                                                return value;
                                                            }});
-        model.dataSourceReturnPlaces.addListener('data_available', function(event) {
-           model.dataSourceReturnPlaces.removeListener('data_available', this);
+
+        var dataAvailableListener = function(event) {
+           model.dataSourceReturnPlaces.removeListener('data_available', dataAvailableListener);
            if (model.pickupReturnPlacesSameRentalLocation) {
              var pickupPlace = model.dataSourcePickupPlaces.data.find(function(element){
                 return $('#pickup_place').val() == element.id;
@@ -492,7 +493,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
            else {
              view.setupReturnPlaceSelector(model.dataSourceReturnPlaces);
            }
-        });
+        }
+
+        model.dataSourceReturnPlaces.addListener('data_available', dataAvailableListener);
         model.dataSourceReturnPlaces.retrieveData();
 
     },
