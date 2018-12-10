@@ -283,6 +283,12 @@ require(['jquery', 'YSDRemoteDataSource', 'YSDMemoryDataSource', 'YSDSelectSelec
           selectorModel.returnPlace.stop();
         }
 
+        if (selectorModel.allowCustomPlaces) {
+            $('#return_place').bind('change', function() {
+                selectorController.returnPlaceChanged();
+            });
+        }
+
         selectorModel.returnPlace = new SelectSelector('return_place', 
             dataSource, null, false, '',
                 function() {
@@ -305,11 +311,6 @@ require(['jquery', 'YSDRemoteDataSource', 'YSDMemoryDataSource', 'YSDSelectSelec
                   $('#return_place').trigger('change');
                 } );
 
-        if (selectorModel.allowCustomPlaces) {
-            $('#return_place').bind('change', function() {
-                selectorController.returnPlaceChanged();
-            });
-        }
     },
 
   	loadPickupReturnTime: function() {

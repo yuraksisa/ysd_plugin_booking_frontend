@@ -500,6 +500,13 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
         if (model.returnPlace != null) {
           model.returnPlace.stop();
         }
+
+        if (selectorModel.allowCustomPlaces) {
+            $('#return_place').bind('change', function() {
+                selectorController.returnPlaceChanged();
+            });
+        }
+
         model.returnPlace = new SelectSelector('return_place', 
             dataSource, model.shopping_cart ? model.shopping_cart.rental_location_code : null, false, '',
                 function() {
@@ -534,12 +541,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                     $("#return_place").val($("#pickup_place").val());
                   }
                   $('#return_place.selectpicker').selectpicker('refresh');
-                  $('#return_place').trigger('change');
-                  // Bind event
-                  $('#return_place').bind('change', function() {
-                      controller.returnPlaceChanged();
-                  });
-                  
+                  $('#return_place').trigger('change');                  
                 });
 
     },    
