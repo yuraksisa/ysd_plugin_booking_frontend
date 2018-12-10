@@ -501,9 +501,9 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
           model.returnPlace.stop();
         }
 
-        if (selectorModel.allowCustomPlaces) {
+        if (model.allowCustomPlaces) {
             $('#return_place').bind('change', function() {
-                selectorController.returnPlaceChanged();
+                controller.returnPlaceChanged();
             });
         }
 
