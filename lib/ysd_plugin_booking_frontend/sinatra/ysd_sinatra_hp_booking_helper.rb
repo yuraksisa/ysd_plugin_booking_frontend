@@ -455,13 +455,13 @@ module Sinatra
         # Prepare the products
         domain = SystemConfiguration::Variable.get_value('site.domain')
         products = ::Yito::Model::Booking::BookingCategory.all(fields: [:code, :name, :short_description, :description, :album_id],
-                                                               conditions: {active: true}, order: [:code])
+                                                               conditions: {active: true, web_public: true}, order: [:code])
         products_list = []
         products.each do |item|
           products_list << {
               code: item.code, name: item.name, short_description: item.short_description, description: item.description,
-              photo: item.photo_url_medium.match(/^https?:/) ? item.photo_url_medium : File.join(domain, item.photo_url_medium),
-              full_photo:  item.photo_url_full.match(/^https?:/) ? item.photo_url_full : File.join(domain, item.photo_url_full)
+              photo: item.item_photo_url_medium.nil? ? nil : (item.photo_url_medium.match(/^https?:/) ? item.photo_url_medium : File.join(domain, item.photo_url_medium)),
+              full_photo: item.photo_url_full.nil? ? nil : (item.photo_url_full.match(/^https?:/) ? item.photo_url_full : File.join(domain, item.photo_url_full))
           }
         end
         p_json = products_list.to_json
