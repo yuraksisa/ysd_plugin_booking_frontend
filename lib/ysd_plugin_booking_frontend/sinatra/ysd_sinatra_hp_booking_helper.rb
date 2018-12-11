@@ -460,7 +460,7 @@ module Sinatra
         products.each do |item|
           products_list << {
               code: item.code, name: item.name, short_description: item.short_description, description: item.description,
-              photo: item.item_photo_url_medium.nil? ? nil : (item.photo_url_medium.match(/^https?:/) ? item.photo_url_medium : File.join(domain, item.photo_url_medium)),
+              photo: item.photo_url_medium.nil? ? nil : (item.photo_url_medium.match(/^https?:/) ? item.photo_url_medium : File.join(domain, item.photo_url_medium)),
               full_photo: item.photo_url_full.nil? ? nil : (item.photo_url_full.match(/^https?:/) ? item.photo_url_full : File.join(domain, item.photo_url_full))
           }
         end
