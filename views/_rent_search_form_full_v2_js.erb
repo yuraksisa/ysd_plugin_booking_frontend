@@ -128,6 +128,12 @@ require(['jquery', 'YSDRemoteDataSource', 'YSDMemoryDataSource', 'YSDSelectSelec
                        data: {
                            code: function() {
                                return $('#promotion_code').val();
+                           },
+                           from: function() {
+                               return $('#date_from').datepicker('getDate').toString('yyyy-MM-dd'); 
+                           },
+                           to: function() {
+                               return $('#date_to').datepicker('getDate').toString('yyyy-MM-dd');
                            }
                        }
                    }

@@ -577,11 +577,13 @@ module Sinatra
               logger.debug "Updated shopping cart"
 
               # Creates the booking
+              automatic_confirmation = SystemConfiguration::Variable.get_value('booking.automatic_confirm_web_reservation_request', 'false').to_bool
               booking = nil
-              begin
+              begin                
                 booking = BookingDataSystem::Booking.create_from_shopping_cart(shopping_cart,
                                                                                request.env["HTTP_USER_AGENT"],
-                                                                               false)
+                                                                               false,
+                                                                               !automatic_confirmation)
                 shopping_cart.destroy # Destroy the converted shopping cart
               rescue DataMapper::SaveFailureError => error
                 logger.error "Error creating booking from shopping cart #{error.inspect}"
@@ -589,6 +591,13 @@ module Sinatra
                 halt 422, {error: error.resource.errors.full_messages}.to_json
               end
               logger.debug "Created booking"
+
+              if automatic_confirmation
+                booking.confirm!
+              elsif SystemConfiguration::Variable.get_value('booking.assignation.automatic_resource_assignation_on_web_request', 'false').to_bool
+                booking.assign_available_stock  
+              end  
+
               # Remove the shopping_cart_renting_id from the session
               session.delete(:shopping_cart_renting_id)
               # Add the booking_id to the session
