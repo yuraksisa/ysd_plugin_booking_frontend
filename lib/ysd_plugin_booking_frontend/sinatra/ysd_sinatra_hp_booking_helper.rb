@@ -126,6 +126,15 @@ module Sinatra
                     driver_age_rule_description: shopping_cart.driver_age_rule_description,
                     driver_age_rule_description_customer_translation: shopping_cart.driver_age_rule_description_customer_translation
                   })
+        sc.merge!({ #Category supplements
+                    category_supplement_1_cost: shopping_cart.category_supplement_1_cost,
+                    category_supplement_2_cost: shopping_cart.category_supplement_2_cost,
+                    category_supplement_3_cost: shopping_cart.category_supplement_3_cost,
+                    #Supplements
+                    supplement_1_cost: shopping_cart.supplement_1_cost,
+                    supplement_2_cost: shopping_cart.supplement_2_cost,
+                    supplement_3_cost: shopping_cart.supplement_3_cost,
+                  })
 
         # Items
         sc_items = []
@@ -305,6 +314,15 @@ module Sinatra
                                  product_deposit_cost: booking.product_deposit_cost,
                                  total_deposit: booking.total_deposit
                                })
+
+        booking_summary.merge!({ #Category supplements
+                                 category_supplement_1_cost: booking.category_supplement_1_cost,
+                                 category_supplement_2_cost: booking.category_supplement_2_cost,
+                                 category_supplement_3_cost: booking.category_supplement_3_cost,
+                                 supplement_1_cost: booking.supplement_1_cost,
+                                 supplement_2_cost: booking.supplement_2_cost,
+                                 supplement_3_cost: booking.supplement_3_cost,
+                               })        
 
         # Lines (products)
         lines = []
