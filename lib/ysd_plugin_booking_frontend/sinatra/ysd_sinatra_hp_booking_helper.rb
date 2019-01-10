@@ -437,8 +437,8 @@ module Sinatra
         #
         booking_payment = SystemConfiguration::Variable.get_value('booking.payment','false').to_bool
         booking_payment_amount = SystemConfiguration::Variable.get_value('booking.payment_amount_setup', 'deposit')
+        payment_cadence = BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
         if shopping_cart.sales_channel_code.nil? or shopping_cart.sales_channel_code.empty?
-          payment_cadence = BookingDataSystem::Booking.payment_cadence?(shopping_cart.date_from, shopping_cart.time_from)
           can_pay = booking_payment && payment_cadence
           can_pay_deposit = can_pay && (['deposit','deposit_and_total'].include?(booking_payment_amount)) && payment_cadence
           can_pay_total = can_pay && (['total','deposit_and_total'].include?(booking_payment_amount)) && payment_cadence
