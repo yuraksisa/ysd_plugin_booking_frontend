@@ -676,15 +676,33 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
                 break;
             }
         }
+
         if (product) {
 
-            var descriptionHtml = '<img src="' + product.full_photo + '" style="display: block; margin: 0 auto; max-width: 100%">';
-            descriptionHtml += '<br>';
-            descriptionHtml += product.description;
+            var descriptionHtml = null;
+
+            // If the theme has defined a custom template for the modal, use it
+            if (document.getElementById('product_detail_script')) {
+              descriptionHtml = tmpl('product_detail_script')({product: product});
+            }
+            else {
+              descriptionHtml = '<img src="' + product.full_photo + '" style="display: block; margin: 0 auto; max-width: 100%">';
+              descriptionHtml += '<br>';
+              descriptionHtml += product.description;
+            }
 
             $('#bs_modal .modal-title').html(product.name);
             $('#bs_modal .modal-body').html(descriptionHtml);
+            $('#bs_modal').on('shown.bs.modal', function (e) {
+              // If the theme has defined an custom script for the modal, execute it
+              if (typeof productDetailSlider !== 'undefined') {
+                $('.post-slide').show();
+                productDetailSlider();
+              }
+            });
             $('#bs_modal').modal('show');
+
+
         }
     }
 
