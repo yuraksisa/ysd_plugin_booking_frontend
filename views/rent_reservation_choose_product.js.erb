@@ -641,7 +641,7 @@ require(['jquery', 'YSDRemoteDataSource','YSDMemoryDataSource', 'YSDSelectSelect
         var result = '';
         for (var idx=0;idx<model.products.length;idx++) {
             result += tmpl('script_detailed_product')({product:model.products[idx],
-                productsInShoppingCart: model.getShoppingCartProducts()});
+                productsInShoppingCart: model.getShoppingCartProducts(), shoppingCart: model.shopping_cart});
         }
         $('#product_listing').html(result);
 

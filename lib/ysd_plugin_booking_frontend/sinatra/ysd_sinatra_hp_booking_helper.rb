@@ -418,7 +418,8 @@ module Sinatra
                                   web_public: true,
                                   sales_channel_code: shopping_cart.sales_channel_code,
                                   apply_promotion_code: (shopping_cart.promotion_code and !shopping_cart.promotion_code.empty?) ? true : false,
-                                  promotion_code: shopping_cart.promotion_code}
+                                  promotion_code: shopping_cart.promotion_code,
+                                  include_album: true}
         p_json = ::Yito::Model::Booking::BookingCategory.search(shopping_cart.rental_location_code,
                                                                 shopping_cart.date_from,
                                                                 shopping_cart.time_from,
@@ -429,7 +430,9 @@ module Sinatra
 
         # Prepare the extras
         e_json = ::Yito::Model::Booking::RentingExtraSearch.search(shopping_cart.date_from,
-                                                                   shopping_cart.date_to, shopping_cart.days, locale).to_json
+                                                                   shopping_cart.date_to, shopping_cart.days, locale, 
+                                                                   nil,
+                                                                   shopping_cart.items.map {|item| item.item_id}).to_json
 
         # Prepare the sales process
         #
